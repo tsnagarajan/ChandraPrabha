@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
 import path from 'node:path';
 import fs from 'node:fs';
 import { createRequire } from 'module';
+import { cookies } from "next/headers";
 
 const require = createRequire(import.meta.url);
 const swe = require('swisseph');
@@ -257,7 +258,8 @@ try {
   const ref = req.headers.get("referer") || "";
   let refConsent = false;
   try { refConsent = new URL(ref).searchParams.get("consent") === "1"; } catch {}
-  const consent = urlConsent || refConsent;
+  const consent = urlConsent || refConsent || cookieConsent;
+  const cookieConsent = cookies().get("cp_consent")?.value === "1";
 
   if (consent && process.env.SHEETS_WEBHOOK_URL) {
     // Use parsed request body you already have
