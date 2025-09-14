@@ -937,6 +937,29 @@ function safeDownloadHTML() {
 `}</style>
 
 
+   <div className="mt-4 text-sm text-gray-800">
+  <p><strong>Tip 1:</strong> Click <em>Geocode</em> and then <em>Use</em> to fill Latitude/Longitude automatically.</p>
+  <p><strong>Tip 2:</strong> If Geocode can’t find your place, open <a href="https://www.latlong.net" target="_blank" rel="noopener noreferrer" className="underline">latlong.net</a>, search your birthplace, copy <em>Latitude</em> and <em>Longitude</em>, and paste them here.</p>
+  <p className="mt-2">
+    <a
+      href="https://docs.google.com/forms/d/e/1FAIpQLSfggwnVAIEcqgxqU6G5OB4YSApgYOlyCUAdjkJz-CKUPu2E-g/viewform"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline"
+    >
+      Leave comments / feedback (optional)
+    </a>
+  </p>
+</div>
+
+
+
+
+
+
+
+
+
    {/* Top header with centered logo (screen) */}
       <header style={{position:'sticky', top:0, background:'rgba(255,255,255,.9)', backdropFilter:'blur(6px)', borderBottom:'1px solid #eee'}}>
         <div style={{ maxWidth:1100, margin:'0 auto', padding:'16px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center' }}>
