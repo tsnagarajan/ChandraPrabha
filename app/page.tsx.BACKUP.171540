@@ -430,10 +430,6 @@ export default function Home() {
   const [timezone, setTimezone] = useState('');
   const [tzSelect, setTzSelect] = useState<string>('');
   const [houseSystem, setHouseSystem] = useState('P');
-  
-  const [consent, setConsent] = useState<boolean | null>(null); // default = neither selected
-
-  
 
   // Keep selected day valid when month/year changes
   useEffect(() => {
@@ -726,6 +722,7 @@ useEffect(() => {
   }
   function downloadJSON() {
     if (!out) return;
+    const payload = { meta: { name, place, lat, lon, date: dateStr, time: timeStr, timezone, houseSystem }, result: out };
     downloadText('chart.json', 'application/json;charset=utf-8', JSON.stringify(payload, null, 2));
   }
   function downloadCSV() {
@@ -811,157 +808,7 @@ function safeDownloadHTML() {
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>${title}</title>
   <style>${styles}</style>
-</head>
-<body>
-  <div id="print-root">${root.innerHTML}</div>
-</body>
-</html>`.trim();
-
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-
-  // Create a real <a> and fire only its click (no form submit, no bubbling)
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.rel = 'noopener';
-  a.target = '_self';
-
-  // do not attach to DOM to avoid layout/bubbling quirks
-  a.addEventListener('click', (ev) => {
-    ev.preventDefault();
-    ev.stopPropagation();
-  });
-
-  // Trigger the download on the microtask queue to dodge any shared click handlers
-  setTimeout(() => {
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }, 0);
-}
-
-
-
-
-
-  function handleDownloadHTML() {
-  try {
-    console.log('[Download] clicked');
-    downloadHTML();
-  } catch (err) {
-    console.error('downloadHTML failed:', err);
-  }
-}
-
-
-
-  function downloadHTML() {
-  const root = document.getElementById('print-root');
-  if (!root) return;
-
-  // Collect inline styles so the file looks identical offline
-  const styles = Array.from(document.querySelectorAll('style'))
-    .map(s => s.innerHTML)
-    .join('\n');
-
-  const title = `Vedic Astrology Report${name ? ' - ' + name : ''}`;
-  const filename = `report${name ? '_' + name.replace(/\s+/g, '_') : ''}.html`;
-
-  const html = `<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>${title}</title>
-  <style>${styles}</style>
-</head>
-<body>
-  <div id="print-root">${root.innerHTML}</div>
-</body>
-</html>`.trim();
-
-  // Blob download path
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-
-  // Create an anchor and click it programmatically
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.rel = 'noopener';
-  a.target = '_self'; // keep in same tab to avoid weird browser behaviors
-  document.body.appendChild(a);
-
-  console.log('[Download] starting blob download:', filename);
-  a.click();
-
-  // Cleanup
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 1000);
-}
-
-  // === Save PDF with per-page header (logo + title) ===
-
-
-      
-  /* =========================
-     UI
-     ========================= */
-  return (
-    <main style={{minHeight:'100vh', background:'#f7f7f8', fontSize:16, lineHeight:1.6}}>
-      <style>{`
-  @media print {
-    /* Hide UI chrome on paper */
-    header { display: none !important; }
-    .export-bar, .screen-only { display: none !important; }
-    .print-only { display: block !important; }
-
-    /* One PDF/print page per section (last section won't add a blank page) */
-    .page-section { break-after: page; page-break-after: always; }
-    .page-section:last-child { break-after: auto; page-break-after: auto; }
-
-    /* Keep big blocks intact; avoid mid-page splits */
-    .card, .avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
-
-    /* Charts: prevent clipping */
-    .si-grid {
-      grid-template-columns: repeat(4, 1fr) !important;
-      grid-auto-rows: 1fr !important;
-      height: auto !important;
-      overflow: visible !important;
-    }
-    svg { overflow: visible !important; }
-
-    /* Preserve colors */
-    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  }
-`}</style>
-
-
-   <div className="mt-4 text-sm text-gray-800">
-  <p className="mt-2">
-    <a
-      href="https://docs.google.com/forms/d/e/1FAIpQLSfggwnVAIEcqgxqU6G5OB4YSApgYOlyCUAdjkJz-CKUPu2E-g/viewform"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="underline"
-    >
-    </a>
-  </p>
-</div>
-
-
-
-
-
-
-
-
-
-   {/* Top header with centered logo (screen) */}
-      <header style={{position:'sticky', top:0, background:'rgba(255,255,255,.9)', backdropFilter:'blur(6px)', borderBottom:'1px solid #eee'}}>
+<header style={{position:'sticky', top:0, background:'rgba(255,255,255,.9)', backdropFilter:'blur(6px)', borderBottom:'1px solid #eee'}}>
         <div style={{ maxWidth:1100, margin:'0 auto', padding:'16px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center' }}>
           <img src="/logo.png" alt="Chandra Prabha — Vedic Astrology" width={260} height={260} style={{display:'block', margin:'0 auto'}} onError={(e)=>{(e.target as HTMLImageElement).style.display='none';}} />
           <div style={{fontSize:14, color:'#6b7280', marginTop:6}}>Vedic Astrology Report</div>
@@ -972,6 +819,9 @@ function safeDownloadHTML() {
         {/* Form */}
         <form onSubmit={generateChart} className="card avoid-break" style={{display:'grid', gap:12}}>
           
+        {/* Quick tips for users + feedback link */}
+         <div className="mt-3 text-sm text-gray-800">
+         </div>
 
 
 
@@ -1000,26 +850,6 @@ function safeDownloadHTML() {
             <button type="button" onClick={resetAll} style={{border:'1px solid #ddd', background:'#fff', padding:'8px 12px', borderRadius:8}}>Reset</button>
           </div>
 
-          <p style={{ marginTop: 8, fontSize: 14, color: '#374151' }}>
-          Tip: Click <strong>Geocode</strong> to auto-fill Latitude/Longitude. If it can’t find your place, get coordinates from{' '}
-        <a
-         href="https://www.latlong.net"
-         target="_blank"
-         rel="noopener noreferrer"
-         style={{ textDecoration: 'underline' }}
-       >
-         latlong.net
-         </a>{' '}
-         and paste them here.
-     </p>
-
-
-
-
-
-
-
-
           <div style={{display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:8}}>
             <label>
               <div>Latitude</div>
@@ -1028,15 +858,10 @@ function safeDownloadHTML() {
             <label>
               <div>Longitude</div>
               <input type="number" step="0.000001" value={lon} onChange={e=>setLon(e.target.value===''? '' : Number(e.target.value))} placeholder="e.g., -87.840603" style={{border:'1px solid #ddd', padding:'8px 10px', borderRadius:8, width:'100%'}} />
-              
+              <div style={{fontSize:12, color:'#6b7280', marginTop:4}}>Tip: You can type coordinates manually. Verify at <a href="https://www.latlong.net/" target="_blank" rel="noreferrer">latlong.net</a>.</div>
             </label>
 
             <style>{`
-             #print-root .si-grid { height: auto !important; overflow: visible !important; }
-             #print-root svg       { overflow: visible !important; }
-`          }</style>
-
-             <style>{`
               /* Keep SI charts full 4×4 and avoid clipping in the PDF capture */
           #print-root .si-grid {
            grid-template-columns: repeat(4, 1fr) !important;
@@ -1147,40 +972,6 @@ function safeDownloadHTML() {
                 <option value="E">Equal (E)</option>
               </select>
             </label>
-          
-          {/* — Consent (tiny Yes/No squares) — */}
-<div style={{ display:'grid', gridTemplateColumns:'1fr auto auto', gap:8, alignItems:'center', marginTop:8 }}>
-  <p style={{ fontSize:12, color:'#4b5563' }}>
-    Allow saving your birth data for research and improvement? (Optional, report unchanged)
-  </p>
-
-  {/* Yes (square) */}
-  <label style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
-    <input
-      type="checkbox"
-      checked={consent === true}
-      onChange={() => setConsent(true)}     // behaves like radio
-      aria-label="Consent Yes"
-    />
-    <span style={{ fontSize:12 }}>Yes</span>
-  </label>
-
-  {/* No (square) */}
-  <label style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
-    <input
-      type="checkbox"
-      checked={consent === false}
-      onChange={() => setConsent(false)}    // behaves like radio
-      aria-label="Consent No"
-    />
-    <span style={{ fontSize:12 }}>No</span>
-  </label>
-</div>
-
-         
-  
-
-          
             <button type="submit" disabled={loading} style={{background:'#000', color:'#fff', border:'none', padding:'10px 14px', borderRadius:8, width:'100%'}}>{loading ? 'Calculating…' : 'Generate Chart'}</button>
           </div>
 

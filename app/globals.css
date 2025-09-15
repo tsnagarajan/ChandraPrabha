@@ -1,0 +1,11 @@
+
+
+
+/* app/globals.css — CSS only */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your global styles below */
+:root { --brand: #0b7285; }
+html, body { height: 100%; margin: 0; }

@@ -430,10 +430,6 @@ export default function Home() {
   const [timezone, setTimezone] = useState('');
   const [tzSelect, setTzSelect] = useState<string>('');
   const [houseSystem, setHouseSystem] = useState('P');
-  
-  const [consent, setConsent] = useState<boolean | null>(null); // default = neither selected
-
-  
 
   // Keep selected day valid when month/year changes
   useEffect(() => {
@@ -972,6 +968,20 @@ function safeDownloadHTML() {
         {/* Form */}
         <form onSubmit={generateChart} className="card avoid-break" style={{display:'grid', gap:12}}>
           
+        {/* Quick tips for users + feedback link */}
+         <div className="mt-3 text-sm text-gray-800">
+         <p><strong>Tip 1:</strong> Click <em>Geocode</em> and then <em>Use</em> to fill Latitude/Longitude automatically.</p>
+         <p><strong>Tip 2:</strong> If Geocode can’t find your place, open <a href="https://www.latlong.net" target="_blank" rel="noopener noreferrer" className="underline">latlong.net</a>, search your birthplace, copy <em>Latitude</em> and <em>Longitude</em>, and paste them here.</p>
+         <p className="mt-2">
+        <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLSfggwnVAIEcqgxqU6G5OB4YSApgYOlyCUAdjkJz-CKUPu2E-g/viewform?usp=preview"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+    >
+    </a>
+  </p>
+</div>
 
 
 
@@ -1000,26 +1010,6 @@ function safeDownloadHTML() {
             <button type="button" onClick={resetAll} style={{border:'1px solid #ddd', background:'#fff', padding:'8px 12px', borderRadius:8}}>Reset</button>
           </div>
 
-          <p style={{ marginTop: 8, fontSize: 14, color: '#374151' }}>
-          Tip: Click <strong>Geocode</strong> to auto-fill Latitude/Longitude. If it can’t find your place, get coordinates from{' '}
-        <a
-         href="https://www.latlong.net"
-         target="_blank"
-         rel="noopener noreferrer"
-         style={{ textDecoration: 'underline' }}
-       >
-         latlong.net
-         </a>{' '}
-         and paste them here.
-     </p>
-
-
-
-
-
-
-
-
           <div style={{display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:8}}>
             <label>
               <div>Latitude</div>
@@ -1028,7 +1018,7 @@ function safeDownloadHTML() {
             <label>
               <div>Longitude</div>
               <input type="number" step="0.000001" value={lon} onChange={e=>setLon(e.target.value===''? '' : Number(e.target.value))} placeholder="e.g., -87.840603" style={{border:'1px solid #ddd', padding:'8px 10px', borderRadius:8, width:'100%'}} />
-              
+              <div style={{fontSize:12, color:'#6b7280', marginTop:4}}>Tip: You can type coordinates manually. Verify at <a href="https://www.latlong.net/" target="_blank" rel="noreferrer">latlong.net</a>.</div>
             </label>
 
             <style>{`
@@ -1147,40 +1137,14 @@ function safeDownloadHTML() {
                 <option value="E">Equal (E)</option>
               </select>
             </label>
-          
-          {/* — Consent (tiny Yes/No squares) — */}
-<div style={{ display:'grid', gridTemplateColumns:'1fr auto auto', gap:8, alignItems:'center', marginTop:8 }}>
-  <p style={{ fontSize:12, color:'#4b5563' }}>
-    Allow saving your birth data for research and improvement? (Optional, report unchanged)
-  </p>
-
-  {/* Yes (square) */}
-  <label style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
-    <input
-      type="checkbox"
-      checked={consent === true}
-      onChange={() => setConsent(true)}     // behaves like radio
-      aria-label="Consent Yes"
-    />
-    <span style={{ fontSize:12 }}>Yes</span>
-  </label>
-
-  {/* No (square) */}
-  <label style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
-    <input
-      type="checkbox"
-      checked={consent === false}
-      onChange={() => setConsent(false)}    // behaves like radio
-      aria-label="Consent No"
-    />
-    <span style={{ fontSize:12 }}>No</span>
-  </label>
-</div>
-
-         
-  
-
-          
+          <p className="text-sm text-gray-700 mt-3">Tip 1: Click Geocode and then <em>Use</em> to fill Latitude/Longitude automatically.</p>
+          <label className="flex items-start gap-2 mt-2">
+            <input type="checkbox" id="consent" name="consent" aria-label="Consent" />
+            
+          </label>
+          <p className="text-sm mt-1">
+            <a href="/comments" className="text-blue-600 underline">Leave comments / feedback (optional) →</a>
+          </p>
             <button type="submit" disabled={loading} style={{background:'#000', color:'#fff', border:'none', padding:'10px 14px', borderRadius:8, width:'100%'}}>{loading ? 'Calculating…' : 'Generate Chart'}</button>
           </div>
 

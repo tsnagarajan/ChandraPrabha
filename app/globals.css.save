@@ -1,0 +1,15 @@
+/* Hide legacy tips blocks */
+header + .mt-4.text-sm.text-gray-800 { display: none !important; }
+form .mt-3.text-sm.text-gray-800     { display: none !important; }
+/* ensure print grid doesn't clip */
+#print-root .si-grid { height: auto !important; overflow: visible !important; }
+#print-root svg      { overflow: visible !important; }
+#print-root .si-grid { 
+  grid-template-columns: repeat(4, 1fr) !important;
+  grid-auto-rows: 1fr !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+#print-root svg { 
+  overflow: visible !important;
+}

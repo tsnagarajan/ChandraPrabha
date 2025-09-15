@@ -3,6 +3,9 @@
 
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+const BRAND = 'ChandraPrabha';
+const REPORT_TITLE = `${BRAND} — Vedic Astrology Report`;
+const DOWNLOAD_BASENAME = `${BRAND}_Report`;
 
 
 /* =========================
@@ -430,10 +433,6 @@ export default function Home() {
   const [timezone, setTimezone] = useState('');
   const [tzSelect, setTzSelect] = useState<string>('');
   const [houseSystem, setHouseSystem] = useState('P');
-  
-  const [consent, setConsent] = useState<boolean | null>(null); // default = neither selected
-
-  
 
   // Keep selected day valid when month/year changes
   useEffect(() => {
@@ -726,6 +725,7 @@ useEffect(() => {
   }
   function downloadJSON() {
     if (!out) return;
+    const payload = { meta: { name, place, lat, lon, date: dateStr, time: timeStr, timezone, houseSystem }, result: out };
     downloadText('chart.json', 'application/json;charset=utf-8', JSON.stringify(payload, null, 2));
   }
   function downloadCSV() {
@@ -940,38 +940,20 @@ function safeDownloadHTML() {
 `}</style>
 
 
-   <div className="mt-4 text-sm text-gray-800">
-  <p className="mt-2">
-    <a
-      href="https://docs.google.com/forms/d/e/1FAIpQLSfggwnVAIEcqgxqU6G5OB4YSApgYOlyCUAdjkJz-CKUPu2E-g/viewform"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="underline"
-    >
-    </a>
-  </p>
-</div>
-
-
-
-
-
-
-
-
-
    {/* Top header with centered logo (screen) */}
-      <header style={{position:'sticky', top:0, background:'rgba(255,255,255,.9)', backdropFilter:'blur(6px)', borderBottom:'1px solid #eee'}}>
-        <div style={{ maxWidth:1100, margin:'0 auto', padding:'16px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center' }}>
-          <img src="/logo.png" alt="Chandra Prabha — Vedic Astrology" width={260} height={260} style={{display:'block', margin:'0 auto'}} onError={(e)=>{(e.target as HTMLImageElement).style.display='none';}} />
-          <div style={{fontSize:14, color:'#6b7280', marginTop:6}}>Vedic Astrology Report</div>
-        </div>
-      </header>
+<header style={{position:'sticky', top:0, background:'rgba(255,255,255,.9)', backdropFilter:'blur(6px)', borderBottom:'1px solid #eee'}}>
+  <div style={{ maxWidth:1100, margin:'0 auto', padding:'16px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center' }}>
+    <img
+      src="/logo.png"
+      alt="Chandra Prabha — Vedic Astrology"
+      width={240}
+      height={240}
+      style={{ display:'block', margin:'0 auto' }}
+    />
+    <div style={{fontSize:14, color:'#6b7280', marginTop:6}}>Vedic Astrology Report</div>
+  </div>
+</header>
 
-      <div style={{maxWidth:1100, margin:'0 auto', padding:'24px 16px'}}>
-        {/* Form */}
-        <form onSubmit={generateChart} className="card avoid-break" style={{display:'grid', gap:12}}>
-          
 
 
 
@@ -1000,19 +982,10 @@ function safeDownloadHTML() {
             <button type="button" onClick={resetAll} style={{border:'1px solid #ddd', background:'#fff', padding:'8px 12px', borderRadius:8}}>Reset</button>
           </div>
 
-          <p style={{ marginTop: 8, fontSize: 14, color: '#374151' }}>
-          Tip: Click <strong>Geocode</strong> to auto-fill Latitude/Longitude. If it can’t find your place, get coordinates from{' '}
-        <a
-         href="https://www.latlong.net"
-         target="_blank"
-         rel="noopener noreferrer"
-         style={{ textDecoration: 'underline' }}
-       >
-         latlong.net
-         </a>{' '}
-         and paste them here.
-     </p>
-
+          {/* Tiny hint under Place */}
+           <p style={{ marginTop: 4, fontSize: 13, color: '#4b5563', maxWidth: '44ch' }}>
+           Tip: click <em>Geocode</em>, then <em>Use</em> to fill Latitude/Longitude.
+        </p>
 
 
 
@@ -1028,7 +1001,7 @@ function safeDownloadHTML() {
             <label>
               <div>Longitude</div>
               <input type="number" step="0.000001" value={lon} onChange={e=>setLon(e.target.value===''? '' : Number(e.target.value))} placeholder="e.g., -87.840603" style={{border:'1px solid #ddd', padding:'8px 10px', borderRadius:8, width:'100%'}} />
-              
+              <div style={{fontSize:12, color:'#6b7280', marginTop:4}}>Tip: You can type coordinates manually. Verify at <a href="https://www.latlong.net/" target="_blank" rel="noreferrer">latlong.net</a>.</div>
             </label>
 
             <style>{`
@@ -1147,40 +1120,6 @@ function safeDownloadHTML() {
                 <option value="E">Equal (E)</option>
               </select>
             </label>
-          
-          {/* — Consent (tiny Yes/No squares) — */}
-<div style={{ display:'grid', gridTemplateColumns:'1fr auto auto', gap:8, alignItems:'center', marginTop:8 }}>
-  <p style={{ fontSize:12, color:'#4b5563' }}>
-    Allow saving your birth data for research and improvement? (Optional, report unchanged)
-  </p>
-
-  {/* Yes (square) */}
-  <label style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
-    <input
-      type="checkbox"
-      checked={consent === true}
-      onChange={() => setConsent(true)}     // behaves like radio
-      aria-label="Consent Yes"
-    />
-    <span style={{ fontSize:12 }}>Yes</span>
-  </label>
-
-  {/* No (square) */}
-  <label style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
-    <input
-      type="checkbox"
-      checked={consent === false}
-      onChange={() => setConsent(false)}    // behaves like radio
-      aria-label="Consent No"
-    />
-    <span style={{ fontSize:12 }}>No</span>
-  </label>
-</div>
-
-         
-  
-
-          
             <button type="submit" disabled={loading} style={{background:'#000', color:'#fff', border:'none', padding:'10px 14px', borderRadius:8, width:'100%'}}>{loading ? 'Calculating…' : 'Generate Chart'}</button>
           </div>
 
@@ -1198,22 +1137,22 @@ function safeDownloadHTML() {
           )}
         </form>
 
-        {/* Geocode results */}
-        {filteredHits.length > 0 && (
-          <div className="card avoid-break" style={{marginTop:16}}>
-            <div style={{fontWeight:700, marginBottom:8}}>Geocode results (city/town first)</div>
-            <ul style={{display:'grid', gap:6}}>
-              {filteredHits.map((h, i) => (
-                <li key={i} style={{display:'flex', justifyContent:'space-between', gap:8, alignItems:'center'}}>
-                  <span>{h.name}</span>
-                  <button onClick={() => { setPlace(h.name); setLat(Number(h.lat.toFixed(6))); setLon(Number(h.lon.toFixed(6))); }} style={{border:'1px solid #ddd', padding:'6px 12px', borderRadius:8, background:'#fff'}}>Use</button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        
+          {/* Feedback (optional) */}
+  <p style={{ marginTop: 10, fontSize: 13 }}>
+    <a
+      href="https://docs.google.com/forms/d/e/1FAIpQLSfggwnVAIEcqgxqU6G5OB4YSApgYOlyCUAdjkJz-CKUPu2E-g/viewform?usp=sf_link"
+      target="_blank" rel="noopener noreferrer"
+      style={{ textDecoration: 'underline' }}
+    >
+      Leave comments (optional)
+    </a>
+  </p>
 
-        {/* ========================= REPORT ========================= */}
+</form>
+
+
+
 {out && (
   <div id="print-root" ref={printRef}>
 
@@ -1529,7 +1468,7 @@ function safeDownloadHTML() {
         </button>
       </div>
     )}
-
+</form>
   </div> {/* end outer content wrapper */}
 </main>
 );
