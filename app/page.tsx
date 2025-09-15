@@ -1150,9 +1150,10 @@ function safeDownloadHTML() {
           
           {/* — Consent (tiny Yes/No squares) — */}
 <div style={{ display:'grid', gridTemplateColumns:'1fr auto auto', gap:8, alignItems:'center', marginTop:8 }}>
-  <p style={{ fontSize:12, color:'#4b5563' }}>
-    Allow saving your birth data for research and improvement? (Optional, report unchanged)
-  </p>
+  <p style={{ fontSize:12, color:'#111827', fontWeight:600 }}>
+  Allow saving your birth data for research and improvement? (Optional, report unchanged)
+</p>
+
 
   {/* Yes (square) */}
   <label style={{ display:'inline-flex', alignItems:'center', gap:6 }}>
@@ -1181,7 +1182,30 @@ function safeDownloadHTML() {
   
 
           
-            <button type="submit" disabled={loading} style={{background:'#000', color:'#fff', border:'none', padding:'10px 14px', borderRadius:8, width:'100%'}}>{loading ? 'Calculating…' : 'Generate Chart'}</button>
+            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <button
+            type="submit"
+            disabled={loading}
+            style={{ background:'#000', color:'#fff', border:'none', padding:'10px 14px', borderRadius:8 }}
+      >
+            {loading ? 'Calculating…' : 'Generate Chart'}
+        </button>
+
+  <a
+    href="/comments"
+    style={{
+      marginLeft: 'auto',
+      border: '1px solid #ddd',
+      padding: '10px 14px',
+      borderRadius: 8,
+      textDecoration: 'none',
+      color: '#111827'
+    }}
+  >
+    Comments (optional)
+  </a>
+</div>
+
           </div>
 
           {geoError && <div style={{color:'#b91c1c'}}>{geoError}</div>}
