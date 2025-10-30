@@ -2045,22 +2045,6 @@ export default function Home() {
               </div>
             )}
           </form>
-          <div style={{ marginTop: 24 }}>
-            <button
-              id="export-btn"
-              type="button"
-              style={{
-                padding: "10px 16px",
-                background: "#333",
-                color: "#fff",
-                borderRadius: 6,
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Export PDF
-            </button>
-          </div>
           {/* Geocode results */}
           {filteredHits.length > 0 && (
             <div className="card avoid-break" style={{ marginTop: 16 }}>
@@ -2157,8 +2141,12 @@ export default function Home() {
                           marginTop: 8,
                           fontSize: 16,
                           display: "grid",
-                          gridTemplateColumns: "repeat(5, 1fr)",
-                          gap: 8,
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: 12,
+                          justifyContent: "center",
+                          maxWidth: 600,
+                          marginLeft: "auto",
+                          marginRight: "auto",
                         }}
                       >
                         <div>
@@ -2592,9 +2580,10 @@ export default function Home() {
               <div className="export-bar">
                 <button
                   type="button"
-                  onClick={() => {
+                  onClick={async () => {
                     const element = document.getElementById("report");
                     if (element) {
+                      const html2pdf = (await import("html2pdf.js")).default;
                       html2pdf()
                         .set({
                           margin: 0.5,
@@ -2626,7 +2615,7 @@ export default function Home() {
             </>
           )}{" "}
           {/* closes conditional block */}
-        </div>{" "}
+        </div>
       </main>
     </>
   );
