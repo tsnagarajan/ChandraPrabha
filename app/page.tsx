@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import html2pdf from "html2pdf.js";
-import PdfExport from '../components/PdfExport';
+import PdfExport from "../components/PdfExport";
 /* =========================
    Types
    ========================= */
@@ -1465,20 +1465,19 @@ export default function Home() {
   /* =========================
      UI
      ========================= */
-    
-    return (
-      <>
+
+  return (
+    <>
       <PdfExport />
       <main
         style={{
-         minHeight: "100vh",
-         background: "#f7f7f8",
-         fontSize: 16,
-         lineHeight: 1.6,
-  }}
->
-    >
-      <style>{`
+          minHeight: "100vh",
+          background: "#f7f7f8",
+          fontSize: 16,
+          lineHeight: 1.6,
+        }}
+      >
+        <style>{`
   @media print {
     /* Hide UI chrome on paper */
     header { display: none !important; }
@@ -1505,220 +1504,226 @@ export default function Home() {
     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 `}</style>
-      <div className="mt-4 text-sm text-gray-800">
-        <p className="mt-2">
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSfggwnVAIEcqgxqU6G5OB4YSApgYOlyCUAdjkJz-CKUPu2E-g/viewform"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-          ></a>
-        </p>
-      </div>
-      {/* Top header with centered logo (screen) */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          background: "rgba(255,255,255,.9)",
-          backdropFilter: "blur(6px)",
-          borderBottom: "1px solid #eee",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1100,
-            margin: "0 auto",
-            padding: "16px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-          }}
-        >
-          <img
-            src="/logo.png"
-            alt="Chandra Prabha — Vedic Astrology"
-            width={260}
-            height={260}
-            style={{ display: "block", margin: "0 auto" }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-          <div
-            style={{
-              fontSize: 28,
-              fontWeight: "bold",
-              color: "#333",
-              marginTop: 6,
-            }}
-          >
-            Jathakam
-          </div>
-        </div>
-      </header>
-      <div id="pdf-content" style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px" }}>
-        <form
-          onSubmit={generateChart}
-          className="card avoid-break"
-          style={{ display: "grid", gap: 12 }}
-        >
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
-            <label>
-              <div>Name</div>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Person's name (e.g., Durga)"
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "8px 10px",
-                  borderRadius: 8,
-                  width: "100%",
-                }}
-              />
-            </label>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr auto auto auto auto",
-              gap: 8,
-            }}
-          >
-            <label>
-              <div>Place</div>
-              <input
-                value={place}
-                onChange={(e) => setPlace(e.target.value)}
-                placeholder="City, State/Province, Country (e.g., Park Ridge, Illinois, USA)"
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "8px 10px",
-                  borderRadius: 8,
-                  width: "100%",
-                }}
-              />
-            </label>
-            <button
-              type="button"
-              disabled={searching}
-              onClick={doGeocode}
-              style={{
-                background: "#000",
-                color: "#fff",
-                border: "none",
-                padding: "8px 12px",
-                borderRadius: 8,
-              }}
-            >
-              {searching ? "Searching…" : "Geocode"}
-            </button>
-            <button
-              type="button"
-              onClick={useMyLocation}
-              style={{
-                border: "1px solid #ddd",
-                background: "#fff",
-                padding: "8px 12px",
-                borderRadius: 8,
-              }}
-            >
-              Use my location
-            </button>
-            <button
-              type="button"
-              onClick={useMyTimezone}
-              style={{
-                border: "1px solid #ddd",
-                background: "#fff",
-                padding: "8px 12px",
-                borderRadius: 8,
-              }}
-            >
-              Use my timezone
-            </button>
-            <button
-              type="button"
-              onClick={resetAll}
-              style={{
-                border: "1px solid #ddd",
-                background: "#fff",
-                padding: "8px 12px",
-                borderRadius: 8,
-              }}
-            >
-              Reset
-            </button>
-          </div>
-
-          <p style={{ marginTop: 8, fontSize: 14, color: "#374151" }}>
-            Tip: Click <strong>Geocode</strong> to auto-fill Latitude/Longitude.
-            If it can’t find your place, get coordinates from{" "}
+        <div className="mt-4 text-sm text-gray-800">
+          <p className="mt-2">
             <a
-              href="https://www.latlong.net"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSfggwnVAIEcqgxqU6G5OB4YSApgYOlyCUAdjkJz-CKUPu2E-g/viewform"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ textDecoration: "underline" }}
-            >
-              latlong.net
-            </a>{" "}
-            and paste them here.
+              className="underline"
+            ></a>
           </p>
-
+        </div>
+        {/* Top header with centered logo (screen) */}
+        <header
+          style={{
+            position: "sticky",
+            top: 0,
+            background: "rgba(255,255,255,.9)",
+            backdropFilter: "blur(6px)",
+            borderBottom: "1px solid #eee",
+          }}
+        >
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(5, 1fr)",
-              gap: 8,
+              maxWidth: 1100,
+              margin: "0 auto",
+              padding: "16px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
             }}
           >
-            <label>
-              <div>Latitude</div>
-              <input
-                type="number"
-                step="0.000001"
-                value={lat}
-                onChange={(e) =>
-                  setLat(e.target.value === "" ? "" : Number(e.target.value))
-                }
-                placeholder="e.g., 42.011233"
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "8px 10px",
-                  borderRadius: 8,
-                  width: "100%",
-                }}
-              />
-            </label>
-            <label>
-              <div>Longitude</div>
-              <input
-                type="number"
-                step="0.000001"
-                value={lon}
-                onChange={(e) =>
-                  setLon(e.target.value === "" ? "" : Number(e.target.value))
-                }
-                placeholder="e.g., -87.840603"
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "8px 10px",
-                  borderRadius: 8,
-                  width: "100%",
-                }}
-              />
-            </label>
+            <img
+              src="/logo.png"
+              alt="Chandra Prabha — Vedic Astrology"
+              width={260}
+              height={260}
+              style={{ display: "block", margin: "0 auto" }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+            <div
+              style={{
+                fontSize: 28,
+                fontWeight: "bold",
+                color: "#333",
+                marginTop: 6,
+              }}
+            >
+              Jathakam
+            </div>
+          </div>
+        </header>
+        <div
+          id="pdf-content"
+          style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px" }}
+        >
+          <form
+            onSubmit={generateChart}
+            className="card avoid-break"
+            style={{ display: "grid", gap: 12 }}
+          >
+            <div
+              style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}
+            >
+              <label>
+                <div>Name</div>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Person's name (e.g., Durga)"
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "8px 10px",
+                    borderRadius: 8,
+                    width: "100%",
+                  }}
+                />
+              </label>
+            </div>
 
-            <style>{`
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr auto auto auto auto",
+                gap: 8,
+              }}
+            >
+              <label>
+                <div>Place</div>
+                <input
+                  value={place}
+                  onChange={(e) => setPlace(e.target.value)}
+                  placeholder="City, State/Province, Country (e.g., Park Ridge, Illinois, USA)"
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "8px 10px",
+                    borderRadius: 8,
+                    width: "100%",
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                disabled={searching}
+                onClick={doGeocode}
+                style={{
+                  background: "#000",
+                  color: "#fff",
+                  border: "none",
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                }}
+              >
+                {searching ? "Searching…" : "Geocode"}
+              </button>
+              <button
+                type="button"
+                onClick={useMyLocation}
+                style={{
+                  border: "1px solid #ddd",
+                  background: "#fff",
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                }}
+              >
+                Use my location
+              </button>
+              <button
+                type="button"
+                onClick={useMyTimezone}
+                style={{
+                  border: "1px solid #ddd",
+                  background: "#fff",
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                }}
+              >
+                Use my timezone
+              </button>
+              <button
+                type="button"
+                onClick={resetAll}
+                style={{
+                  border: "1px solid #ddd",
+                  background: "#fff",
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                }}
+              >
+                Reset
+              </button>
+            </div>
+
+            <p style={{ marginTop: 8, fontSize: 14, color: "#374151" }}>
+              Tip: Click <strong>Geocode</strong> to auto-fill
+              Latitude/Longitude. If it can’t find your place, get coordinates
+              from{" "}
+              <a
+                href="https://www.latlong.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "underline" }}
+              >
+                latlong.net
+              </a>{" "}
+              and paste them here.
+            </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(5, 1fr)",
+                gap: 8,
+              }}
+            >
+              <label>
+                <div>Latitude</div>
+                <input
+                  type="number"
+                  step="0.000001"
+                  value={lat}
+                  onChange={(e) =>
+                    setLat(e.target.value === "" ? "" : Number(e.target.value))
+                  }
+                  placeholder="e.g., 42.011233"
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "8px 10px",
+                    borderRadius: 8,
+                    width: "100%",
+                  }}
+                />
+              </label>
+              <label>
+                <div>Longitude</div>
+                <input
+                  type="number"
+                  step="0.000001"
+                  value={lon}
+                  onChange={(e) =>
+                    setLon(e.target.value === "" ? "" : Number(e.target.value))
+                  }
+                  placeholder="e.g., -87.840603"
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "8px 10px",
+                    borderRadius: 8,
+                    width: "100%",
+                  }}
+                />
+              </label>
+
+              <style>{`
              #print-root .si-grid { height: auto !important; overflow: visible !important; }
              #print-root svg       { overflow: visible !important; }
 `}</style>
 
-            <style>{`
+              <style>{`
               /* Keep SI charts full 4×4 and avoid clipping in the PDF capture */
           #print-root .si-grid {
            grid-template-columns: repeat(4, 1fr) !important;
@@ -1752,879 +1757,877 @@ export default function Home() {
   #print-root .report-title { font-weight: 900; font-size: 18px; margin-top: 6px; }
 `}</style>
 
-            {/* Date (DD/MM/YYYY) */}
-            <div>
-              <div>Date (DD/MM/YYYY)</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <select
-                  value={day === "" ? "" : Number(day)}
-                  onChange={(e) =>
-                    setDay(e.target.value === "" ? "" : Number(e.target.value))
-                  }
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "8px 10px",
-                    borderRadius: 8,
-                  }}
-                >
-                  <option value="">DD</option>
-                  {range(
-                    1,
-                    daysInMonth(
-                      typeof year === "number" ? year : undefined,
-                      typeof month === "number" ? month : undefined
-                    )
-                  ).map((d) => (
-                    <option key={d} value={d}>
-                      {pad2(d)}
-                    </option>
-                  ))}
-                </select>
-                <span>/</span>
-                <select
-                  value={month === "" ? "" : Number(month)}
-                  onChange={(e) => {
-                    setMonth(
-                      e.target.value === "" ? "" : Number(e.target.value)
-                    );
-                  }}
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "8px 10px",
-                    borderRadius: 8,
-                  }}
-                >
-                  <option value="">MM</option>
-                  {range(1, 12).map((m) => (
-                    <option key={m} value={m}>
-                      {pad2(m)}
-                    </option>
-                  ))}
-                </select>
-                <span>/</span>
-                <select
-                  value={year === "" ? "" : Number(year)}
-                  onChange={(e) => {
-                    setYear(
-                      e.target.value === "" ? "" : Number(e.target.value)
-                    );
-                  }}
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "8px 10px",
-                    borderRadius: 8,
-                  }}
-                >
-                  <option value="">YYYY</option>
-                  {yearOptions.map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
+              {/* Date (DD/MM/YYYY) */}
+              <div>
+                <div>Date (DD/MM/YYYY)</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <select
+                    value={day === "" ? "" : Number(day)}
+                    onChange={(e) =>
+                      setDay(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">DD</option>
+                    {range(
+                      1,
+                      daysInMonth(
+                        typeof year === "number" ? year : undefined,
+                        typeof month === "number" ? month : undefined
+                      )
+                    ).map((d) => (
+                      <option key={d} value={d}>
+                        {pad2(d)}
+                      </option>
+                    ))}
+                  </select>
+                  <span>/</span>
+                  <select
+                    value={month === "" ? "" : Number(month)}
+                    onChange={(e) => {
+                      setMonth(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      );
+                    }}
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">MM</option>
+                    {range(1, 12).map((m) => (
+                      <option key={m} value={m}>
+                        {pad2(m)}
+                      </option>
+                    ))}
+                  </select>
+                  <span>/</span>
+                  <select
+                    value={year === "" ? "" : Number(year)}
+                    onChange={(e) => {
+                      setYear(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      );
+                    }}
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">YYYY</option>
+                    {yearOptions.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
 
-            {/* Time (HH:MM:SS + AM/PM) */}
-            <div>
-              <div>Time (HH:MM:SS)</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <select
-                  value={hour12 === "" ? "" : Number(hour12)}
-                  onChange={(e) =>
-                    setHour12(
-                      e.target.value === "" ? "" : Number(e.target.value)
-                    )
-                  }
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "8px 10px",
-                    borderRadius: 8,
-                  }}
-                >
-                  <option value="">HH</option>
-                  {range(1, 12).map((h) => (
-                    <option key={h} value={h}>
-                      {pad2(h)}
-                    </option>
-                  ))}
-                </select>
-                <span>:</span>
-                <select
-                  value={minute === "" ? "" : Number(minute)}
-                  onChange={(e) =>
-                    setMinute(
-                      e.target.value === "" ? "" : Number(e.target.value)
-                    )
-                  }
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "8px 10px",
-                    borderRadius: 8,
-                  }}
-                >
-                  <option value="">MM</option>
-                  {range(0, 59).map((m) => (
-                    <option key={m} value={m}>
-                      {pad2(m)}
-                    </option>
-                  ))}
-                </select>
-                <span>:</span>
-                <select
-                  value={second === "" ? "" : Number(second)}
-                  onChange={(e) =>
-                    setSecond(
-                      e.target.value === "" ? "" : Number(e.target.value)
-                    )
-                  }
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "8px 10px",
-                    borderRadius: 8,
-                  }}
-                >
-                  <option value="">SS</option>
-                  {range(0, 59).map((s) => (
-                    <option key={s} value={s}>
-                      {pad2(s)}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={ampm}
-                  onChange={(e) =>
-                    setAmpm((e.target.value || "") as "AM" | "PM" | "")
-                  }
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "8px 10px",
-                    borderRadius: 8,
-                  }}
-                >
-                  <option value="">AM/PM</option>
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
+              {/* Time (HH:MM:SS + AM/PM) */}
+              <div>
+                <div>Time (HH:MM:SS)</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <select
+                    value={hour12 === "" ? "" : Number(hour12)}
+                    onChange={(e) =>
+                      setHour12(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">HH</option>
+                    {range(1, 12).map((h) => (
+                      <option key={h} value={h}>
+                        {pad2(h)}
+                      </option>
+                    ))}
+                  </select>
+                  <span>:</span>
+                  <select
+                    value={minute === "" ? "" : Number(minute)}
+                    onChange={(e) =>
+                      setMinute(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">MM</option>
+                    {range(0, 59).map((m) => (
+                      <option key={m} value={m}>
+                        {pad2(m)}
+                      </option>
+                    ))}
+                  </select>
+                  <span>:</span>
+                  <select
+                    value={second === "" ? "" : Number(second)}
+                    onChange={(e) =>
+                      setSecond(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">SS</option>
+                    {range(0, 59).map((s) => (
+                      <option key={s} value={s}>
+                        {pad2(s)}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={ampm}
+                    onChange={(e) =>
+                      setAmpm((e.target.value || "") as "AM" | "PM" | "")
+                    }
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">AM/PM</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
               </div>
-            </div>
 
-            {/* Timezone */}
-            <label>
-              <div>Timezone</div>
-              <select
-                value={tzSelect}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setTzSelect(v);
-                  if (v !== "CUSTOM") setTimezone(v);
-                }}
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "8px 10px",
-                  borderRadius: 8,
-                  width: "100%",
-                }}
-              >
-                <option value="">Select timezone…</option>
-                {TIMEZONES.map((tz) => (
-                  <option key={tz} value={tz}>
-                    {tz}
-                  </option>
-                ))}
-                <option value="CUSTOM">Custom (type below)</option>
-              </select>
-              {tzSelect === "CUSTOM" && (
-                <input
-                  value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
-                  placeholder="e.g., America/Chicago"
+              {/* Timezone */}
+              <label>
+                <div>Timezone</div>
+                <select
+                  value={tzSelect}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setTzSelect(v);
+                    if (v !== "CUSTOM") setTimezone(v);
+                  }}
                   style={{
                     border: "1px solid #ddd",
                     padding: "8px 10px",
                     borderRadius: 8,
                     width: "100%",
-                    marginTop: 6,
-                  }}
-                />
-              )}
-            </label>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr auto",
-              gap: 8,
-              alignItems: "end",
-            }}
-          >
-            <label>
-              <div>House System</div>
-              <select
-                value={houseSystem}
-                onChange={(e) => setHouseSystem(e.target.value)}
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "8px 10px",
-                  borderRadius: 8,
-                  width: "100%",
-                }}
-              >
-                <option value="P">Placidus (P)</option>
-                <option value="W">Whole Sign (W)</option>
-                <option value="K">Koch (K)</option>
-                <option value="C">Campanus (C)</option>
-                <option value="E">Equal (E)</option>
-              </select>
-            </label>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                background: "#000",
-                color: "#fff",
-                border: "none",
-                padding: "10px 14px",
-                borderRadius: 8,
-              }}
-            >
-              {loading ? "Calculating…" : "Generate Chart"}
-            </button>
-
-            <a
-              href="mailto:pranag@yahoo.com?subject=Feedback on Jathakam"
-              style={{
-                display: "inline-block",
-                padding: "10px 14px",
-                borderRadius: 8,
-                backgroundColor: "#fffbe6",
-                color: "#1d4ed8", // blue text
-                fontWeight: "bold",
-                textDecoration: "underline",
-                border: "1px solid #facc15",
-              }}
-            >
-              Click here to send your feedback
-            </a>
-          </div>
-
-          {geoError && <div style={{ color: "#b91c1c" }}>{geoError}</div>}
-
-          {err && (
-            <div
-              style={{
-                color: "#b91c1c",
-                background: "#fff",
-                border: "1px solid #fca5a5",
-                padding: 12,
-                borderRadius: 8,
-              }}
-            >
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>
-                {typeof err === "string" ? err : err.error}
-              </div>
-              {typeof err === "object" && (err as ApiError).details && (
-                <details style={{ fontSize: 14 }}>
-                  <summary>Show technical details</summary>
-                  <pre style={{ whiteSpace: "pre-wrap" }}>
-                    {JSON.stringify((err as ApiError).details, null, 2)}
-                  </pre>
-                </details>
-              )}
-            </div>
-          )}
-        </form>
-        <div style={{ marginTop: 24 }}>
-  <button
-    id="export-btn"
-    type="button"
-    style={{
-      padding: "10px 16px",
-      background: "#333",
-      color: "#fff",
-      borderRadius: 6,
-      border: "none",
-      cursor: "pointer",
-    }}
-  >
-    Export PDF
-  </button>
-</div>
-        
-        
-        
-        
-        
-        
-        
-        
-        {/* Geocode results */}
-        {filteredHits.length > 0 && (
-          <div className="card avoid-break" style={{ marginTop: 16 }}>
-            <div style={{ fontWeight: 700, marginBottom: 8 }}>
-              Geocode results (city/town first)
-            </div>
-            <ul style={{ display: "grid", gap: 6 }}>
-              {filteredHits.map((h, i) => (
-                <li
-                  key={i}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 8,
-                    alignItems: "center",
                   }}
                 >
-                  <span>{h.name}</span>
-                  <button
-                    onClick={() => {
-                      setPlace(h.name);
-                      setLat(Number(h.lat.toFixed(6)));
-                      setLon(Number(h.lon.toFixed(6)));
-                    }}
+                  <option value="">Select timezone…</option>
+                  {TIMEZONES.map((tz) => (
+                    <option key={tz} value={tz}>
+                      {tz}
+                    </option>
+                  ))}
+                  <option value="CUSTOM">Custom (type below)</option>
+                </select>
+                {tzSelect === "CUSTOM" && (
+                  <input
+                    value={timezone}
+                    onChange={(e) => setTimezone(e.target.value)}
+                    placeholder="e.g., America/Chicago"
                     style={{
                       border: "1px solid #ddd",
-                      padding: "6px 12px",
+                      padding: "8px 10px",
                       borderRadius: 8,
-                      background: "#fff",
+                      width: "100%",
+                      marginTop: 6,
+                    }}
+                  />
+                )}
+              </label>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr auto",
+                gap: 8,
+                alignItems: "end",
+              }}
+            >
+              <label>
+                <div>House System</div>
+                <select
+                  value={houseSystem}
+                  onChange={(e) => setHouseSystem(e.target.value)}
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "8px 10px",
+                    borderRadius: 8,
+                    width: "100%",
+                  }}
+                >
+                  <option value="P">Placidus (P)</option>
+                  <option value="W">Whole Sign (W)</option>
+                  <option value="K">Koch (K)</option>
+                  <option value="C">Campanus (C)</option>
+                  <option value="E">Equal (E)</option>
+                </select>
+              </label>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  background: "#000",
+                  color: "#fff",
+                  border: "none",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                }}
+              >
+                {loading ? "Calculating…" : "Generate Chart"}
+              </button>
+
+              <a
+                href="mailto:pranag@yahoo.com?subject=Feedback on Jathakam"
+                style={{
+                  display: "inline-block",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  backgroundColor: "#fffbe6",
+                  color: "#1d4ed8", // blue text
+                  fontWeight: "bold",
+                  textDecoration: "underline",
+                  border: "1px solid #facc15",
+                }}
+              >
+                Click here to send your feedback
+              </a>
+            </div>
+
+            {geoError && <div style={{ color: "#b91c1c" }}>{geoError}</div>}
+
+            {err && (
+              <div
+                style={{
+                  color: "#b91c1c",
+                  background: "#fff",
+                  border: "1px solid #fca5a5",
+                  padding: 12,
+                  borderRadius: 8,
+                }}
+              >
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>
+                  {typeof err === "string" ? err : err.error}
+                </div>
+                {typeof err === "object" && (err as ApiError).details && (
+                  <details style={{ fontSize: 14 }}>
+                    <summary>Show technical details</summary>
+                    <pre style={{ whiteSpace: "pre-wrap" }}>
+                      {JSON.stringify((err as ApiError).details, null, 2)}
+                    </pre>
+                  </details>
+                )}
+              </div>
+            )}
+          </form>
+          <div style={{ marginTop: 24 }}>
+            <button
+              id="export-btn"
+              type="button"
+              style={{
+                padding: "10px 16px",
+                background: "#333",
+                color: "#fff",
+                borderRadius: 6,
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Export PDF
+            </button>
+          </div>
+          {/* Geocode results */}
+          {filteredHits.length > 0 && (
+            <div className="card avoid-break" style={{ marginTop: 16 }}>
+              <div style={{ fontWeight: 700, marginBottom: 8 }}>
+                Geocode results (city/town first)
+              </div>
+              <ul style={{ display: "grid", gap: 6 }}>
+                {filteredHits.map((h, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 8,
+                      alignItems: "center",
                     }}
                   >
-                    Use
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {/* ========================= REPORT ========================= */}
-        {out && (
-          <>
-            <div id="report">
-              <div id="print-root" ref={printRef}>
-                {/* ---------- PAGE 1: Summary + Pañchāṅga + D1 ---------- */}
-                <section className="page-section first">
-                  {PRINT_LOGO_EACH_PAGE && (
-                    <div className="print-only page-logo">
+                    <span>{h.name}</span>
+                    <button
+                      onClick={() => {
+                        setPlace(h.name);
+                        setLat(Number(h.lat.toFixed(6)));
+                        setLon(Number(h.lon.toFixed(6)));
+                      }}
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "6px 12px",
+                        borderRadius: 8,
+                        background: "#fff",
+                      }}
+                    >
+                      Use
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {/* ========================= REPORT ========================= */}
+          {out && (
+            <>
+              <div id="report">
+                <div id="print-root" ref={printRef}>
+                  {/* ---------- PAGE 1: Summary + Pañchāṅga + D1 ---------- */}
+                  <section className="page-section first">
+                    {PRINT_LOGO_EACH_PAGE && (
+                      <div className="print-only page-logo">
+                        <img
+                          src="/logo.png"
+                          width={140}
+                          height={140}
+                          alt="Chandra Prabha — Jathakam"
+                        />
+                        <div
+                          style={{
+                            fontSize: 18,
+                            fontWeight: 900,
+                            marginTop: 6,
+                          }}
+                        >
+                          Vedic Astrology Report
+                        </div>
+                      </div>
+                    )}
+                    {/* Report header (always visible on page 1: screen + print) */}
+                    <div
+                      className="report-header"
+                      style={{ textAlign: "center", margin: "0 0 12px" }}
+                    >
                       <img
                         src="/logo.png"
+                        alt="Chandra-Prabha"
                         width={140}
                         height={140}
-                        alt="Chandra Prabha — Jathakam"
+                        style={{ display: "block", margin: "0 auto" }}
                       />
                       <div
-                        style={{ fontSize: 18, fontWeight: 900, marginTop: 6 }}
+                        style={{ fontSize: 32, fontWeight: 900, marginTop: 6 }}
                       >
-                        Vedic Astrology Report
+                        Jathakam-Insights
                       </div>
                     </div>
-                  )}
-                  {/* Report header (always visible on page 1: screen + print) */}
-                  <div
-                    className="report-header"
-                    style={{ textAlign: "center", margin: "0 0 12px" }}
-                  >
-                    <img
-                      src="/logo.png"
-                      alt="Chandra-Prabha"
-                      width={140}
-                      height={140}
-                      style={{ display: "block", margin: "0 auto" }}
-                    />
-                    <div
-                      style={{ fontSize: 32, fontWeight: 900, marginTop: 6 }}
-                    >
-                      Jathakam-Insights
-                    </div>
-                  </div>
 
-                  {/* Intro */}
-                  <div
-                    className="card avoid-break"
-                    style={{ textAlign: "center" }}
-                  >
-                    <div style={{ fontSize: 16, fontWeight: 900 }}>
-                      User Input
-                    </div>
+                    {/* Intro */}
                     <div
-                      style={{
-                        marginTop: 8,
-                        fontSize: 16,
-                        display: "grid",
-                        gridTemplateColumns: "repeat(5, 1fr)",
-                        gap: 8,
-                      }}
+                      className="card avoid-break"
+                      style={{ textAlign: "center" }}
                     >
-                      <div>
-                        <b>Name:</b> {name || "—"}
+                      <div style={{ fontSize: 16, fontWeight: 900 }}>
+                        User Input
                       </div>
-                      <div>
-                        <b>Birth Place:</b> {place || "—"}
-                      </div>
-                      <div>
-                        <b>Date of Birth:</b> {dateStr || "—"}
-                      </div>
-                      <div>
-                        <b>Time of Birth:</b> {timeStr || "—"}
-                      </div>
-                      <div>
-                        <b>Timezone:</b> {timezone || "—"}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Summary & Panchanga */}
-                  <div className="card avoid-break" style={{ marginTop: 16 }}>
-                    <div className="section-title">Summary & Pañchāṅga</div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1.5fr 1fr",
-                        gap: 12,
-                      }}
-                    >
-                      {/* Summary (left) */}
                       <div
                         style={{
+                          marginTop: 8,
+                          fontSize: 16,
                           display: "grid",
-                          gridTemplateColumns: "repeat(3, 1fr)",
+                          gridTemplateColumns: "repeat(5, 1fr)",
                           gap: 8,
                         }}
                       >
                         <div>
-                          <b>Engine:</b> {out.engine}
+                          <b>Name:</b> {name || "—"}
                         </div>
                         <div>
-                          <b>JD (UT):</b> {out.jd_ut.toFixed(6)}
+                          <b>Birth Place:</b> {place || "—"}
                         </div>
                         <div>
-                          <b>LST:</b> {fmtLST(out.lstHours)}
+                          <b>Date of Birth:</b> {dateStr || "—"}
                         </div>
                         <div>
-                          <b>D1 Lagna:</b> {fmtSignDeg(out.ascendant)} (
-                          {fmtDMS(out.ascendant)})
+                          <b>Time of Birth:</b> {timeStr || "—"}
                         </div>
                         <div>
-                          <b>D9 Lagna:</b> {fmtSignDeg(out.d9Ascendant)} (
-                          {fmtDMS(out.d9Ascendant)})
+                          <b>Timezone:</b> {timezone || "—"}
                         </div>
-                        <div>
-                          <b>Timezone:</b> {out.timezone}
-                        </div>
-                        <div style={{ gridColumn: "1 / span 3" }}>
-                          <b>Sunrise:</b> {fmtISO(out.sunriseISO, out.timezone)}{" "}
-                          &nbsp; | &nbsp; <b>Sunset:</b>{" "}
-                          {fmtISO(out.sunsetISO, out.timezone)}
-                        </div>
-                      </div>
-                      {/* Panchanga (right) */}
-                      <div>
-                        {panchanga ? (
-                          <div
-                            style={{
-                              display: "grid",
-                              gridTemplateColumns: "1fr 1fr",
-                              gap: 8,
-                            }}
-                          >
-                            <div>
-                              <b>Vara</b>
-                              <div>{panchanga.vara}</div>
-                            </div>
-                            <div>
-                              <b>Tithi</b>
-                              <div>
-                                {panchanga.paksha} {panchanga.tithiName} (#
-                                {panchanga.tithiNum})
-                              </div>
-                            </div>
-                            <div>
-                              <b>Nakshatra</b>
-                              <div>{panchanga.nakshatra}</div>
-                            </div>
-                            <div>
-                              <b>Pada</b>
-                              <div>{panchanga.pada}</div>
-                            </div>
-                            <div>
-                              <b>Yoga</b>
-                              <div>{panchanga.yoga}</div>
-                            </div>
-                            <div>
-                              <b>Karana</b>
-                              <div>{panchanga.karana}</div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            style={{ fontStyle: "italic", color: "#6b7280" }}
-                          >
-                            Pañchāṅga not available.
-                          </div>
-                        )}
                       </div>
                     </div>
-                  </div>
 
-                  {/* D1 chart */}
-                  <div className="charts-column" style={{ marginTop: 16 }}>
+                    {/* Summary & Panchanga */}
+                    <div className="card avoid-break" style={{ marginTop: 16 }}>
+                      <div className="section-title">Summary & Pañchāṅga</div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1.5fr 1fr",
+                          gap: 12,
+                        }}
+                      >
+                        {/* Summary (left) */}
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(3, 1fr)",
+                            gap: 8,
+                          }}
+                        >
+                          <div>
+                            <b>Engine:</b> {out.engine}
+                          </div>
+                          <div>
+                            <b>JD (UT):</b> {out.jd_ut.toFixed(6)}
+                          </div>
+                          <div>
+                            <b>LST:</b> {fmtLST(out.lstHours)}
+                          </div>
+                          <div>
+                            <b>D1 Lagna:</b> {fmtSignDeg(out.ascendant)} (
+                            {fmtDMS(out.ascendant)})
+                          </div>
+                          <div>
+                            <b>D9 Lagna:</b> {fmtSignDeg(out.d9Ascendant)} (
+                            {fmtDMS(out.d9Ascendant)})
+                          </div>
+                          <div>
+                            <b>Timezone:</b> {out.timezone}
+                          </div>
+                          <div style={{ gridColumn: "1 / span 3" }}>
+                            <b>Sunrise:</b>{" "}
+                            {fmtISO(out.sunriseISO, out.timezone)} &nbsp; |
+                            &nbsp; <b>Sunset:</b>{" "}
+                            {fmtISO(out.sunsetISO, out.timezone)}
+                          </div>
+                        </div>
+                        {/* Panchanga (right) */}
+                        <div>
+                          {panchanga ? (
+                            <div
+                              style={{
+                                display: "grid",
+                                gridTemplateColumns: "1fr 1fr",
+                                gap: 8,
+                              }}
+                            >
+                              <div>
+                                <b>Vara</b>
+                                <div>{panchanga.vara}</div>
+                              </div>
+                              <div>
+                                <b>Tithi</b>
+                                <div>
+                                  {panchanga.paksha} {panchanga.tithiName} (#
+                                  {panchanga.tithiNum})
+                                </div>
+                              </div>
+                              <div>
+                                <b>Nakshatra</b>
+                                <div>{panchanga.nakshatra}</div>
+                              </div>
+                              <div>
+                                <b>Pada</b>
+                                <div>{panchanga.pada}</div>
+                              </div>
+                              <div>
+                                <b>Yoga</b>
+                                <div>{panchanga.yoga}</div>
+                              </div>
+                              <div>
+                                <b>Karana</b>
+                                <div>{panchanga.karana}</div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div
+                              style={{ fontStyle: "italic", color: "#6b7280" }}
+                            >
+                              Pañchāṅga not available.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* D1 chart */}
+                    <div className="charts-column" style={{ marginTop: 16 }}>
+                      <SouthIndianChart
+                        key={`d1-${out.jd_ut}`}
+                        title="Rāśi (D1) — Signs"
+                        mode="sign"
+                        ascDeg={out.ascendant}
+                        positions={out.positions}
+                      />
+                    </div>
+                  </section>
+
+                  {/* ---------- PAGE 2: D9 + Varga Summary ---------- */}
+                  <section className="page-section">
+                    {PRINT_LOGO_EACH_PAGE && (
+                      <div className="print-only page-logo">
+                        <img
+                          src="/logo.png"
+                          width={120}
+                          height={120}
+                          alt="Chandra Prabha — Vedic Astrology"
+                        />
+                      </div>
+                    )}
+
+                    {/* D9 chart */}
+                    <div className="charts-column">
+                      <SouthIndianChart
+                        key={`d9-${out.jd_ut}`}
+                        title="Navāṁśa (D9) — Signs"
+                        mode="sign"
+                        ascDeg={out.d9Ascendant}
+                        positions={out.d9Positions}
+                      />
+                    </div>
+
+                    {/* Varga Summary (D1 → D9) */}
+                    <div className="card avoid-break" style={{ marginTop: 16 }}>
+                      <div className="section-title">
+                        Varga Summary — D1 → D9 (Navāṁśa)
+                      </div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1.2fr 1.4fr 1.4fr 0.8fr",
+                          gap: 8,
+                        }}
+                      >
+                        <div style={{ fontWeight: 900 }}>Body</div>
+                        <div style={{ fontWeight: 900 }}>D1 (Rāśi)</div>
+                        <div style={{ fontWeight: 900 }}>D9 (Navāṁśa)</div>
+                        <div style={{ fontWeight: 900 }}>Navāṁśa part</div>
+                        {[
+                          "Ascendant",
+                          "Sun",
+                          "Moon",
+                          "Mercury",
+                          "Venus",
+                          "Mars",
+                          "Jupiter",
+                          "Saturn",
+                          "Rahu",
+                          "Ketu",
+                        ].map((body) => {
+                          const d1 =
+                            body === "Ascendant"
+                              ? out.ascendant
+                              : out.positions?.[body];
+                          const d9 =
+                            body === "Ascendant"
+                              ? out.d9Ascendant
+                              : out.d9Positions?.[body];
+                          const navSize = 360 / (12 * 9); // 3°20′
+                          const d9Deg =
+                            typeof d9 === "number"
+                              ? ((d9 % 360) + 360) % 360
+                              : NaN;
+                          const part = Number.isFinite(d9Deg)
+                            ? Math.floor((d9Deg % 30) / navSize) + 1
+                            : null; // 1..9
+                          return (
+                            <React.Fragment key={`vs-${body}`}>
+                              <div>{body}</div>
+                              <div>
+                                {Number.isFinite(d1 as number)
+                                  ? fmtSignDeg(d1 as number)
+                                  : "—"}
+                              </div>
+                              <div>
+                                {Number.isFinite(d9 as number)
+                                  ? fmtSignDeg(d9 as number)
+                                  : "—"}
+                              </div>
+                              <div>{part ?? "—"}</div>
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+                      <div
+                        style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}
+                      >
+                        “Navāṁśa part” is the 1–9 sub-division within the D9
+                        sign (each is 3°20′).
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* ---------- PAGE 3: Bhāva ---------- */}
+                  <section className="page-section">
+                    {PRINT_LOGO_EACH_PAGE && (
+                      <div className="print-only page-logo">
+                        <img
+                          src="/logo.png"
+                          width={120}
+                          height={120}
+                          alt="Chandra Prabha — Vedic Astrology"
+                        />
+                      </div>
+                    )}
                     <SouthIndianChart
-                      key={`d1-${out.jd_ut}`}
-                      title="Rāśi (D1) — Signs"
-                      mode="sign"
+                      title="Bhāva (Houses from Lagna)"
+                      mode="bhava"
                       ascDeg={out.ascendant}
                       positions={out.positions}
                     />
-                  </div>
-                </section>
+                  </section>
 
-                {/* ---------- PAGE 2: D9 + Varga Summary ---------- */}
-                <section className="page-section">
-                  {PRINT_LOGO_EACH_PAGE && (
-                    <div className="print-only page-logo">
-                      <img
-                        src="/logo.png"
-                        width={120}
-                        height={120}
-                        alt="Chandra Prabha — Vedic Astrology"
-                      />
+                  {/* ---------- PAGE: Varga — Signs only (D1, D2, D3, D7, D9, D10, D12, D30) ---------- */}
+                  <section className="page-section">
+                    <div className="card avoid-break">
+                      <div className="section-title">Varga — Signs only</div>
+
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1.3fr repeat(8, 1fr)",
+                          gap: 8,
+                        }}
+                      >
+                        <div style={{ fontWeight: 900 }}>Body</div>
+                        <div style={{ fontWeight: 900 }}>D1</div>
+                        <div style={{ fontWeight: 900 }}>D2</div>
+                        <div style={{ fontWeight: 900 }}>D3</div>
+                        <div style={{ fontWeight: 900 }}>D7</div>
+                        <div style={{ fontWeight: 900 }}>D9</div>
+                        <div style={{ fontWeight: 900 }}>D10</div>
+                        <div style={{ fontWeight: 900 }}>D12</div>
+                        <div style={{ fontWeight: 900 }}>D30</div>
+
+                        {vargaPlacements(out.positions, out.ascendant).map(
+                          (row, i) => (
+                            <React.Fragment key={`varga-${i}`}>
+                              <div>{row.body}</div>
+                              <div>{row.D1}</div>
+                              <div>{row.D2}</div>
+                              <div>{row.D3}</div>
+                              <div>{row.D7}</div>
+                              <div>{row.D9}</div>
+                              <div>{row.D10}</div>
+                              <div>{row.D12}</div>
+                              <div>{row.D30}</div>
+                            </React.Fragment>
+                          )
+                        )}
+                      </div>
+
+                      <div
+                        style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}
+                      >
+                        Signs only are computed from D1 longitudes using
+                        standard varga rules (no degrees shown).
+                      </div>
                     </div>
-                  )}
+                  </section>
 
-                  {/* D9 chart */}
-                  <div className="charts-column">
-                    <SouthIndianChart
-                      key={`d9-${out.jd_ut}`}
-                      title="Navāṁśa (D9) — Signs"
-                      mode="sign"
-                      ascDeg={out.d9Ascendant}
-                      positions={out.d9Positions}
-                    />
-                  </div>
-
-                  {/* Varga Summary (D1 → D9) */}
-                  <div className="card avoid-break" style={{ marginTop: 16 }}>
-                    <div className="section-title">
-                      Varga Summary — D1 → D9 (Navāṁśa)
-                    </div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1.2fr 1.4fr 1.4fr 0.8fr",
-                        gap: 8,
-                      }}
-                    >
-                      <div style={{ fontWeight: 900 }}>Body</div>
-                      <div style={{ fontWeight: 900 }}>D1 (Rāśi)</div>
-                      <div style={{ fontWeight: 900 }}>D9 (Navāṁśa)</div>
-                      <div style={{ fontWeight: 900 }}>Navāṁśa part</div>
-                      {[
-                        "Ascendant",
-                        "Sun",
-                        "Moon",
-                        "Mercury",
-                        "Venus",
-                        "Mars",
-                        "Jupiter",
-                        "Saturn",
-                        "Rahu",
-                        "Ketu",
-                      ].map((body) => {
-                        const d1 =
-                          body === "Ascendant"
-                            ? out.ascendant
-                            : out.positions?.[body];
-                        const d9 =
-                          body === "Ascendant"
-                            ? out.d9Ascendant
-                            : out.d9Positions?.[body];
-                        const navSize = 360 / (12 * 9); // 3°20′
-                        const d9Deg =
-                          typeof d9 === "number"
-                            ? ((d9 % 360) + 360) % 360
-                            : NaN;
-                        const part = Number.isFinite(d9Deg)
-                          ? Math.floor((d9Deg % 30) / navSize) + 1
-                          : null; // 1..9
-                        return (
-                          <React.Fragment key={`vs-${body}`}>
-                            <div>{body}</div>
-                            <div>
-                              {Number.isFinite(d1 as number)
-                                ? fmtSignDeg(d1 as number)
-                                : "—"}
-                            </div>
-                            <div>
-                              {Number.isFinite(d9 as number)
-                                ? fmtSignDeg(d9 as number)
-                                : "—"}
-                            </div>
-                            <div>{part ?? "—"}</div>
+                  {/* ---------- PAGE 4: Nakshatra • Pada • Ruler (D1) ---------- */}
+                  <section className="page-section">
+                    {PRINT_LOGO_EACH_PAGE && (
+                      <div className="print-only page-logo">
+                        <img
+                          src="/logo.png"
+                          width={120}
+                          height={120}
+                          alt="Chandra Prabha — Vedic Astrology"
+                        />
+                      </div>
+                    )}
+                    <div className="card avoid-break">
+                      <div className="section-title">
+                        Nakshatra • Pada • Ruler (D1)
+                      </div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "repeat(6, 1fr)",
+                          gap: 8,
+                        }}
+                      >
+                        <div style={{ fontWeight: 900 }}>Body</div>
+                        <div style={{ fontWeight: 900 }}>Sign</div>
+                        <div style={{ fontWeight: 900 }}>Longitude</div>
+                        <div style={{ fontWeight: 900 }}>Nakshatra</div>
+                        <div style={{ fontWeight: 900 }}>Pada</div>
+                        <div style={{ fontWeight: 900 }}>Ruler</div>
+                        {out.nakTable.map((r, i) => (
+                          <React.Fragment key={`nak-${i}`}>
+                            <div>{r.body}</div>
+                            <div>{r.sign}</div>
+                            <div>{fmtSignDeg(r.deg)}</div>
+                            <div>{r.nakshatra}</div>
+                            <div>{r.pada}</div>
+                            <div>{r.lord}</div>
                           </React.Fragment>
-                        );
-                      })}
+                        ))}
+                      </div>
                     </div>
-                    <div
-                      style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}
-                    >
-                      “Navāṁśa part” is the 1–9 sub-division within the D9 sign
-                      (each is 3°20′).
-                    </div>
-                  </div>
-                </section>
+                  </section>
 
-                {/* ---------- PAGE 3: Bhāva ---------- */}
-                <section className="page-section">
-                  {PRINT_LOGO_EACH_PAGE && (
-                    <div className="print-only page-logo">
-                      <img
-                        src="/logo.png"
-                        width={120}
-                        height={120}
-                        alt="Chandra Prabha — Vedic Astrology"
-                      />
-                    </div>
-                  )}
-                  <SouthIndianChart
-                    title="Bhāva (Houses from Lagna)"
-                    mode="bhava"
-                    ascDeg={out.ascendant}
-                    positions={out.positions}
-                  />
-                </section>
-
-                {/* ---------- PAGE: Varga — Signs only (D1, D2, D3, D7, D9, D10, D12, D30) ---------- */}
-                <section className="page-section">
-                  <div className="card avoid-break">
-                    <div className="section-title">Varga — Signs only</div>
-
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1.3fr repeat(8, 1fr)",
-                        gap: 8,
-                      }}
-                    >
-                      <div style={{ fontWeight: 900 }}>Body</div>
-                      <div style={{ fontWeight: 900 }}>D1</div>
-                      <div style={{ fontWeight: 900 }}>D2</div>
-                      <div style={{ fontWeight: 900 }}>D3</div>
-                      <div style={{ fontWeight: 900 }}>D7</div>
-                      <div style={{ fontWeight: 900 }}>D9</div>
-                      <div style={{ fontWeight: 900 }}>D10</div>
-                      <div style={{ fontWeight: 900 }}>D12</div>
-                      <div style={{ fontWeight: 900 }}>D30</div>
-
-                      {vargaPlacements(out.positions, out.ascendant).map(
-                        (row, i) => (
-                          <React.Fragment key={`varga-${i}`}>
-                            <div>{row.body}</div>
-                            <div>{row.D1}</div>
-                            <div>{row.D2}</div>
-                            <div>{row.D3}</div>
-                            <div>{row.D7}</div>
-                            <div>{row.D9}</div>
-                            <div>{row.D10}</div>
-                            <div>{row.D12}</div>
-                            <div>{row.D30}</div>
+                  {/* ---------- PAGE 5: Aspects (Major) ---------- */}
+                  <section className="page-section">
+                    {PRINT_LOGO_EACH_PAGE && (
+                      <div className="print-only page-logo">
+                        <img
+                          src="/logo.png"
+                          width={120}
+                          height={120}
+                          alt="Chandra Prabha — Vedic Astrology"
+                        />
+                      </div>
+                    )}
+                    <div className="card avoid-break">
+                      <div className="section-title">Aspects (Major)</div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                          gap: 8,
+                        }}
+                      >
+                        <div style={{ fontWeight: 900 }}>Planet A</div>
+                        <div style={{ fontWeight: 900 }}>Aspect</div>
+                        <div style={{ fontWeight: 900 }}>Planet B</div>
+                        <div style={{ fontWeight: 900 }}>Δ°</div>
+                        {mergeAspects(out.aspects || [], deriveAscAspects(out))
+                          .length === 0 && (
+                          <>
+                            <div>—</div>
+                            <div>—</div>
+                            <div>—</div>
+                            <div>—</div>
+                          </>
+                        )}
+                        {mergeAspects(
+                          out.aspects || [],
+                          deriveAscAspects(out)
+                        ).map((p, i) => (
+                          <React.Fragment key={`asp-${i}`}>
+                            <div>{p.a}</div>
+                            <div>{p.type}</div>
+                            <div>{p.b}</div>
+                            <div>{p.delta.toFixed(2)}</div>
                           </React.Fragment>
-                        )
-                      )}
+                        ))}
+                      </div>
+                      <div
+                        style={{ fontSize: 14, color: "#6b7280", marginTop: 6 }}
+                      >
+                        Aspects include Ascendant↔planet; ecliptic longitudes
+                        with typical orbs (6° conj/opp, 5° tri/sq, 4° sex).
+                      </div>
                     </div>
+                  </section>
 
-                    <div
-                      style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}
-                    >
-                      Signs only are computed from D1 longitudes using standard
-                      varga rules (no degrees shown).
+                  {/* ---------- PAGE 6: Vimśottarī Mahādaśā (from birth) ---------- */}
+                  <section className="page-section">
+                    {PRINT_LOGO_EACH_PAGE && (
+                      <div className="print-only page-logo">
+                        <img
+                          src="/logo.png"
+                          width={120}
+                          height={120}
+                          alt="Chandra Prabha — Vedic Astrology"
+                        />
+                      </div>
+                    )}
+                    <div className="card avoid-break">
+                      <div className="section-title">
+                        Vimśottarī Mahādaśā (from birth)
+                      </div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr 1fr",
+                          gap: 8,
+                        }}
+                      >
+                        <div style={{ fontWeight: 900 }}>Lord</div>
+                        <div style={{ fontWeight: 900 }}>Start</div>
+                        <div style={{ fontWeight: 900 }}>End</div>
+                        {out.dasha.map((d, i) => (
+                          <React.Fragment key={`dasha-${i}`}>
+                            <div>{d.lord}</div>
+                            <div>{fmtISO(d.startISO, out.timezone)}</div>
+                            <div>{fmtISO(d.endISO, out.timezone)}</div>
+                          </React.Fragment>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </section>
+                  </section>
 
-                {/* ---------- PAGE 4: Nakshatra • Pada • Ruler (D1) ---------- */}
-                <section className="page-section">
-                  {PRINT_LOGO_EACH_PAGE && (
-                    <div className="print-only page-logo">
-                      <img
-                        src="/logo.png"
-                        width={120}
-                        height={120}
-                        alt="Chandra Prabha — Vedic Astrology"
-                      />
-                    </div>
-                  )}
-                  <div className="card avoid-break">
-                    <div className="section-title">
-                      Nakshatra • Pada • Ruler (D1)
-                    </div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(6, 1fr)",
-                        gap: 8,
-                      }}
-                    >
-                      <div style={{ fontWeight: 900 }}>Body</div>
-                      <div style={{ fontWeight: 900 }}>Sign</div>
-                      <div style={{ fontWeight: 900 }}>Longitude</div>
-                      <div style={{ fontWeight: 900 }}>Nakshatra</div>
-                      <div style={{ fontWeight: 900 }}>Pada</div>
-                      <div style={{ fontWeight: 900 }}>Ruler</div>
-                      {out.nakTable.map((r, i) => (
-                        <React.Fragment key={`nak-${i}`}>
-                          <div>{r.body}</div>
-                          <div>{r.sign}</div>
-                          <div>{fmtSignDeg(r.deg)}</div>
-                          <div>{r.nakshatra}</div>
-                          <div>{r.pada}</div>
-                          <div>{r.lord}</div>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                {/* ---------- PAGE 5: Aspects (Major) ---------- */}
-                <section className="page-section">
-                  {PRINT_LOGO_EACH_PAGE && (
-                    <div className="print-only page-logo">
-                      <img
-                        src="/logo.png"
-                        width={120}
-                        height={120}
-                        alt="Chandra Prabha — Vedic Astrology"
-                      />
-                    </div>
-                  )}
-                  <div className="card avoid-break">
-                    <div className="section-title">Aspects (Major)</div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                        gap: 8,
-                      }}
-                    >
-                      <div style={{ fontWeight: 900 }}>Planet A</div>
-                      <div style={{ fontWeight: 900 }}>Aspect</div>
-                      <div style={{ fontWeight: 900 }}>Planet B</div>
-                      <div style={{ fontWeight: 900 }}>Δ°</div>
-                      {mergeAspects(out.aspects || [], deriveAscAspects(out))
-                        .length === 0 && (
-                        <>
-                          <div>—</div>
-                          <div>—</div>
-                          <div>—</div>
-                          <div>—</div>
-                        </>
-                      )}
-                      {mergeAspects(
-                        out.aspects || [],
-                        deriveAscAspects(out)
-                      ).map((p, i) => (
-                        <React.Fragment key={`asp-${i}`}>
-                          <div>{p.a}</div>
-                          <div>{p.type}</div>
-                          <div>{p.b}</div>
-                          <div>{p.delta.toFixed(2)}</div>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                    <div
-                      style={{ fontSize: 14, color: "#6b7280", marginTop: 6 }}
-                    >
-                      Aspects include Ascendant↔planet; ecliptic longitudes with
-                      typical orbs (6° conj/opp, 5° tri/sq, 4° sex).
-                    </div>
-                  </div>
-                </section>
-
-                {/* ---------- PAGE 6: Vimśottarī Mahādaśā (from birth) ---------- */}
-                <section className="page-section">
-                  {PRINT_LOGO_EACH_PAGE && (
-                    <div className="print-only page-logo">
-                      <img
-                        src="/logo.png"
-                        width={120}
-                        height={120}
-                        alt="Chandra Prabha — Vedic Astrology"
-                      />
-                    </div>
-                  )}
-                  <div className="card avoid-break">
-                    <div className="section-title">
-                      Vimśottarī Mahādaśā (from birth)
-                    </div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr 1fr",
-                        gap: 8,
-                      }}
-                    >
-                      <div style={{ fontWeight: 900 }}>Lord</div>
-                      <div style={{ fontWeight: 900 }}>Start</div>
-                      <div style={{ fontWeight: 900 }}>End</div>
-                      {out.dasha.map((d, i) => (
-                        <React.Fragment key={`dasha-${i}`}>
-                          <div>{d.lord}</div>
-                          <div>{fmtISO(d.startISO, out.timezone)}</div>
-                          <div>{fmtISO(d.endISO, out.timezone)}</div>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                {/* END: printed sections */}
+                  {/* END: printed sections */}
+                </div>{" "}
+                {/* closes print-root */}
               </div>{" "}
-              {/* closes print-root */}
-            </div>{" "}
-            {/* closes report */}
-            {/* Floating export toolbar (screen only) */}
-            <div className="export-bar">
-              <button
-                type="button"
-                onClick={() => {
-                  const element = document.getElementById("report");
-                  if (element) {
-                    html2pdf()
-                      .set({
-                        margin: 0.5,
-                        filename: "Jathakam-Insights.pdf",
-                        image: { type: "jpeg", quality: 0.98 },
-                        html2canvas: { scale: 2 },
-                        jsPDF: {
-                          unit: "in",
-                          format: "letter",
-                          orientation: "portrait",
-                        },
-                      })
-                      .from(element)
-                      .save();
-                  }
-                }}
-                title="Download PDF"
-              >
-                Download PDF
-              </button>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                title="Print (Save as PDF)"
-              >
-                Print
-              </button>
-            </div>
-          </>
-        )}{" "}
-        {/* closes conditional block */}
-      </div>{" "}
-</main>
-  </>
+              {/* closes report */}
+              {/* Floating export toolbar (screen only) */}
+              <div className="export-bar">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const element = document.getElementById("report");
+                    if (element) {
+                      html2pdf()
+                        .set({
+                          margin: 0.5,
+                          filename: "Jathakam-Insights.pdf",
+                          image: { type: "jpeg", quality: 0.98 },
+                          html2canvas: { scale: 2 },
+                          jsPDF: {
+                            unit: "in",
+                            format: "letter",
+                            orientation: "portrait",
+                          },
+                        })
+                        .from(element)
+                        .save();
+                    }
+                  }}
+                  title="Download PDF"
+                >
+                  Download PDF
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  title="Print (Save as PDF)"
+                >
+                  Print
+                </button>
+              </div>
+            </>
+          )}{" "}
+          {/* closes conditional block */}
+        </div>{" "}
+      </main>
+    </>
   );
 }
-
