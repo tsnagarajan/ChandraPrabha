@@ -8,6 +8,7 @@
     "start": "next start -p ${PORT:-8080}"
   },
   "dependencies": {
+    "html2pdf.js": "^0.12.1",
     "luxon": "^3.7.2",
     "next": "15.5.2",
     "react": "19.1.0",
