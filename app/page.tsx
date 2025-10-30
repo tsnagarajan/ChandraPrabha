@@ -1469,13 +1469,14 @@ export default function Home() {
     return (
       <>
       <PdfExport />
-      <main>
-      style={{
-        minHeight: "100vh",
-        background: "#f7f7f8",
-        fontSize: 16,
-        lineHeight: 1.6,
-      }}
+      <main
+        style={{
+         minHeight: "100vh",
+         background: "#f7f7f8",
+         fontSize: 16,
+         lineHeight: 1.6,
+  }}
+>
     >
       <style>{`
   @media print {
@@ -1558,8 +1559,7 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px" }}>
-        {/* Form */}
+      <div id="pdf-content" style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px" }}>
         <form
           onSubmit={generateChart}
           className="card avoid-break"
@@ -2038,6 +2038,30 @@ export default function Home() {
             </div>
           )}
         </form>
+        <div style={{ marginTop: 24 }}>
+  <button
+    id="export-btn"
+    type="button"
+    style={{
+      padding: "10px 16px",
+      background: "#333",
+      color: "#fff",
+      borderRadius: 6,
+      border: "none",
+      cursor: "pointer",
+    }}
+  >
+    Export PDF
+  </button>
+</div>
+        
+        
+        
+        
+        
+        
+        
+        
         {/* Geocode results */}
         {filteredHits.length > 0 && (
           <div className="card avoid-break" style={{ marginTop: 16 }}>
@@ -2599,7 +2623,8 @@ export default function Home() {
         )}{" "}
         {/* closes conditional block */}
       </div>{" "}
-      {/* end outer content wrapper */}
-    </main>
+</main>
+  </>
   );
 }
+
