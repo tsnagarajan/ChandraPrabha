@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import html2pdf from "html2pdf.js";
-
+import PdfExport from '../components/PdfExport';
 /* =========================
    Types
    ========================= */
@@ -1465,8 +1465,11 @@ export default function Home() {
   /* =========================
      UI
      ========================= */
-  return (
-    <main
+    
+    return (
+      <>
+      <PdfExport />
+      <main
       style={{
         minHeight: "100vh",
         background: "#f7f7f8",
