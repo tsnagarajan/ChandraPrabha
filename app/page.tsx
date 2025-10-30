@@ -1469,7 +1469,7 @@ export default function Home() {
     return (
       <>
       <PdfExport />
-      <main
+      <main>
       style={{
         minHeight: "100vh",
         background: "#f7f7f8",
