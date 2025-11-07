@@ -1460,6 +1460,12 @@ export default function Home() {
     }, 1000);
   }
 
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js");
+    }
+  }, []);
+
   // === Save PDF with per-page header (logo + title) ===
 
   /* =========================
@@ -2044,6 +2050,29 @@ export default function Home() {
                 )}
               </div>
             )}
+            {/* ✅ Add this message block here */}
+            <div
+              style={{
+                fontSize: "14px",
+                color: "#444",
+                textAlign: "center",
+                marginBottom: "1rem",
+                padding: "1rem",
+                backgroundColor: "#f5f5f5",
+                borderRadius: "8px",
+              }}
+            >
+              📌 <strong>Welcome to Chandra Prabha.</strong>
+              <br />
+              🖥️ For best results, use a desktop or laptop and add this app to
+              your <em>Dock</em>.<br />
+              📱 iPad users: Tap <em>“Add to Home Screen”</em> in Safari for a
+              native-like experience.
+              <br />
+              📱 iPhone users: You may use this app for quick viewing, download,
+              or print—but charts may appear truncated due to screen size.
+            </div>
+            {/* ✅ Message ends here */}
           </form>
           {/* Geocode results */}
           {filteredHits.length > 0 && (
