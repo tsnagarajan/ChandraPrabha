@@ -911,6 +911,25 @@ export default function Home() {
       }
       if (corrected && corrected !== timezone) setTimezone(corrected);
 
+      // Log user input to local backend
+      try {
+        await fetch("http://localhost:3001/log-chart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            place,
+            lat,
+            lon,
+            date: dateStr,
+            time: timeStr,
+            timezone: tz,
+          }),
+        });
+      } catch (logError) {
+        console.error("Logging failed:", logError);
+      }
+
       const res = await fetch("/api/chart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
