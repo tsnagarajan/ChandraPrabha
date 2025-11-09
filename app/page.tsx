@@ -1594,12 +1594,14 @@ export default function Home() {
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "1fr auto auto auto auto",
-                gap: 8,
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+                alignItems: "flex-start",
+                marginBottom: "12px",
               }}
             >
-              <label>
+              <label style={{ flex: "1 1 100%" }}>
                 <div>Place</div>
                 <input
                   value={place}
@@ -1613,6 +1615,7 @@ export default function Home() {
                   }}
                 />
               </label>
+
               <button
                 type="button"
                 disabled={searching}
@@ -1627,6 +1630,46 @@ export default function Home() {
               >
                 {searching ? "Searching…" : "Geocode"}
               </button>
+
+              {/* Geocode results */}
+              {filteredHits.length > 0 && (
+                <div className="card avoid-break" style={{ marginTop: 16 }}>
+                  <div style={{ fontWeight: 700, marginBottom: 8 }}>
+                    Geocode results (city/town first)
+                  </div>
+                  <ul style={{ display: "grid", gap: 6 }}>
+                    {filteredHits.map((h, i) => (
+                      <li
+                        key={i}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 8,
+                          alignItems: "center",
+                        }}
+                      >
+                        <span>{h.name}</span>
+                        <button
+                          onClick={() => {
+                            setPlace(h.name);
+                            setLat(Number(h.lat.toFixed(6)));
+                            setLon(Number(h.lon.toFixed(6)));
+                          }}
+                          style={{
+                            border: "1px solid #ddd",
+                            padding: "6px 12px",
+                            borderRadius: 8,
+                            background: "#fff",
+                          }}
+                        >
+                          Use
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <button
                 type="button"
                 onClick={useMyLocation}
@@ -1639,6 +1682,7 @@ export default function Home() {
               >
                 Use my location
               </button>
+
               <button
                 type="button"
                 onClick={useMyTimezone}
@@ -1651,6 +1695,7 @@ export default function Home() {
               >
                 Use my timezone
               </button>
+
               <button
                 type="button"
                 onClick={resetAll}
@@ -1665,20 +1710,30 @@ export default function Home() {
               </button>
             </div>
 
-            <p style={{ marginTop: 8, fontSize: 14, color: "#374151" }}>
-              Tip: Click <strong>Geocode</strong> to auto-fill
-              Latitude/Longitude. If it can’t find your place, get coordinates
-              from{" "}
+            <div
+              style={{
+                fontSize: "14px",
+                color: "#111827",
+                textAlign: "center",
+                marginTop: "16px",
+                marginBottom: "16px",
+                fontWeight: "bold",
+              }}
+            >
+              Click Geocode and scroll down to view matching places. Click “Use”
+              to auto-fill Latitude and Longitude.
+              <br />
+              If no results appear, visit{" "}
               <a
                 href="https://www.latlong.net"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ textDecoration: "underline" }}
+                style={{ textDecoration: "underline", color: "#1d4ed8" }}
               >
                 latlong.net
               </a>{" "}
-              and paste them here.
-            </p>
+              to obtain coordinates and paste them here manually.
+            </div>
 
             <div
               style={{
@@ -2054,64 +2109,29 @@ export default function Home() {
             <div
               style={{
                 fontSize: "14px",
-                color: "#444",
+                color: "#111827",
                 textAlign: "center",
                 marginBottom: "1rem",
                 padding: "1rem",
                 backgroundColor: "#f5f5f5",
                 borderRadius: "8px",
+                fontWeight: "bold",
+                lineHeight: "1.6",
               }}
             >
-              📌 <strong>Welcome to Chandra Prabha.</strong>
-              <br />
-              🖥️ For best results, use a desktop or laptop and add this app to
-              your <em>Dock</em>.<br />
-              📱 iPad users: Tap <em>“Add to Home Screen”</em> in Safari for a
+              <div style={{ fontSize: "16px", marginBottom: "0.5rem" }}>
+                Welcome to Chandra Prabha.
+              </div>
+              For best results, use a desktop or laptop and add this app to your{" "}
+              <em>Dock</em>.<br />
+              iPad users: Tap <em>“Add to Home Screen”</em> in Safari for a
               native-like experience.
               <br />
-              📱 iPhone users: You may use this app for quick viewing, download,
-              or print—but charts may appear truncated due to screen size.
+              iPhone users: You may use this app for quick viewing, download, or
+              print—but charts may appear truncated due to screen size.
             </div>
             {/* ✅ Message ends here */}
           </form>
-          {/* Geocode results */}
-          {filteredHits.length > 0 && (
-            <div className="card avoid-break" style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 700, marginBottom: 8 }}>
-                Geocode results (city/town first)
-              </div>
-              <ul style={{ display: "grid", gap: 6 }}>
-                {filteredHits.map((h, i) => (
-                  <li
-                    key={i}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      gap: 8,
-                      alignItems: "center",
-                    }}
-                  >
-                    <span>{h.name}</span>
-                    <button
-                      onClick={() => {
-                        setPlace(h.name);
-                        setLat(Number(h.lat.toFixed(6)));
-                        setLon(Number(h.lon.toFixed(6)));
-                      }}
-                      style={{
-                        border: "1px solid #ddd",
-                        padding: "6px 12px",
-                        borderRadius: 8,
-                        background: "#fff",
-                      }}
-                    >
-                      Use
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
           {/* ========================= REPORT ========================= */}
           {out && (
             <>
