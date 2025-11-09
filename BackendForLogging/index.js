@@ -33,6 +33,7 @@ app.post("/log-chart", (req, res) => {
   res.status(200).json({ message: "Logged successfully" });
 });
 
-app.listen(3001, () => {
-  console.log("Logging server running on port 3001");
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Logging server running on port ${PORT}`);
 });
