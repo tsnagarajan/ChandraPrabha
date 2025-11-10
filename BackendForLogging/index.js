@@ -18,9 +18,9 @@ app.post("/log-chart", (req, res) => {
   console.log("Received chart input:", req.body); // ✅ Add this line
 
 
-  if (!fs.existsSync(path.dirname(logPath))) {
-    fs.mkdirSync(path.dirname(logPath));
-  }
+ if (!fs.existsSync(path.dirname(logPath))) {
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
+}
 
   let existingLogs = [];
   if (fs.existsSync(logPath)) {
