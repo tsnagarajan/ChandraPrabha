@@ -18,12 +18,11 @@ app.post("/log-chart", (req, res) => {
     data: req.body,
   };
 
-  console.log("Received chart input:", req.body); // ✅ Add this line
+  console.log("Received chart input:", req.body);
 
-
- if (!fs.existsSync(path.dirname(logPath))) {
-  fs.mkdirSync(path.dirname(logPath), { recursive: true });
-}
+  if (!fs.existsSync(path.dirname(logPath))) {
+    fs.mkdirSync(path.dirname(logPath), { recursive: true });
+  }
 
   let existingLogs = [];
   if (fs.existsSync(logPath)) {
@@ -36,11 +35,18 @@ app.post("/log-chart", (req, res) => {
   res.status(200).json({ message: "Logged successfully" });
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Logging server running on port ${PORT}`);
+// ✅ This route now works
+app.get("/view-logs", (req, res) => {
+  const logPath = path.join(__dirname, "logs", "chart-usage.json");
+  if (fs.existsSync(logPath)) {
+    const data = fs.readFileSync(logPath, "utf8");
+    res.type("json").send(data);
+  } else {
+    res.status(404).json({ message: "No logs found" });
+  }
 });
 
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found", path: req.path });
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Logging server running on port ${PORT}`);
 });
