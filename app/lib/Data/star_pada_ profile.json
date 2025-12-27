@@ -1,0 +1,164 @@
+{
+"Ashwini": [
+{ "pada": 1, "interpretation": "You approach life with a sense of duty and moral initiative. Your core drive is Dharma-oriented, meaning you feel most secure when your actions are principled and your energy is channeled into pioneering work that serves a higher purpose." },
+{ "pada": 2, "interpretation": "You possess a strong drive for security and practical planning. Your core drive is Artha-oriented, focusing your healing and swift energy toward tangible results, material stability, and the pursuit of professional success." },
+{ "pada": 3, "interpretation": "You are driven by a desire for social connection and intellectual exchange. Your core drive is Kama-oriented, leading you to seek pleasure through communication, travel, and building vibrant relationships with others." },
+{ "pada": 4, "interpretation": "You possess a deep-seated need for spiritual wisdom and emotional liberation. Your core drive is Moksha-oriented, causing you to internalize your healing energy to seek peace, introspection, and a connection to the divine." }
+],
+"Bharani": [
+{ "pada": 1, "interpretation": "You approach life's transformations with a sense of moral duty. Your core drive is Dharma-oriented, giving you the endurance to handle birth, death, and creative cycles with a principled and responsible attitude." },
+{ "pada": 2, "interpretation": "You focus your creative power on building security and lasting resources. Your core drive is Artha-oriented, making you highly pragmatic and determined to turn your intense passions into stable, material achievements." },
+{ "pada": 3, "interpretation": "You are driven by social curiosity and the pursuit of sensory experiences. Your core drive is Kama-oriented, encouraging you to explore relationships and creative expressions that satisfy your deep emotional desires." },
+{ "pada": 4, "interpretation": "You channel your transformative energy into spiritual growth and release. Your core drive is Moksha-oriented, leading you to seek the hidden meanings of life and find liberation from material attachments." }
+],
+"Krittika": [
+{ "pada": 1, "interpretation": "You use your sharp, purifying energy to uphold duty and truth. Your core drive is Dharma-oriented, making you a principled leader who uses their cutting intellect to protect and guide others." },
+{ "pada": 2, "interpretation": "You apply your analytical skills to achieve material growth and stability. Your core drive is Artha-oriented, focusing your fiery nature on practical success, nourishment, and the accumulation of resources." },
+{ "pada": 3, "interpretation": "You seek intellectual pleasure and vibrant social interactions. Your core drive is Kama-oriented, leading you to use your sharp wit to navigate social circles and satisfy your curiosity about the world." },
+{ "pada": 4, "interpretation": "You use your purifying fire to seek inner clarity and spiritual liberation. Your core drive is Moksha-oriented, helping you cut away emotional illusions to reach a state of peace and detachment." }
+],
+"Rohini": [
+{ "pada": 1, "interpretation": "You approach beauty and growth with a sense of moral responsibility. Your core drive is Dharma-oriented, leading you to create and nurture in ways that are principled, traditional, and meaningful." },
+{ "pada": 2, "interpretation": "You possess a powerful drive for luxury, comfort, and material wealth. Your core drive is Artha-oriented, making you highly successful at manifesting beauty into tangible, stable, and high-quality results." },
+{ "pada": 3, "interpretation": "You are driven by a love for art, communication, and social pleasure. Your core drive is Kama-oriented, making you charming and focused on building relationships that are aesthetically and emotionally fulfilling." },
+{ "pada": 4, "interpretation": "You seek spiritual fulfillment through your creative and nurturing gifts. Your core drive is Moksha-oriented, leading you to find the divine within nature and your own maternal or artistic instincts." }
+],
+"Mrigashirsha": [
+{ "pada": 1, "interpretation": "You seek knowledge and truth as a matter of duty. Your core drive is Dharma-oriented, focusing your restless curiosity on moral exploration and the pursuit of ancient wisdom." },
+{ "pada": 2, "interpretation": "You apply your searching mind to practical matters and professional security. Your core drive is Artha-oriented, helping you turn your research and curiosity into stable career paths and material gains." },
+{ "pada": 3, "interpretation": "You are driven by social exploration and intellectual pleasure. Your core drive is Kama-oriented, making you a witty communicator who finds joy in learning and connecting with diverse groups." },
+{ "pada": 4, "interpretation": "You seek inner peace and spiritual answers to your constant questions. Your core drive is Moksha-oriented, leading your wandering mind back to the soul and the search for ultimate liberation." }
+],
+"Ardra": [
+{ "pada": 1, "interpretation": "You face life's storms with a sense of duty and renewal. Your core drive is Dharma-oriented, helping you use intense experiences to rebuild your character on a foundation of moral truth." },
+{ "pada": 2, "interpretation": "You focus your intense, transformative energy on achieving stability and security. Your core drive is Artha-oriented, giving you the grit to work through challenges to build a safe and prosperous life." },
+{ "pada": 3, "interpretation": "You seek social intensity and intellectual satisfaction. Your core drive is Kama-oriented, leading you to explore complex relationships and high-energy social environments to satisfy your curiosities." },
+{ "pada": 4, "interpretation": "You find spiritual clarity through the release of past pain. Your core drive is Moksha-oriented, allowing you to use your tears and trials as a path toward profound inner peace and liberation." }
+],
+"Punarvasu": [
+{ "pada": 1, "interpretation": "You approach renewal and prosperity with a principled mind. Your core drive is Dharma-oriented, making you a generous soul who seeks to rebuild and improve the world through moral action." },
+{ "pada": 2, "interpretation": "You focus your adaptable energy on building security and home life. Your core drive is Artha-oriented, leading you to find success by being practical and manifesting wealth through repeated effort." },
+{ "pada": 3, "interpretation": "You are driven by intellectual growth and social harmony. Your core drive is Kama-oriented, making you a creative communicator who finds joy in learning and connecting with diverse groups." },
+{ "pada": 4, "interpretation": "You seek spiritual home-coming and emotional peace. Your core drive is Moksha-oriented, focusing your nurturing energy on self-realization and the pursuit of eternal wisdom." }
+],
+"Pushya": [
+{ "pada": 1, "interpretation": "You nourish others as a matter of high duty. Your core drive is Dharma-oriented, making you a guardian of tradition and moral values who seeks to provide for the community's well-being." },
+{ "pada": 2, "interpretation": "You apply your nurturing instincts to achieve material stability and status. Your core drive is Artha-oriented, helping you grow your resources and influence through consistent and practical work." },
+{ "pada": 3, "interpretation": "You are driven by social service and intellectual expansion. Your core drive is Kama-oriented, leading you to find joy in helping others and building a wide, supportive social network." },
+{ "pada": 4, "interpretation": "You seek spiritual expansion and ultimate nourishment for the soul. Your core drive is Moksha-oriented, focusing your deeply religious and meditative energy on reaching higher states of consciousness." }
+],
+"Ashlesha": [
+{ "pada": 1, "interpretation": "You use your intuitive and entwining energy to protect duty and principles. Your core drive is Dharma-oriented, making you a vigilant observer of life's moral boundaries." },
+{ "pada": 2, "interpretation": "You apply your cunning and strategic mind to gain material security. Your core drive is Artha-oriented, making you highly successful at navigating complex business or financial environments." },
+{ "pada": 3, "interpretation": "You are driven by deep social secrets and intellectual intrigue. Your core drive is Kama-oriented, leading you to seek fulfillment through intense psychological connections and social strategy." },
+{ "pada": 4, "interpretation": "You seek spiritual transformation by shedding your old skin. Your core drive is Moksha-oriented, using your powerful intuition to transcend material illusions and find inner liberation." }
+],
+"Magha": [
+{ "pada": 1, "interpretation": "You approach your royal and ancestral legacy with a sense of duty. Your core drive is Dharma-oriented, making you a principled leader who honors tradition and acts with high moral authority." },
+{ "pada": 2, "interpretation": "You focus your power and ambition on building lasting material status. Your core drive is Artha-oriented, helping you secure your position and wealth through practical and disciplined effort." },
+{ "pada": 3, "interpretation": "You seek social recognition and worldly pleasures. Your core drive is Kama-oriented, leading you to use your charismatic presence to influence social circles and enjoy the fruits of your status." },
+{ "pada": 4, "interpretation": "You seek spiritual release by connecting with your ancestors. Your core drive is Moksha-oriented, helping you understand that true power lies in the soul's liberation from worldly attachments." }
+],
+"Purva Phalguni": [
+{ "pada": 1, "interpretation": "You enjoy life's fruits while maintaining a sense of moral duty. Your core drive is Dharma-oriented, leading you to seek pleasure and creativity in ways that are honorable and principled." },
+{ "pada": 2, "interpretation": "You focus your creative energy on achieving material security and comfort. Your core drive is Artha-oriented, making you pragmatic about turning your talents into a stable and prosperous lifestyle." },
+{ "pada": 3, "interpretation": "You are driven by romantic social connections and sensory pleasures. Your core drive is Kama-oriented, making you a lover of beauty, art, and vibrant relationships that fulfill your heart." },
+{ "pada": 4, "interpretation": "You seek inner peace through the refinement of your desires. Your core drive is Moksha-oriented, leading you to find spiritual joy by transcending the need for external validation or material pleasure." }
+],
+"Uttara Phalguni": [
+{ "pada": 1, "interpretation": "You fulfill your role as a patron and protector with high duty. Your core drive is Dharma-oriented, making you a responsible leader who builds stability based on moral principles." },
+{ "pada": 2, "interpretation": "You focus your organizing skills on achieving material success and status. Your core drive is Artha-oriented, helping you secure your community and family through practical and efficient work." },
+{ "pada": 3, "interpretation": "You seek social harmony and intellectual growth through service. Your core drive is Kama-oriented, leading you to find fulfillment by building strong, helpful connections within your network." },
+{ "pada": 4, "interpretation": "You seek spiritual clarity through your dedication to others. Your core drive is Moksha-oriented, finding that true liberation comes from selfless service and a connection to the divine." }
+],
+"Hasta": [
+{ "pada": 1, "interpretation": "You use your skillful hands and quick mind to serve duty. Your core drive is Dharma-oriented, making you a principled worker who approaches every task with a sense of moral responsibility." },
+{ "pada": 2, "interpretation": "You apply your dexterity and cleverness to achieve material security. Your core drive is Artha-oriented, making you highly successful in trades, business, or any practical, results-oriented craft." },
+{ "pada": 3, "interpretation": "You are driven by intellectual curiosity and social wit. Your core drive is Kama-oriented, leading you to seek pleasure through communication, games, and building diverse relationships." },
+{ "pada": 4, "interpretation": "You seek spiritual peace through the work of your hands. Your core drive is Moksha-oriented, using your focus and precision as a form of meditation to find inner liberation." }
+],
+"Chitra": [
+{ "pada": 1, "interpretation": "You approach your brilliant creative work with a sense of moral duty. Your core drive is Dharma-oriented, leading you to create beauty and structures that reflect deep-seated principles and truth." },
+{ "pada": 2, "interpretation": "You focus your artistic eye on building material security and tangible wealth. Your core drive is Artha-oriented, making you highly pragmatic about manifesting your visions into high-value results." },
+{ "pada": 3, "interpretation": "You are driven by social charisma and aesthetic pleasure. Your core drive is Kama-oriented, making you a lover of design, fashion, and relationships that celebrate beauty and innovation." },
+{ "pada": 4, "interpretation": "You seek the divine architect within. Your core drive is Moksha-oriented, helping you realize that all external beauty is a reflection of the soul’s inner light and liberation." }
+],
+"Swati": [
+{ "pada": 1, "interpretation": "You approach your quest for freedom and independence with a sense of moral duty. Your core drive is Dharma-oriented, leading you to seek growth and movement in ways that are principled and ethically sound." },
+{ "pada": 2, "interpretation": "You focus your adaptable and airy energy on achieving material security. Your core drive is Artha-oriented, helping you turn your social connections and business savvy into a stable and prosperous life." },
+{ "pada": 3, "interpretation": "You are driven by intellectual exploration and social harmony. Your core drive is Kama-oriented, making you a flexible communicator who finds pleasure in diverse relationships and new ideas." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation through the power of the wind. Your core drive is Moksha-oriented, leading you to find inner peace by letting go of attachments and moving toward a state of higher consciousness." }
+],
+"Vishakha": [
+{ "pada": 1, "interpretation": "You pursue your intense goals and ambitions with a sense of moral responsibility. Your core drive is Dharma-oriented, making you a principled achiever who values truth even in the heat of competition." },
+{ "pada": 2, "interpretation": "You focus your powerful determination on achieving material success and status. Your core drive is Artha-oriented, helping you secure your position through strategic planning and practical effort." },
+{ "pada": 3, "interpretation": "You are driven by social influence and the pursuit of sensory desires. Your core drive is Kama-oriented, leading you to use your focused energy to build relationships that satisfy your deep cravings for connection." },
+{ "pada": 4, "interpretation": "You seek spiritual transformation by redirecting your intense focus inward. Your core drive is Moksha-oriented, helping you overcome obsessions and find liberation through self-realization." }
+],
+"Anuradha": [
+{ "pada": 1, "interpretation": "You approach your friendships and social alliances with a sense of duty. Your core drive is Dharma-oriented, making you a loyal companion who values moral integrity and shared principles." },
+{ "pada": 2, "interpretation": "You focus your collaborative energy on achieving material stability and security. Your core drive is Artha-oriented, helping you build wealth through partnerships and practical social organization." },
+{ "pada": 3, "interpretation": "You are driven by social curiosity and intellectual pleasure. Your core drive is Kama-oriented, making you an explorer of relationships who finds joy in the company of diverse and interesting people." },
+{ "pada": 4, "interpretation": "You seek spiritual depth and emotional peace through your connections. Your core drive is Moksha-oriented, leading you to find the divine through universal love and the release of personal ego." }
+],
+"Jyeshtha": [
+{ "pada": 1, "interpretation": "You use your protective and elder energy to uphold duty and tradition. Your core drive is Dharma-oriented, making you a principled leader who uses their power to guide and protect others." },
+{ "pada": 2, "interpretation": "You apply your strategic mind and authority to gain material security. Your core drive is Artha-oriented, making you highly successful at managing resources and maintaining status through practical means." },
+{ "pada": 3, "interpretation": "You are driven by social power and intellectual intrigue. Your core drive is Kama-oriented, leading you to seek fulfillment through complex social dynamics and the satisfaction of your desires." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation by transcending your need for control. Your core drive is Moksha-oriented, using your powerful intuition to find peace beyond the material world and its power struggles." }
+],
+"Mula": [
+{ "pada": 1, "interpretation": "You approach your search for the root of all things with a sense of duty. Your core drive is Dharma-oriented, leading you to investigate the moral foundations of life and dismantle what is false." },
+{ "pada": 2, "interpretation": "You focus your intense, rooting energy on achieving stability and security. Your core drive is Artha-oriented, helping you find success by building your life on a solid, practical, and well-researched foundation." },
+{ "pada": 3, "interpretation": "You are driven by intellectual pleasure and the exploration of social mysteries. Your core drive is Kama-oriented, making you a curious researcher who finds joy in uncovering the hidden motives of others." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation by uprooting your material attachments. Your core drive is Moksha-oriented, leading you to find ultimate truth and peace by connecting with the source of all existence." }
+],
+"Purva Ashadha": [
+{ "pada": 1, "interpretation": "You approach your invincibility and goals with a sense of moral duty. Your core drive is Dharma-oriented, making you a principled achiever who seeks to improve the world through your victories." },
+{ "pada": 2, "interpretation": "You focus your flowing energy on achieving material success and comfort. Your core drive is Artha-oriented, helping you manifest your desires into a stable and prosperous lifestyle through practical effort." },
+{ "pada": 3, "interpretation": "You are driven by social pleasure and intellectual expansion. Your core drive is Kama-oriented, leading you to find joy in communication, travel, and building relationships that celebrate life." },
+{ "pada": 4, "interpretation": "You seek spiritual peace by aligning your will with the divine. Your core drive is Moksha-oriented, finding that true victory comes from inner liberation and the calm of a purified mind." }
+],
+"Uttara Ashadha": [
+{ "pada": 1, "interpretation": "You approach your quest for ultimate victory with a sense of high duty. Your core drive is Dharma-oriented, making you a responsible leader who values tradition and acts with great integrity." },
+{ "pada": 2, "interpretation": "You focus your disciplined energy on achieving lasting material status. Your core drive is Artha-oriented, helping you secure your position through practical work and the fulfillment of your responsibilities." },
+{ "pada": 3, "interpretation": "You are driven by social service and intellectual satisfaction. Your core drive is Kama-oriented, leading you to find joy in building connections that serve the greater good of your community." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation by connecting with your higher purpose. Your core drive is Moksha-oriented, helping you understand that the greatest victory is the soul's release from worldly ambition." }
+],
+"Shravana": [
+{ "pada": 1, "interpretation": "You use your gift of listening and learning to serve duty. Your core drive is Dharma-oriented, making you a principled seeker of wisdom who approaches life with a sense of moral responsibility." },
+{ "pada": 2, "interpretation": "You apply your knowledge and receptivity to achieve material security. Your core drive is Artha-oriented, making you successful in professional paths that require careful attention and practical application." },
+{ "pada": 3, "interpretation": "You are driven by social harmony and intellectual exchange. Your core drive is Kama-oriented, leading you to find pleasure in teaching, learning, and building connections through effective communication." },
+{ "pada": 4, "interpretation": "You seek spiritual peace through the silence of the soul. Your core drive is Moksha-oriented, using your ability to listen to hear the inner voice of the divine and find ultimate liberation." }
+],
+"Dhanishtha": [
+{ "pada": 1, "interpretation": "You approach your charisma and wealth with a sense of moral duty. Your core drive is Dharma-oriented, leading you to use your influence and resources in ways that are honorable and principled." },
+{ "pada": 2, "interpretation": "You focus your ambitious energy on building material status and security. Your core drive is Artha-oriented, helping you manifest your musical or organizational talents into a prosperous life." },
+{ "pada": 3, "interpretation": "You are driven by social recognition and intellectual pleasure. Your core drive is Kama-oriented, leading you to use your rhythmic nature to navigate social circles and enjoy vibrant relationships." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation by finding the rhythm of the universe. Your core drive is Moksha-oriented, helping you transcend your desire for fame to find inner peace and a connection to the divine." }
+],
+"Shatabhisha": [
+{ "pada": 1, "interpretation": "You use your healing and mysterious energy to serve duty. Your core drive is Dharma-oriented, making you a principled seeker of truth who approaches life with a sense of moral responsibility." },
+{ "pada": 2, "interpretation": "You apply your scientific and secretive mind to achieve material security. Your core drive is Artha-oriented, making you successful in paths that require deep research and practical strategy." },
+{ "pada": 3, "interpretation": "You are driven by intellectual curiosity and social mystery. Your core drive is Kama-oriented, leading you to seek fulfillment through complex relationships and the exploration of hidden social patterns." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation by breaking through your own isolation. Your core drive is Moksha-oriented, using your healing powers to find inner peace and a sense of unity with the divine." }
+],
+"Purva Bhadrapada": [
+{ "pada": 1, "interpretation": "You approach your intense transformation with a sense of duty. Your core drive is Dharma-oriented, leading you to use your visionary power to uphold moral principles and rebuild on truth." },
+{ "pada": 2, "interpretation": "You focus your passionate energy on achieving material stability. Your core drive is Artha-oriented, helping you turn your intense experiences into a secure and prosperous foundation for your life." },
+{ "pada": 3, "interpretation": "You are driven by intellectual intensity and social passion. Your core drive is Kama-oriented, leading you to explore complex relationships and high-energy environments that satisfy your heart." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation through the fire of purification. Your core drive is Moksha-oriented, helping you transcend your dual nature to find profound inner peace and a connection to the divine." }
+],
+"Uttara Bhadrapada": [
+{ "pada": 1, "interpretation": "You approach your compassionate wisdom with a sense of high duty. Your core drive is Dharma-oriented, making you a disciplined leader who values tradition and acts with moral integrity." },
+{ "pada": 2, "interpretation": "You focus your steady energy on achieving material security and long-term goals. Your core drive is Artha-oriented, helping you build a stable life through practical work and persistent effort." },
+{ "pada": 3, "interpretation": "You are driven by social service and intellectual depth. Your core drive is Kama-oriented, leading you to find joy in building strong, supportive connections within your community and network." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation by connecting with the depths of the soul. Your core drive is Moksha-oriented, finding that true peace comes from spiritual discipline and a release of worldly ego." }
+],
+"Revati": [
+{ "pada": 1, "interpretation": "You approach your role as a protector and guide with a sense of duty. Your core drive is Dharma-oriented, leading you to care for others in ways that are honorable, traditional, and principled." },
+{ "pada": 2, "interpretation": "You focus your nurturing energy on achieving material security and wealth. Your core drive is Artha-oriented, helping you manifest your mystical or artistic gifts into a stable and prosperous life." },
+{ "pada": 3, "interpretation": "You are driven by social harmony and aesthetic pleasure. Your core drive is Kama-oriented, making you a lover of beauty and relationships that are emotionally and spiritually fulfilling." },
+{ "pada": 4, "interpretation": "You seek spiritual liberation by completing your journey with the divine. Your core drive is Moksha-oriented, finding ultimate peace by dissolving your ego into universal love and total detachment." }
+]
+}

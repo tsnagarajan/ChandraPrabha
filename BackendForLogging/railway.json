@@ -1,6 +1,0 @@
-{
-  "build": {
-    "root": "BackendForLogging",
-    "start": "node index.js"
-  }
-}
