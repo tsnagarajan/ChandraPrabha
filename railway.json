@@ -2,7 +2,8 @@
   "build": {
     "builder": "nixpacks"
   },
-  "start": {
-    "cmd": "next start"
+  "deploy": {
+    "startCommand": "next start -p $PORT -H 0.0.0.0",
+    "restartPolicyType": "on_failure"
   }
 }
