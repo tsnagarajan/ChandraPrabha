@@ -13,7 +13,8 @@ interface ChartSummary {
   currentDasa: string;
 }
 
-export function generateInterpretation(summary: ChartSummary): string {
+export function generateInterpretation(summary: any): string {
+  // 1. Find Ascendant, Moon, and Star
   const asc = ascendants.find(a =>
     summary.ascendant.toLowerCase().includes(a["Lagna (Ascendant)"].toLowerCase())
   );
@@ -25,12 +26,17 @@ export function generateInterpretation(summary: ChartSummary): string {
   const starData = (starPadas as any)[summary.nakshatra];
   const padaDetails = starData ? starData.find((p: any) => p.pada === summary.pada) : null;
 
-  // Manual check for the Dasa in the JSON
+  // 2. Dasa Logic - Clean the name to match your JSON exactly
+  const rawDasaName = summary.currentDasa || "Unknown";
+  const cleanSearchName = rawDasaName.trim().toLowerCase();
+
+  // Find the match in the dasa file you just sent
   const currentDasaInfo = dasas.find(d => 
-    d.Planet.trim().toLowerCase() === (summary.currentDasa || "").trim().toLowerCase()
+    d.Planet.toLowerCase() === cleanSearchName
   );
 
-  const yogaInterpretations = summary.yogas.map(yogaName => {
+  // 3. Yoga Logic
+  const yogaInterpretations = (summary.yogas || []).map((yogaName: string) => {
     const description = (yogaData as any)[yogaName];
     return description 
       ? `#### ${yogaName}\n${description}` 
@@ -38,28 +44,27 @@ export function generateInterpretation(summary: ChartSummary): string {
   }).join('\n\n');
 
   return `
-## Your Personalized Astrology Report (Updated Report)
+## Your Personalized Astrology Report
 
 ### 1. Your Ascendant: ${summary.ascendant}
-${asc ? asc.Interpretation : ""}
+${asc ? asc.Interpretation : "Interpretation processing..."}
 
 ### 2. Your Moon Sign: ${summary.moonRasi}
-${moon ? moon.Interpretation : ""}
+${moon ? moon.Interpretation : "Interpretation processing..."}
 
 ### 3. Your Star: ${summary.nakshatra} (Pada ${summary.pada})
-${padaDetails ? padaDetails.interpretation : ""}
+${padaDetails ? padaDetails.interpretation : "Interpretation processing..."}
 
-### 4. Your Current Period (Dasa): ${summary.currentDasa}
-${currentDasaInfo ? currentDasaInfo.Interpretation : ""}
+### 4. Your Current Period (Dasa): ${currentDasaInfo ? currentDasaInfo.Planet : rawDasaName}
+${currentDasaInfo ? currentDasaInfo.Interpretation : "Detailed interpretation for this period is being processed."}
 
 ### 5. Special Yogas
-${yogaInterpretations || "No major yogas currently identified."}
+${yogaInterpretations || "No major yogas currently identified in this chart."}
 
 ---
-**Disclaimer:** The Yogas listed above represent planetary potentials based on classical definitions.
+**Disclaimer:** This report is based on classical astrological interpretations.
 `.trim();
 }
-
 export function generateSummary(chart: any): ChartSummary {
   const ascSigns = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
   const positions = chart.positions;
@@ -92,7 +97,7 @@ export function generateSummary(chart: any): ChartSummary {
 
   const yogas: string[] = [];
   const planetsInSigns = Object.entries(positions)
-    .filter(([name]) => !["Sun", "Moon", "Rahu", "Ketu", "Ur", "Ne", "Pl"].includes(name))
+  .filter(([name]) => !["Ur", "Ne", "Pl"].includes(name))
     .map(([_, degree]) => Math.floor((degree as number) / 30));
 
   const secondFromMoon = (moonIndex + 1) % 12;

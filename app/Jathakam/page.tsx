@@ -737,15 +737,36 @@ export default function Home() {
   const [out, setOut] = useState<ChartOut | null>(null);
   const [err, setErr] = useState<string | ApiError | null>(null);
 
-  // ✅ Add this block right here:
-  const summary = useMemo(() => {
-    if (!out) return null;
-    return generateSummary(out);
-  }, [out]);
+const { summary, interpretation } = useMemo(() => {
+  if (!out) return { summary: null, interpretation: null };
 
-  // Generate interpretation from existing summary
-  const interpretation = summary ? generateInterpretation(summary) : null;
+  const baseSummary = generateSummary(out);
 
+  // 1. Get today's date
+  const today = new Date();
+
+  // 2. Find the dasha that is active RIGHT NOW
+  const currentDashaObject = out?.dasha?.find((period: any) => {
+    const startDate = new Date(period.startISO);
+    const endDate = new Date(period.endISO);
+    return today >= startDate && today <= endDate;
+  });
+
+  // 3. Fallback: If for some reason dates don't match, use the first one 
+  // (though the logic above should find the real current one)
+  const planetName = currentDashaObject?.lord || out?.dasha?.[0]?.lord || "Unknown";
+
+  const fullSummary = {
+    ...baseSummary,
+    currentDasa: planetName
+  };
+
+  const text = generateInterpretation(fullSummary);
+  return { summary: fullSummary, interpretation: text };
+}, [out]);
+
+// Note: Ensure your Page 7 refers to the 'interpretation' variable created above.
+  
   const printRef = useRef<HTMLDivElement>(null);
 
   // Prevent any global click -> print from hijacking our Download button
@@ -1005,7 +1026,7 @@ export default function Home() {
       setErr(null);
       setOut(json as ChartOut);
 
-      // 5-second delay to ensure rendering is complete before scrolling
+      // 5-second delay
       setTimeout(() => {
         const element = document.getElementById('report');
         if (element) {
@@ -1018,6 +1039,8 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  } // end generateChart
+
   const panchanga = useMemo(() => panchangaFrom(out), [out]);
 
   const filteredHits = useMemo(() => {
@@ -2260,7 +2283,7 @@ export default function Home() {
             </div>
             {/* ✅ Message ends here */}
           </form>
-        </div>
+        </div> {/* This closes id="pdf-content" */}
         {out && (
           <div id="report">
             {/* ========================= REPORT ========================= */}
@@ -2706,27 +2729,62 @@ export default function Home() {
             </section>
 
            {/* ---------- PAGE 7: Highlights ---------- */}
-            <section
-              className="page-section"
-              style={{ pageBreakBefore: 'always', padding: '40px 0' }}
-            >
-              <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                <img
-                  src="/logo.png"
-                  width={140}
-                  height={140}
-                  alt="Chandra Prabha — Jathakam"
-                />
-              </div>
+{/* ---------- PAGE 7: Highlights ---------- */}
+<section
+  className="page-section"
+  style={{ 
+    pageBreakBefore: 'always', 
+    padding: '40px', 
+    backgroundColor: '#fffdf5', // Soft parchment feel
+    borderRadius: '8px',
+    boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+    borderTop: '6px solid #e67e22', // Nice orange Vedic accent
+    maxWidth: '800px',
+    margin: '40px auto'
+  }}
+>
+  <div style={{ textAlign: 'center', marginBottom: 20 }}>
+    <img
+      src="/logo.png"
+      width={140}
+      height={140}
+      alt="Chandra Prabha — Jathakam"
+    />
+  </div>
 
-              {interpretation && (
-                <div style={{ marginTop: 32 }}>
-                  <div style={{ whiteSpace: 'pre-line', fontSize: '15px', lineHeight: '1.7', color: '#333' }}>
-                    {interpretation}
-                  </div>
-                </div>
-              )}
-            </section>
+  {/* 1. The Main Header */}
+  <div style={{ marginBottom: 30, textAlign: 'center' }}>
+    <h2 style={{ 
+      fontSize: '28px', 
+      fontWeight: 'bold', 
+      fontFamily: 'serif', 
+      color: '#2c3e50',
+      borderBottom: '1px solid #ddd', 
+      paddingBottom: '15px',
+      letterSpacing: '1px'
+    }}>
+      Personalized Life Highlights
+    </h2>
+  </div>
+
+  {/* 2. The Full Interpretation */}
+  {interpretation ? (
+    <div style={{ marginTop: 20 }}>
+      <div style={{ 
+        whiteSpace: 'pre-line', 
+        fontSize: '16px', 
+        lineHeight: '1.8', 
+        color: '#2c3e50',
+        fontFamily: 'serif', // Makes it look like a formal report
+        textAlign: 'justify'
+      }}>
+        {interpretation}
+      </div>
+    </div>
+  ) : (
+    <p style={{ textAlign: 'center', fontFamily: 'serif' }}>Generating details...</p>
+  )}
+</section>
 
             {/* ---------- Export Toolbar ---------- */}
             <div className="no-print" style={{ 
@@ -2768,8 +2826,6 @@ export default function Home() {
         )}
       </main>
     </>
-   );
- }
-}             
-
+  );
+}
 
