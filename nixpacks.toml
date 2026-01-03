@@ -1,2 +1,8 @@
 [phases.setup]
 aptPkgs = ["python3", "python3-pip", "python3-setuptools", "python3-wheel", "make", "g++"]
+
+[phases.build]
+cmds = ["npm install", "npm run build"]
+
+[start]
+cmd = "npm run start"
