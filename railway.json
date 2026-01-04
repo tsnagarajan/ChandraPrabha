@@ -2,7 +2,7 @@
   "build": {
     "builder": "nixpacks",
     "buildCommand": "apt-get update && apt-get install -y python3 make g++ && npm install",
-    "rootDirectory": "./"
+    "rootDirectory": "ChandraPrabha"
   },
   "deploy": {
     "startCommand": "npm run start",
