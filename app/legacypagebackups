@@ -1,0 +1,91 @@
+---
+
+# Legacy Page Backups — Chandra Prabha
+
+This folder preserves earlier versions of `page.tsx` during the restoration and evolution of the Chandra Prabha app. Each file represents a meaningful step in the journey. The current main file is located at:
+
+
+## 🔹 File Index
+
+| Filename                            | Description                                                                 |
+|-------------------------------------|-----------------------------------------------------------------------------|
+| `page.before-bottom-edit.bak.tsx`   | Preceded the hardened export logic and bottom-click override               |
+| `page.tophunt.20250914-212546.tsx` | Snapshot from September 14, 2025 — before export bar refinements           |
+| `page.step1.bak.tsx`                | Early working version with basic form and chart logic                      |
+| `page.precommentfix.bak.tsx`        | Before comment cleanup and layout refinements                             |
+| `page.pdfbutton.backup.tsx`         | Introduced PDF export button and stacked chart layout                     |
+| `page-broken.tsx`                   | Experimental or partially broken version with Panchanga + LST helpers      |
+
+---
+
+## 🧭 Notes
+
+- These files are **not active** but preserved for reference and restoration.
+- The main file (`app/page.tsx`) includes:
+  - Consent + email fields
+  - Logging to Railway backend
+  - Hardened export logic (`safeDownloadHTML`)
+  - Panchanga, aspects, D1/D9 charts
+  - Full form and layout refinements
+
+---
+
+🕯️ Every version here is a step in the legacy. Nothing is deleted — only preserved with clarity.
+
+import { ChartOut } from './types'; // adjust the path if needed
+
+export type ChartSummary = {
+  bigThree: {
+    ascendant: string;
+    sun: string;
+    moon: string;
+  };
+  strengths: string[];
+  uniqueNote?: string;
+  yogas: string[];
+};
+
+export function generateSummary(out: ChartOut): ChartSummary {
+  const ascSign = getSignName(out.ascendant);
+  const sunSign = getSignName(out.positions['Sun']);
+  const moonSign = getSignName(out.positions['Moon']);
+
+  const bigThree = {
+    ascendant: getLagnaSummary(ascSign),
+    sun: `Sun in ${sunSign} — vitality, purpose, and core identity.`,
+    moon: `Moon in ${moonSign} — emotional tone and inner world.`,
+  };
+
+  const strengths: string[] = [];
+
+  const planetList = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+  for (const planet of planetList) {
+    const deg = out.positions[planet];
+    if (deg !== undefined && isInOwnOrExalted(planet, deg)) {
+      strengths.push(`Strong ${planet} — may reflect dignity, clarity, or expressive gifts.`);
+    }
+  }
+
+  const uniqueNote = detectRareAspect(out); // we’ll add this function next
+  const yogas: string[] = []; // placeholder for now
+
+  return { bigThree, strengths, uniqueNote, yogas };
+}
+
+export const detectRareAspect = (out: ChartOut): string | undefined => {
+  const sun = out.positions['Sun'];
+  const moon = out.positions['Moon'];
+  if (sun !== undefined && moon !== undefined) {
+    const angle = Math.abs(sun - moon) % 360;
+    if (angle > 85 && angle < 95) {
+      return 'Sun and Moon are nearly square — may reflect inner tension and creative drive.';
+    }
+    if (angle > 175 && angle < 185) {
+      return 'Sun and Moon are nearly opposite — may reflect emotional depth and duality.';
+    }
+    if (angle > 265 && angle < 275) {
+      return 'Sun and Moon are nearly trine — may reflect inner harmony and emotional clarity.';
+    }
+  }
+  return undefined;
+};

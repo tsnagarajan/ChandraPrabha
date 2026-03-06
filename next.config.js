@@ -2,25 +2,24 @@
 const nextConfig = {
   experimental: {
     optimizeCss: false,
-    css: false
   },
 
-  serverExternalPackages: ['swisseph'],
+  serverExternalPackages: ["swisseph"],
 
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: true,
   },
 
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: true,
   },
 
   webpack: (config) => {
     config.externals.push({
-      swisseph: 'commonjs swisseph'
+      swisseph: "commonjs swisseph",
     });
     return config;
-  }
+  },
 };
 
 module.exports = nextConfig;

@@ -1,0 +1,330 @@
+import React, { useMemo } from "react";
+
+export default function AshtakavargaSection({ out }: any) {
+  // 1. DATA SOURCES
+  const positions = out?.positions || {};
+  const liveAsc = out?.ascendant || 0;
+
+  // 2. LIVE MATH ENGINE
+  const result = useMemo(() => {
+    const signsList = ["SUN", "MOON", "MARS", "MERCURY", "JUPITER", "VENUS", "SATURN"];
+    const getS = (deg: number) => Math.floor((((deg % 360) + 360) % 360) / 30);
+    
+    const pSigns: Record<string, number> = {
+      SUN: getS(positions.Sun || positions.SUN || 0),
+      MOON: getS(positions.Moon || positions.MOON || 0),
+      MARS: getS(positions.Mars || positions.MARS || 0),
+      MERCURY: getS(positions.Mercury || positions.MERCURY || 0),
+      JUPITER: getS(positions.Jupiter || positions.JUPITER || 0),
+      VENUS: getS(positions.Venus || positions.VENUS || 0),
+      SATURN: getS(positions.Saturn || positions.SATURN || 0),
+      ASC: getS(liveAsc)
+    };
+
+    const rules: any = {
+      SUN: { SUN:[1,2,4,7,8,9,10,11], MOON:[3,6,10,11], MARS:[1,2,4,7,8,9,10,11], MERCURY:[3,5,6,9,10,11,12], JUPITER:[5,6,9,11], VENUS:[6,7,12], SATURN:[1,2,4,7,8,9,10,11], ASC:[3,4,6,10,11,12] },
+      MOON: { SUN:[3,6,7,8,10,11], MOON:[1,3,6,7,10,11], MARS:[2,3,5,6,9,10,11], MERCURY:[1,3,4,5,7,8,10,11], JUPITER:[1,4,7,8,10,11,12], VENUS:[3,4,5,7,9,10,11], SATURN:[3,5,6,11], ASC:[3,6,10,11] },
+      MARS: { SUN:[3,5,6,10,11], MOON:[3,6,11], MARS:[1,2,4,7,8,10,11], MERCURY:[3,5,6,11], JUPITER:[6,10,11,12], VENUS:[6,8,11,12], SATURN:[1,4,7,8,9,10,11], ASC:[1,3,6,10,11] },
+      MERCURY: { SUN:[5,6,9,11,12], MOON:[2,4,6,8,10,11], MARS:[1,2,4,7,8,9,10,11], MERCURY:[1,3,5,6,9,10,11,12], JUPITER:[6,8,11,12], VENUS:[1,2,3,4,5,8,9,11], SATURN:[1,2,4,7,8,9,10,11], ASC:[1,2,4,6,8,10,11] },
+      JUPITER: { SUN:[1,2,3,4,7,8,9,10,11], MOON:[2,5,7,9,11], MARS:[1,2,4,7,8,10,11], MERCURY:[1,2,4,5,6,9,10,11], JUPITER:[1,2,3,4,7,8,10,11], VENUS:[2,5,6,9,10,11], SATURN:[3,5,6,12], ASC:[1,2,4,5,6,7,9,10,11] },
+      VENUS: { SUN:[8,11,12], MOON:[1,2,3,4,5,8,9,11,12], MARS:[3,5,6,9,11,12], MERCURY:[3,5,6,9,11], JUPITER:[5,8,9,10,11], VENUS:[1,2,3,4,5,8,9,10,11], SATURN:[3,4,5,8,9,10,11], ASC:[1,2,3,4,5,8,9,11] },
+      SATURN: { SUN:[1,2,4,7,8,10,11], MOON:[3,6,11], MARS:[3,5,6,10,11,12], MERCURY:[6,8,9,10,11,12], JUPITER:[5,6,11,12], VENUS:[6,11,12], SATURN:[3,5,6,11], ASC:[1,3,4,6,10,11] }
+    };
+
+    const table: any = {};
+    const bavTotals: any = {};
+    const sarva = Array(12).fill(0);
+
+    signsList.forEach(pKey => {
+      table[pKey] = Array(12).fill(0);
+      Object.keys(rules[pKey]).forEach(refKey => {
+        const startSign = pSigns[refKey];
+        rules[pKey][refKey].forEach((houseNum: number) => {
+          const targetSign = (startSign + (houseNum - 1)) % 12;
+          table[pKey][targetSign] += 1;
+        });
+      });
+      bavTotals[pKey] = table[pKey].reduce((a: any, b: any) => a + b, 0);
+      table[pKey].forEach((pts: number, i: number) => { sarva[i] += pts; });
+    });
+
+    return { table, sarva, bavTotals };
+  }, [positions, liveAsc]);
+
+  const avTable = result.table;
+  const savArray = result.sarva;
+  const bavTotals = result.bavTotals;
+
+  const signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+  const ascSignIdx = Math.floor((((liveAsc % 360) + 360) % 360) / 30);
+  const ascSignName = signs[ascSignIdx] || "";
+  const lagnaIdx = ascSignIdx;
+
+  const ascLabelMap: Record<string, string> = {
+    Aries: "Mesha", Taurus: "Vrishabha", Gemini: "Mithuna", Cancer: "Karka", Leo: "Simha", Virgo: "Kanya",
+    Libra: "Tula", Scorpio: "Vrischika", Sagittarius: "Dhanu", Capricorn: "Makara", Aquarius: "Kumbha", Pisces: "Meena",
+  };
+  const ascSanskrit = ascLabelMap[ascSignName] || "";
+
+  
+
+
+
+
+
+  const planets = [
+    { key: "SUN", display: "Sun" },
+    { key: "MOON", display: "Moon" },
+    { key: "MARS", display: "Mars" },
+    { key: "MERCURY", display: "Mercury" },
+    { key: "JUPITER", display: "Jupiter" },
+    { key: "VENUS", display: "Venus" },
+    { key: "SATURN", display: "Saturn" },
+  ];
+
+  // 2) RETROGRADE (VAKRA): exclude Rahu/Ketu completely
+  const retroPlanets = Object.entries(out?.speeds ?? {})
+    .filter(([abbr, sp]) => {
+      if (typeof sp !== "number") return false;
+      if (sp >= 0) return false;
+
+      const a = String(abbr).toLowerCase();
+      if (a === "ra" || a === "ke" || a === "rahu" || a === "ketu") return false;
+
+      return true;
+    })
+    .map(([abbr]) => {
+      const map: Record<string, string> = {
+        Su: "Sun",
+        Mo: "Moon",
+        Me: "Mercury",
+        Ve: "Venus",
+        Ma: "Mars",
+        Ju: "Jupiter",
+        Sa: "Saturn",
+        Ur: "Uranus",
+        Ne: "Neptune",
+        Pl: "Pluto",
+      };
+      return map[abbr] || abbr;
+    });
+
+  
+
+  // 4) SPEED DISPLAY (as before)
+  const speedMap: Record<string, string> = {
+    Su: "Sun", Mo: "Moon", Me: "Mercury", Ve: "Venus", Ma: "Mars",
+    Ju: "Jupiter", Sa: "Saturn", Ra: "Rahu", Ke: "Ketu",
+    Ur: "Uranus", Ne: "Neptune", Pl: "Pluto",
+  };
+
+  const speedLines = Object.entries(out?.speeds ?? {})
+    .filter(([_, sp]) => typeof sp === "number" && Number.isFinite(sp))
+    .map(([abbr, sp]) => ({
+      planet: speedMap[abbr] || abbr,
+      abbr,
+      sp: Number(sp),
+    }))
+    .sort((a, b) => {
+      const order = [
+        "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",
+        "Rahu","Ketu","Uranus","Neptune","Pluto",
+      ];
+      return order.indexOf(a.planet) - order.indexOf(b.planet);
+    });
+
+  // 5) SAV → House labels based on lagna rotation
+  const houseNames: Record<number, string> = {
+    1: "Vitality",
+    2: "Wealth",
+    3: "Effort",
+    4: "Home",
+    5: "Children",
+    6: "Resistance",
+    7: "Marriage",
+    8: "Longevity",
+    9: "Fortune",
+    10: "Career",
+    11: "Gains",
+    12: "Loss/Spirituality",
+  };
+
+  const housePoints = Array.from({ length: 12 }).map((_, i) => {
+    const house = i + 1;
+    const signIndex = (lagnaIdx + i) % 12;
+    const pts = Number(savArray?.[signIndex] ?? 0);
+    return {
+      house,
+      sign: signs[signIndex],
+      pts,
+      label: `H${house} (${houseNames[house]} - ${signs[signIndex]})`,
+    };
+  });
+
+  const bestHouses = [...housePoints].sort((a, b) => b.pts - a.pts).slice(0, 4);
+  const weakHouses = [...housePoints].sort((a, b) => a.pts - b.pts).slice(0, 4);
+
+  // BAV ranking (uses your planet keys like SUN/MOON...)
+  const bavRank = Object.entries(bavTotals ?? {})
+    .map(([k, v]) => ({ k, v: Number(v) }))
+    .filter((x) => Number.isFinite(x.v))
+    .sort((a, b) => b.v - a.v);
+
+  // House header mapping (for the table)
+  const getHouseNum = (signIdx: number) => ((signIdx - lagnaIdx + 12) % 12) + 1;
+
+  return (
+    <div style={{ padding: "20px", border: "2px solid black", fontFamily: "serif", backgroundColor: "#fff" }}>
+      <h2 style={{ textAlign: "center", marginBottom: "5px" }}>
+        Page 9: Ashtakavarga Tables & Results
+      </h2>
+      <h4 style={{ textAlign: "center", marginTop: 0 }}>
+      {ascSignName} Ascendant{ascSanskrit ? ` (${ascSanskrit} Lagna)` : ""}
+      </h4>
+
+
+      <p style={{ marginTop: 10, fontSize: 13 }}>
+        Ashtakavarga is a classical Vedic system measuring planetary support. Higher totals indicate greater strength and smoother manifestation of results.
+      </p>
+
+      {/* Vakra + Speeds (optional, short, no repetition) */}
+      <div style={{ marginTop: 8, marginBottom: 10, fontSize: 13 }}>
+        <div>
+          <b>Vakra Nature (Retrograde): </b>
+          {retroPlanets.length ? retroPlanets.join(", ") : "All planets are direct"}
+        </div>
+
+        <div style={{ marginTop: 6 }}>
+          <b>Planet Speeds: </b>
+          {speedLines.length
+            ? speedLines.map((x) => `${x.planet} ${x.sp.toFixed(2)}`).join(" | ")
+            : "—"}
+        </div>
+      </div>
+
+      {/* Planet Strength (BAV Total) - shown once */}
+      <div style={{ marginTop: 10, fontSize: 13 }}>
+        <b>Planet Strength (BAV Total)</b>
+        {bavRank.length ? (
+          <ol style={{ marginTop: 6 }}>
+            {bavRank.map((x, i) => (
+              <li key={x.k}>
+                {i + 1}. {x.k}: {x.v}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div>—</div>
+        )}
+      </div>
+
+      // --- [LOGIC SECTION - NO HTML HERE] ---
+  const houseNames: Record<number, string> = {
+    1: "Vitality", 2: "Wealth", 3: "Effort", 4: "Home", 5: "Children", 6: "Resistance",
+    7: "Marriage", 8: "Longevity", 9: "Fortune", 10: "Career", 11: "Gains", 12: "Loss/Spirituality",
+  };
+
+  const housePoints = Array.from({ length: 12 }).map((_, i) => {
+    const house = i + 1;
+    const signIndex = (lagnaIdx + i) % 12;
+    const pts = Number(savArray?.[signIndex] ?? 0);
+    return {
+      house,
+      sign: signs[signIndex],
+      pts,
+      label: `H${house} (${houseNames[house]} - ${signs[signIndex]})`,
+    };
+  });
+
+  const bestHouses = [...housePoints].sort((a, b) => b.pts - a.pts).slice(0, 4);
+  const weakHouses = [...housePoints].sort((a, b) => a.pts - b.pts).slice(0, 4);
+
+  const bavRank = Object.entries(bavTotals ?? {})
+    .map(([k, v]) => ({ k, v: Number(v) }))
+    .filter((x) => Number.isFinite(x.v))
+    .sort((a, b) => b.v - a.v);
+
+  const rawDasa = out?.dasha?.mahadasha?.planet || "";
+  const mahadashaPlanet = rawDasa.toUpperCase();
+  const dasaSignIdx = pSigns[mahadashaPlanet] || 0;
+  const currentDasaBAV = avTable[mahadashaPlanet]?.[dasaSignIdx] || 0;
+  const currentDasaSAV = savArray[dasaSignIdx] || 0;
+
+  const trikonaTable = JSON.parse(JSON.stringify(avTable)); 
+  const groups = [[0, 4, 8], [1, 5, 9], [2, 6, 10], [3, 7, 11]];
+  Object.keys(trikonaTable).forEach(p => {
+    groups.forEach(group => {
+      const vals = group.map(idx => trikonaTable[p][idx] || 0);
+      const minVal = Math.min(...vals);
+      group.forEach(idx => { if(trikonaTable[p][idx] !== undefined) trikonaTable[p][idx] -= minVal; });
+    });
+  });
+
+  const shodhanaTotals: any = {};
+  Object.keys(trikonaTable).forEach(p => {
+    shodhanaTotals[p] = trikonaTable[p].reduce((a: number, b: number) => a + b, 0);
+  });
+
+  // --- [VISUAL SECTION - HTML STARTS HERE] ---
+  return (
+    <div style={{ padding: "20px", border: "2px solid black", fontFamily: "serif", backgroundColor: "#fff", color: "#000" }}>
+      <h2 style={{ textAlign: "center", marginBottom: "5px" }}>Page 9: Ashtakavarga Tables & Results</h2>
+      <h4 style={{ textAlign: "center", marginTop: 0 }}>
+        {ascSignName} Ascendant{ascSanskrit ? ` (${ascSanskrit} Lagna)` : ""}
+      </h4>
+
+      <div style={{ marginTop: 15, padding: "12px", border: "1px double #666", backgroundColor: "#f0f4f8", fontSize: "13px" }}>
+        <b style={{ fontSize: "14px", color: "#2c3e50" }}>Current Dasa Analysis</b>
+        <div style={{ marginTop: 5 }}>
+          <b>Period Lord:</b> {mahadashaPlanet} | <b>Strength:</b> {currentDasaBAV} BAV / {currentDasaSAV} SAV
+        </div>
+      </div>
+
+      <div style={{ marginTop: 14, fontSize: 13 }}>
+        <b>House Strength (SAV)</b>
+        <div style={{ marginTop: 6 }}><b>Best support:</b> {bestHouses.map((x) => `${x.label}: ${x.pts}`).join(" | ")}</div>
+        <div style={{ marginTop: 2 }}><b>Needs care:</b> {weakHouses.map((x) => `${x.label}: ${x.pts}`).join(" | ")}</div>
+      </div>
+
+      <h3 style={{ fontSize: "15px", marginTop: "20px" }}>1. Basic Ashtakavarga</h3>
+      <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center", fontSize: "12px" }}>
+        <thead>
+          <tr style={{ backgroundColor: "#eee" }}>
+            <th>Planet</th>
+            {signs.map(s => <th key={s}>{s.slice(0,3)}</th>)}
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {planets.map(p => (
+            <tr key={p.key}>
+              <td style={{ border: "1px solid #000", textAlign: "left" }}>{p.display}</td>
+              {avTable[p.key].map((v: any, i: number) => <td key={i} style={{ border: "1px solid #000" }}>{v}</td>)}
+              <td style={{ border: "1px solid #000", fontWeight: "bold" }}>{bavTotals[p.key]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3 style={{ fontSize: "15px", marginTop: "25px" }}>2. Trikona Shodhana (Reduced Points)</h3>
+      <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center", fontSize: "12px" }}>
+        <thead>
+          <tr style={{ backgroundColor: "#eee" }}>
+            <th>Planet</th>
+            {signs.map(s => <th key={s}>{s.slice(0,3)}</th>)}
+            <th>Pinda</th>
+          </tr>
+        </thead>
+        <tbody>
+          {planets.map(p => (
+            <tr key={p.key}>
+              <td style={{ border: "1px solid #000", textAlign: "left" }}>{p.display}</td>
+              {trikonaTable[p.key].map((v: any, i: number) => <td key={i} style={{ border: "1px solid #000" }}>{v}</td>)}
+              <td style={{ border: "1px solid #000", fontWeight: "bold", color: "red" }}>{shodhanaTotals[p.key]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

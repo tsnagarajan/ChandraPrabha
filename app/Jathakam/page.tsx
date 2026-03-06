@@ -10,7 +10,13 @@ import PdfExport from '../../components/PdfExport';
 import { generateSummary, generateInterpretation } from '../lib/interpretation';
 
 // Up 1 level to find Page7.tsx inside 'app'
-import Page7 from '../Page7.tsx';
+import Page7 from '../Page7';
+import AshtakavargaSection from '../../components/AshtakavargaSection';
+
+//import ShadbalaSection, { StrengthInterpretation } from "../../components/ShadbalaSection";
+//import BhavabalaSection from "../../components/BhavabalaSection";
+
+
 
 /* =========================
    Types
@@ -633,6 +639,35 @@ export default function Home() {
       .page-section { margin-top:16px; }
       .section-title { font-size:20px; font-weight:900; margin: 6px 0 10px; }
 
+       /* --- FINAL PRINT & PDF FIX --- */
+  @media print {
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .no-print { display: none !important; }
+
+    /* This stops the "distortion" and ensures the Rasi chart stays square */
+    #report {
+      width: 850px !important;
+      margin: 0 auto !important;
+      background: white !important;
+    }
+
+    .page-section {
+      page-break-after: always !important;
+      break-after: page !important;
+    }
+  }
+
+
+
+
+
+
+
+
+
       /* South-Indian chart visuals (screen) */
       .si-cell { border:2.2px solid #111; border-radius:12px; background:#fff; overflow:hidden; }
       .si-label { font-size:17px; font-weight:900; letter-spacing:.2px; }
@@ -691,6 +726,10 @@ export default function Home() {
     return () => document.head.removeChild(style);
   }, []);
 
+  
+
+
+
   /* Form state (blank defaults) */
   const [name, setName] = useState('');
   const [place, setPlace] = useState('');
@@ -707,6 +746,7 @@ export default function Home() {
   const [tzSelect, setTzSelect] = useState<string>('');
   const [houseSystem, setHouseSystem] = useState('P');
 
+  
   const [consent, setConsent] = useState<boolean | null>(null); // default = neither selected
 
   const [email, setEmail] = useState('');
@@ -737,6 +777,12 @@ export default function Home() {
   const [out, setOut] = useState<ChartOut | null>(null);
   const [err, setErr] = useState<string | ApiError | null>(null);
 
+  // --- PLACE THE CALCULATIONS HERE ---
+  const shadData = out?.shadbala || {};
+  const bhavaData = out?.bhavabala || {};
+
+
+
 const { summary, interpretation } = useMemo(() => {
   if (!out) return { summary: null, interpretation: null };
 
@@ -752,7 +798,7 @@ const { summary, interpretation } = useMemo(() => {
     return today >= startDate && today <= endDate;
   });
 
-  // 3. Fallback: If for some reason dates don't match, use the first one 
+  // 3. Fallback: If for some reason dates don't match, use the first one
   // (though the logic above should find the real current one)
   const planetName = currentDashaObject?.lord || out?.dasha?.[0]?.lord || "Unknown";
 
@@ -765,8 +811,10 @@ const { summary, interpretation } = useMemo(() => {
   return { summary: fullSummary, interpretation: text };
 }, [out]);
 
+
+
 // Note: Ensure your Page 7 refers to the 'interpretation' variable created above.
-  
+
   const printRef = useRef<HTMLDivElement>(null);
 
   // Prevent any global click -> print from hijacking our Download button
@@ -993,46 +1041,32 @@ const { summary, interpretation } = useMemo(() => {
       }
       if (corrected && corrected !== timezone) setTimezone(corrected);
 
-      // Log user input (Fire-and-forget style to prevent UI errors)
-      fetch('https://chandraprabha-production.up.railway.app/log-chart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, place, lat, lon, date: dateStr, time: timeStr, timezone: tz }),
-      }).catch(() => console.log("Logging skipped")); 
-
+      // 1. GET MAIN CHART DATA
       const res = await fetch('/api/chart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          date: dateStr,
-          time: timeStr,
-          timezone: tz,
-          lat: Number(lat),
-          lon: Number(lon),
-          houseSystem,
-        }),
+        body: JSON.stringify({ date: dateStr, time: timeStr, timezone: tz, lat, lon }),
       });
 
-      let json: any = null;
-      try {
-        json = await res.json();
-      } catch {}
+      const json = await res.json();
 
       if (!res.ok) {
-        setErr(json && json.error ? (json as ApiError) : { error: 'Chart error' });
-        return;
+        throw new Error(json.error || 'Failed to fetch');
       }
 
-      setErr(null);
-      setOut(json as ChartOut);
+      // 2. RESTORE ORIGINAL STATE
+      setOut(json);
+      
 
-      // 5-second delay
+
+      // 4. Scroll to your beautiful Ashtakavarga
       setTimeout(() => {
         const element = document.getElementById('report');
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, 5000);
+      }, 500);
+
 
     } catch (e: any) {
       setErr({ error: e?.message || String(e) });
@@ -1063,56 +1097,81 @@ const { summary, interpretation } = useMemo(() => {
   }, [hits]);
 
   /* ---- Chart component (bold; uses CSS var --cell-size) ---- */
-  function SouthIndianChart({
-    title,
-    mode,
-    ascDeg,
-    positions,
-  }: {
-    title: string;
-    mode: 'sign' | 'bhava';
-    ascDeg?: number;
-    positions: Record<string, number>;
-  }) {
-    const boxes = Array.from({ length: 12 }).map((_, i) => ({
-      sign: i,
-      signAbbr: SIGN_ABBR[i],
-      label: '',
-      planets: [] as string[],
-    }));
-    const ascSign = Math.floor(norm360(ascDeg ?? 0) / 30);
+function SouthIndianChart({
+  title,
+  mode,
+  ascDeg,
+  positions,
+  retroSet,
+}: {
+  title: string;
+  mode: "sign" | "bhava";
+  ascDeg?: number;
+  positions: Record<string, number>;
+  retroSet?: Set<string>;
+}) {
+  const boxes = Array.from({ length: 12 }).map((_, i) => ({
+    sign: i,
+    signAbbr: SIGN_ABBR[i],
+    label: "",
+    planets: [] as string[],
+  }));
 
-    if (mode === 'sign') {
-      boxes.forEach((b) => (b.label = b.signAbbr));
-      Object.entries(positions).forEach(([name, deg]) => {
-        const s = Math.floor(norm360(deg) / 30);
-        boxes[s].planets.push(PLANET_ABBR[name] ?? name);
-      });
-      if (typeof ascDeg === 'number' && Number.isFinite(ascDeg)) {
-        const sAsc = Math.floor(norm360(ascDeg) / 30);
-        boxes[sAsc].planets.unshift('ASC');
-      }
-    } else {
-      boxes.forEach((b) => {
-        const h = ((b.sign - ascSign + 12) % 12) + 1;
-        b.label = `H${h}`;
-      });
-      Object.entries(positions).forEach(([name, deg]) => {
-        const s = Math.floor(norm360(deg) / 30);
-        const house = ((s - ascSign + 12) % 12) + 1;
-        const idx = boxes.findIndex((bb) => bb.label === `H${house}`);
-        if (idx >= 0) boxes[idx].planets.push(PLANET_ABBR[name] ?? name);
-      });
-      const idxH1 = boxes.findIndex((bb) => bb.label === 'H1');
-      if (idxH1 >= 0) boxes[idxH1].planets.unshift('ASC');
-    }
+  const ascSign = Math.floor(norm360(ascDeg ?? 0) / 30);
+  const isRetro = (name: string) => !!retroSet?.has(name) || !!retroSet?.has(PLANET_ABBR[name] ?? name);
 
-    const grid: Array<Array<null | (typeof boxes)[number]>> = Array.from({
-      length: 4,
-    }).map(() => Array(4).fill(null));
-    SOUTH_LAYOUT.forEach(({ sign, row, col }) => {
-      grid[row][col] = boxes[sign];
+
+  if (mode === "sign") {
+    // SIGN CHART: label each box by sign abbreviation
+    boxes.forEach((b) => (b.label = b.signAbbr));
+
+    Object.entries(positions).forEach(([name, deg]) => {
+      const s = Math.floor(norm360(deg) / 30);
+
+      let pLabel = PLANET_ABBR[name] ?? name;
+      if (isRetro(name)) pLabel = `${pLabel} R`;
+
+      boxes[s].planets.push(pLabel);
     });
+
+    // Add ASC marker
+    if (typeof ascDeg === "number" && Number.isFinite(ascDeg)) {
+      const sAsc = Math.floor(norm360(ascDeg) / 30);
+      boxes[sAsc].planets.unshift("ASC");
+    }
+  } else {
+    // BHAVA CHART: relabel boxes as houses H1..H12
+    boxes.forEach((b) => {
+      const h = ((b.sign - ascSign + 12) % 12) + 1;
+      b.label = `H${h}`;
+    });
+
+    Object.entries(positions).forEach(([name, deg]) => {
+      const s = Math.floor(norm360(deg) / 30);
+      const house = ((s - ascSign + 12) % 12) + 1;
+      const idx = boxes.findIndex((bb) => bb.label === `H${house}`);
+      if (idx < 0) return;
+
+      let pLabel = PLANET_ABBR[name] ?? name;
+      if (isRetro(name)) pLabel = `${pLabel} R`;
+
+      boxes[idx].planets.push(pLabel);
+    });
+
+    // Add ASC marker to H1
+    const idxH1 = boxes.findIndex((bb) => bb.label === "H1");
+    if (idxH1 >= 0) boxes[idxH1].planets.unshift("ASC");
+  }
+
+    const grid = [
+    [boxes[11], boxes[0], boxes[1], boxes[2]],
+    [boxes[10], null,     null,     boxes[3]],
+    [boxes[9],  null,     null,     boxes[4]],
+    [boxes[8],  boxes[7], boxes[6], boxes[5]],
+  ];
+
+
+
 
     return (
       <div className="card avoid-break">
@@ -1190,6 +1249,7 @@ const { summary, interpretation } = useMemo(() => {
                             }}
                           >
                             {p}
+
                           </span>
                         ));
                       })()}
@@ -1200,10 +1260,13 @@ const { summary, interpretation } = useMemo(() => {
             ))
           )}
         </div>
+
+
+
+
       </div>
     );
   }
-
   /* -------- Exports -------- */
   function downloadText(filename: string, mime: string, text: string) {
     const blob = new Blob([text], { type: mime });
@@ -1254,6 +1317,9 @@ const { summary, interpretation } = useMemo(() => {
       'text/csv;charset=utf-8',
       'Body,SignLongitude,DMS\n' + d1Rows
     );
+
+    
+
 
     const d9Rows = d1Names
       .map((n) => {
@@ -1584,7 +1650,7 @@ const { summary, interpretation } = useMemo(() => {
     return () => document.head.removeChild(style);
   }, []);
 
-  /* Form state (blank defaults) 
+  /* Form state (blank defaults)
   const [name, setName] = useState('');
   const [place, setPlace] = useState('');
   const [lat, setLat] = useState<number | ''>('');
@@ -1623,17 +1689,75 @@ const { summary, interpretation } = useMemo(() => {
      UI
      ========================= */
 
-  return (
-    <>
-      <PdfExport />
-      <main
-        style={{
-          minHeight: '100vh',
-          background: '#f7f7f8',
-          fontSize: 16,
-          lineHeight: 1.6,
-        }}
-      >
+// 1) Get speeds from backend output
+const speedMap = out?.speeds ?? {};
+
+// 2) Find which planets are retrograde (negative speed)
+//    ✅ Exclude Rahu/Ketu (they are always retro in Vedic practice)
+const retroAbbrs = Object.entries(speedMap)
+  .filter(([abbr, speed]) =>
+    typeof speed === "number" &&
+    speed < 0 &&
+    abbr !== "Ra" &&
+    abbr !== "Ke" &&
+    abbr !== "Ur" &&
+    abbr !== "Ne" &&
+    abbr !== "Pl"
+  )
+  .map(([abbr]) => abbr);
+
+// 3) retroSet for the South Indian chart tokens (Sun, Mer, Ven, Mar, Moo, Jup, Sat)
+const chartTokenMap: Record<string, string> = {
+  Su: "Sun",
+  Mo: "Moo",
+  Me: "Mer",
+  Ve: "Ven",
+  Ma: "Mar",
+  Ju: "Jup",
+  Sa: "Sat",
+  // Ra/Ke intentionally omitted
+};
+const retroSet = new Set(retroAbbrs.map((abbr) => chartTokenMap[abbr] || abbr));
+
+// 4) Names for the status line + retro note
+const abbrToName: Record<string, string> = {
+  Su: "Sun",
+  Mo: "Moon",
+  Me: "Mercury",
+  Ve: "Venus",
+  Ma: "Mars",
+  Ju: "Jupiter",
+  Sa: "Saturn",
+  // Ra/Ke intentionally omitted
+};
+const retroNames = retroAbbrs.map((a) => abbrToName[a] || a);
+
+
+
+
+// 5) Text printed in JSX
+const motionStatusText =
+  retroNames.length === 0
+    ? "Status: All Planets are Marga (Direct)"
+    : `Status: Vakra (Retrograde): ${retroNames.join(", ")}`;
+
+
+
+return (
+  <>
+    <PdfExport />
+    <main
+      style={{
+        minHeight: "100vh",
+        background: "#f7f7f8",
+        fontSize: 16,
+        lineHeight: 1.6,
+      }}
+    >
+
+
+
+
         <style>{`
   @media print {
     /* Hide UI chrome on paper */
@@ -2284,184 +2408,106 @@ const { summary, interpretation } = useMemo(() => {
             {/* ✅ Message ends here */}
           </form>
         </div> {/* This closes id="pdf-content" */}
-        {out && (
-          <div id="print-root">
-            {/* ========================= REPORT ========================= */}
+
+               {out && (
+                        <div id="print-root">
+                        <div id="report">
+
+
+
             {/* ---------- PAGE 1: Summary + Pañchāṅga + D1 ---------- */}
-            <section className="page-section first">
-              {PRINT_LOGO_EACH_PAGE && (
-                <div className="print-only page-logo">
-                  <img
-                    src="/logo.png"
-                    width={140}
-                    height={140}
-                    alt="Chandra Prabha — Jathakam"
-                  />
-                  <div
-                    style={{
-                      fontSize: 18,
-                      fontWeight: 900,
-                      marginTop: 6,
-                    }}
-                  >
-                    Vedic Astrology Report
-                  </div>
-                </div>
-              )}
+    <section className="page-section first">
+      {PRINT_LOGO_EACH_PAGE && (
+        <div className="print-only page-logo">
+          <img src="/logo.png" width={140} height={140} alt="Chandra Prabha — Vedic Astrology"/>
+          <div style={{fontSize:18, fontWeight:900, marginTop:6}}>Vedic Astrology Report</div>
+        </div>
+      )}
+{/* Report header (always visible on page 1: screen + print) */}
+<div className="report-header" style={{textAlign:'center', margin:'0 0 12px'}}>
+  <img src="/logo.png" alt="Chandra-Prabha" width={140} height={140}
+       style={{display:'block', margin:'0 auto'}} />
+  <div style={{fontSize:18, fontWeight:900, marginTop:6}}>
+    Chandra-Prabha — Vedic Astrology Report
+  </div>
+</div>
 
-              {/* Report header (always visible on page 1: screen + print) */}
-              <div
-                className="report-header"
-                style={{ textAlign: 'center', margin: '0 0 12px' }}
-              >
-                <img
-                  src="/logo.png"
-                  alt="Chandra-Prabha"
-                  width={140}
-                  height={140}
-                  style={{ display: 'block', margin: '0 auto' }}
-                />
-                <div style={{ fontSize: 32, fontWeight: 900, marginTop: 6 }}>
-                  Jathakam-Insights
-                </div>
+
+
+
+
+
+
+
+
+      {/* Intro */}
+      <div className="card avoid-break" style={{textAlign:'center'}}>
+        <div style={{fontSize:22, fontWeight:900}}>Vedic Astrology Report</div>
+        <div style={{marginTop:8, fontSize:16, display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:8}}>
+          <div><b>Name:</b> {name || '—'}</div>
+          <div><b>Birth Place:</b> {place || '—'}</div>
+          <div><b>Date of Birth:</b> {dateStr || '—'}</div>
+          <div><b>Time of Birth:</b> {timeStr || '—'}</div>
+          <div><b>Timezone:</b> {timezone || '—'}</div>
+        </div>
+      </div>
+
+      {/* Summary & Panchanga */}
+      <div className="card avoid-break" style={{marginTop:16}}>
+        <div className="section-title">Summary & Pañchāṅga</div>
+        <div style={{display:'grid', gridTemplateColumns:'1.5fr 1fr', gap:12}}>
+          {/* Summary (left) */}
+          <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:8}}>
+            <div><b>Engine:</b> {out.engine}</div>
+            <div><b>JD (UT):</b> {out.jd_ut.toFixed(6)}</div>
+            <div><b>LST:</b> {fmtLST(out.lstHours)}</div>
+            <div><b>D1 Lagna:</b> {fmtSignDeg(out.ascendant)} ({fmtDMS(out.ascendant)})</div>
+            <div><b>D9 Lagna:</b> {fmtSignDeg(out.d9Ascendant)} ({fmtDMS(out.d9Ascendant)})</div>
+            <div><b>Timezone:</b> {out.timezone}</div>
+            <div style={{gridColumn:'1 / span 3'}}>
+              <b>Sunrise:</b> {fmtISO(out.sunriseISO, out.timezone)} &nbsp; | &nbsp; <b>Sunset:</b> {fmtISO(out.sunsetISO, out.timezone)}
+            </div>
+          </div>
+          {/* Panchanga (right) */}
+          <div>
+            {panchanga ? (
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:8}}>
+                <div><b>Vara</b><div>{panchanga.vara}</div></div>
+                <div><b>Tithi</b><div>{panchanga.paksha} {panchanga.tithiName} (#{panchanga.tithiNum})</div></div>
+                <div><b>Nakshatra</b><div>{panchanga.nakshatra}</div></div>
+                <div><b>Pada</b><div>{panchanga.pada}</div></div>
+                <div><b>Yoga</b><div>{panchanga.yoga}</div></div>
+                <div><b>Karana</b><div>{panchanga.karana}</div></div>
               </div>
+            ) : (
+              <div style={{fontStyle:'italic', color:'#6b7280'}}>Pañchāṅga not available.</div>
+            )}
+          </div>
+        </div>
+      </div>
 
-              {/* Intro + Summary + Panchanga */}
-              <div className="card avoid-break" style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 16, fontWeight: 900 }}>User Input</div>
-                <div
-                  style={{
-                    marginTop: 8,
-                    fontSize: 16,
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 12,
-                    justifyContent: 'center',
-                    maxWidth: 600,
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                  }}
-                >
-                  <div>
-                    <b>Name:</b> {name || '—'}
-                  </div>
-                  <div>
-                    <b>Birth Place:</b> {place || '—'}
-                  </div>
-                  <div>
-                    <b>Date of Birth:</b> {dateStr || '—'}
-                  </div>
-                  <div>
-                    <b>Time of Birth:</b> {timeStr || '—'}
-                  </div>
-                  <div>
-                    <b>Timezone:</b> {timezone || '—'}
-                  </div>
-                </div>
-              </div>
+      {/* D1 chart */}
+<div className="charts-column" style={{ marginTop: 16 }}>
+  <SouthIndianChart
+    key={`d1-${out.jd_ut}`}
+    title="Rāśi (D1) — Signs"
+    mode="sign"
+    ascDeg={out.ascendant}
+    positions={out.positions}
+    retroSet={retroSet}
 
-              <div className="card avoid-break" style={{ marginTop: 16 }}>
-                <div className="section-title">Summary & Pañchāṅga</div>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1.5fr 1fr',
-                    gap: 12,
-                  }}
-                >
-                  {/* Summary (left) */}
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(3, 1fr)',
-                      gap: 8,
-                    }}
-                  >
-                    <div>
-                      <b>Engine:</b> {out.engine}
-                    </div>
-                    <div>
-                      <b>JD (UT):</b> {out.jd_ut.toFixed(6)}
-                    </div>
-                    <div>
-                      <b>LST:</b> {fmtLST(out.lstHours)}
-                    </div>
-                    <div>
-                      <b>D1 Lagna:</b> {fmtSignDeg(out.ascendant)} (
-                      {fmtDMS(out.ascendant)})
-                    </div>
-                    <div>
-                      <b>D9 Lagna:</b> {fmtSignDeg(out.d9Ascendant)} (
-                      {fmtDMS(out.d9Ascendant)})
-                    </div>
-                    <div>
-                      <b>Timezone:</b> {out.timezone}
-                    </div>
-                    <div style={{ gridColumn: '1 / span 3' }}>
-                      <b>Sunrise:</b> {fmtISO(out.sunriseISO, out.timezone)}{' '}
-                      &nbsp;|&nbsp;
-                      <b>Sunset:</b> {fmtISO(out.sunsetISO, out.timezone)}
-                    </div>
-                  </div>
+  />
+</div>
 
-                  {/* Panchanga (right) */}
-                  <div>
-                    {panchanga ? (
-                      <div
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: '1fr 1fr',
-                          gap: 8,
-                        }}
-                      >
-                        <div>
-                          <b>Vara</b>
-                          <div>{panchanga.vara}</div>
-                        </div>
-                        <div>
-                          <b>Tithi</b>
-                          <div>
-                            {panchanga.paksha} {panchanga.tithiName} (#
-                            {panchanga.tithiNum})
-                          </div>
-                        </div>
-                        <div>
-                          <b>Nakshatra</b>
-                          <div>{panchanga.nakshatra}</div>
-                        </div>
-                        <div>
-                          <b>Pada</b>
-                          <div>{panchanga.pada}</div>
-                        </div>
-                        <div>
-                          <b>Yoga</b>
-                          <div>{panchanga.yoga}</div>
-                        </div>
-                        <div>
-                          <b>Karana</b>
-                          <div>{panchanga.karana}</div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div style={{ fontStyle: 'italic', color: '#6b7280' }}>
-                        Pañchāṅga not available.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+</section>
 
-              {/* D1 chart */}
-              <div className="charts-column" style={{ marginTop: 16 }}>
-                <SouthIndianChart
-                  key={`d1-${out.jd_ut}`}
-                  title="Rāśi (D1) — Signs"
-                  mode="sign"
-                  ascDeg={out.ascendant}
-                  positions={out.positions}
-                />
-              </div>
-            </section>
+
+
+
+
+
+
+
 
             {/* ---------- PAGE 2: D9 + Varga Summary ---------- */}
             <section className="page-section">
@@ -2473,6 +2519,8 @@ const { summary, interpretation } = useMemo(() => {
                   mode="sign"
                   ascDeg={out.d9Ascendant}
                   positions={out.d9Positions}
+                  retroSet={retroSet}
+
                 />
               </div>
 
@@ -2560,6 +2608,9 @@ const { summary, interpretation } = useMemo(() => {
                 mode="bhava"
                 ascDeg={out.ascendant}
                 positions={out.positions}
+                retroSet={retroSet}
+
+
               />
             </section>
             {/* ---------- PAGE: Varga — Signs only (D1, D2, D3, D7, D9, D10, D12, D30) ---------- */}
@@ -2702,39 +2753,56 @@ const { summary, interpretation } = useMemo(() => {
             </section>
 
             {/* ---------- PAGE 6: Vimśottarī Mahādaśā ---------- */}
-            <section className="page-section">
-              <div className="card avoid-break">
-                <div className="section-title">
-                  Vimśottarī Mahādaśā (from birth)
-                </div>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1fr',
-                    gap: 8,
-                  }}
-                >
-                  <div style={{ fontWeight: 900 }}>Lord</div>
-                  <div style={{ fontWeight: 900 }}>Start</div>
-                  <div style={{ fontWeight: 900 }}>End</div>
-                  {out.dasha.map((d, i) => (
-                    <React.Fragment key={`dasha-${i}`}>
-                      <div>{d.lord}</div>
-                      <div>{fmtISO(d.startISO, out.timezone)}</div>
-                      <div>{fmtISO(d.endISO, out.timezone)}</div>
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-            </section>
+<section className="page-section">
+  <div className="card avoid-break">
+    <div className="section-title">Vimśottarī Mahādaśā (from birth)</div>
+
+    {/* Current Mahadasha (computed inline safely) */}
+    {out?.dasha && out.dasha.length > 0 && (
+      <div style={{ marginTop: 6, marginBottom: 10, fontWeight: 900 }}>
+        Current Mahādaśā:{" "}
+        {(() => {
+          const now = new Date();
+          const current = out.dasha.find((d: any) => {
+            const start = new Date(d.startISO);
+            const end = new Date(d.endISO);
+            return start <= now && now < end;
+          });
+          return current ? current.lord : "—";
+        })()}
+      </div>
+    )}
+
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        gap: 8,
+      }}
+    >
+      <div style={{ fontWeight: 900 }}>Lord</div>
+      <div style={{ fontWeight: 900 }}>Start</div>
+      <div style={{ fontWeight: 900 }}>End</div>
+
+      {out.dasha.map((d, i) => (
+        <React.Fragment key={`dasha-${i}`}>
+          <div>{d.lord}</div>
+          <div>{fmtISO(d.startISO, out.timezone)}</div>
+          <div>{fmtISO(d.endISO, out.timezone)}</div>
+        </React.Fragment>
+      ))}
+    </div>
+  </div>
+</section>
+
 
            {/* ---------- PAGE 7: Highlights ---------- */}
 {/* ---------- PAGE 7: Highlights ---------- */}
 <section
   className="page-section"
-  style={{ 
-    pageBreakBefore: 'always', 
-    padding: '40px', 
+  style={{
+    pageBreakBefore: 'always',
+    padding: '40px',
     backgroundColor: '#fffdf5', // Soft parchment feel
     borderRadius: '8px',
     boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
@@ -2754,12 +2822,12 @@ const { summary, interpretation } = useMemo(() => {
 
   {/* 1. The Main Header */}
   <div style={{ marginBottom: 30, textAlign: 'center' }}>
-    <h2 style={{ 
-      fontSize: '28px', 
-      fontWeight: 'bold', 
-      fontFamily: 'serif', 
+    <h2 style={{
+      fontSize: '28px',
+      fontWeight: 'bold',
+      fontFamily: 'serif',
       color: '#2c3e50',
-      borderBottom: '1px solid #ddd', 
+      borderBottom: '1px solid #ddd',
       paddingBottom: '15px',
       letterSpacing: '1px'
     }}>
@@ -2768,64 +2836,139 @@ const { summary, interpretation } = useMemo(() => {
   </div>
 
   {/* 2. The Full Interpretation */}
-  {interpretation ? (
-    <div style={{ marginTop: 20 }}>
-      <div style={{ 
-        whiteSpace: 'pre-line', 
-        fontSize: '16px', 
-        lineHeight: '1.8', 
+{interpretation ? (
+  <div style={{ marginTop: 20 }}>
+    <div
+      style={{
+        whiteSpace: 'pre-line',
+        fontSize: '16px',
+        lineHeight: '1.8',
         color: '#2c3e50',
-        fontFamily: 'serif', // Makes it look like a formal report
-        textAlign: 'justify'
-      }}>
-        {interpretation}
-      </div>
+        fontFamily: 'serif',
+        textAlign: 'justify',
+      }}
+    >
+      {interpretation}
     </div>
-  ) : (
-    <p style={{ textAlign: 'center', fontFamily: 'serif' }}>Generating details...</p>
-  )}
+  </div>
+) : (
+  <p style={{ textAlign: 'center', fontFamily: 'serif' }}>
+    Generating details...
+  </p>
+)}
+
 </section>
 
-            {/* ---------- Export Toolbar ---------- */}
-            <div className="no-print" style={{ 
-              marginTop: '40px', 
-              padding: '20px', 
-              borderTop: '1px solid #eee', 
-              textAlign: 'center',
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '20px'
-            }}>
-              <button 
-                onClick={() => window.print()}
-                style={{ padding: '10px 20px', cursor: 'pointer', backgroundColor: '#4A90E2', color: 'white', border: 'none', borderRadius: '4px' }}
-              >
-                Print Report
-              </button>
-              
-              <button 
-                onClick={async () => {
-                  const element = document.getElementById('report');
-                  if (element) {
-                    const html2pdf = (await import('html2pdf.js')).default;
-                    html2pdf().set({
-                      margin: 0.5,
-                      filename: 'Jathakam-Report.pdf',
-                      image: { type: 'jpeg', quality: 0.98 },
-                      html2canvas: { scale: 2 },
-                      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-                    }).from(element).save();
-                  }
-                }}
-                style={{ padding: '10px 20px', cursor: 'pointer', backgroundColor: '#50E3C2', color: 'white', border: 'none', borderRadius: '4px' }}
-              >
-                Download PDF
-              </button>
-            </div>
-          </div>
-        )}
-      </main>
-    </>
-  );
+
+
+    {/* ---------- PAGE 8: Ashtakavarga ---------- */}
+    <section
+      className="page-section avoid-break"
+      style={{
+        pageBreakBefore: "always",
+        padding: "40px",
+        backgroundColor: "#f9fbff",
+        borderRadius: "8px",
+        boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
+        borderTop: "6px solid #2c7be5",
+        maxWidth: "900px",
+        margin: "40px auto",
+      }}
+    >
+      <div style={{ textAlign: "center", marginBottom: 30 }}>
+        <img
+          src="/logo.png"
+          width={120}
+          height={120}
+          alt="Chandra Prabha"
+        />
+        <h2
+          style={{
+            fontSize: "28px",
+            fontWeight: "bold",
+            fontFamily: "serif",
+            color: "#1f2937",
+            marginTop: "20px",
+          }}
+        >
+          Ashtakavarga Analysis
+        </h2>
+        <p
+  style={{
+    marginTop: "12px",
+    fontSize: "16px",
+    fontFamily: "serif",
+    color: "#4b5563",
+    maxWidth: "700px",
+    marginLeft: "auto",
+    marginRight: "auto",
+  }}
+>
+  Ashtakavarga is a classical Vedic system measuring planetary support, where higher totals indicate greater strength.
+  It highlights where each planet supports your life most strongly, especially during your current daśā period.
+  Each row shows how much support a planet gives to each house, and the totals show the planet’s overall strength and influence.
+</p>
+
+
+      </div>
+
+      {/* The Table Component */}
+      <AshtakavargaSection out={out} />
+
+     
+    </section>
+
+ 
+
+</div>
+</div>
+)}
+
+<div
+  className="no-print"
+  style={{ marginTop: 40, padding: 20, textAlign: "center" }}
+>
+  <button
+    type="button"
+    onClick={async (e) => {
+      const element = document.getElementById("report");
+      if (!element) return;
+      const btn = e.currentTarget as HTMLButtonElement;
+      const originalText = btn.innerText;
+      try {
+        btn.innerText = "Generating PDF...";
+        const html2pdf = (await import("html2pdf.js")).default;
+        const options = {
+          margin: [0.5, 0.5],
+          filename: "Jathakam-Report.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        };
+        await html2pdf().set(options).from(element).save();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        btn.innerText = originalText;
+      }
+    }}
+    style={{
+      padding: "12px 24px",
+      cursor: "pointer",
+      backgroundColor: "#50E3C2",
+      color: "white",
+      border: "none",
+      borderRadius: 6,
+      fontWeight: "bold",
+    }}
+  >
+    Download Full PDF Report
+  </button>
+</div>
+
+</main>
+</>
+);
 }
 
