@@ -7,8 +7,7 @@ import "server-only";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs"; // make sure this API runs in Node (not Edge)
 
-import { computeShadbala } from "@/app/lib/shadbala-logic";
-import { computeBhavabala } from "@/app/lib/bhavabala-logic";
+import { computeShadbala, computeBhavabala } from "@/app/lib/shadbala-complete";
 
 import { getHouseLords } from "@/app/lib/house-lords";
 
@@ -643,7 +642,7 @@ const shadInput = {
 
 };
 
-
+console.log("SPEEDS CHECK:", JSON.stringify(speeds).slice(0, 300));
 
 // --- DIAGNOSTIC COMPUTE SHADBALA ---
 let shadbala: any = {};
@@ -692,33 +691,12 @@ try {
 }
 // --- BHAVA BALA (SAFE) ---
 let bhavabala: any = {};
-
 try {
-  // Force 1..12 cusps as houseCusps (what bhavabala-logic expects)
-  const houseCusps =
-    Array.isArray(cusps) && cusps.length === 12 ? [0, ...cusps] : Array.isArray(cusps) ? cusps : [0,0,0,0,0,0,0,0,0,0,0,0,0];
-
-  // Convert positions object into planetPositions array (what bhavabala-logic expects)
-  const planetPositions = Object.entries(positions ?? {}).map(([planet, lon]) => ({
-    planet,
-    lon: Number(lon),
-    house: Number((planetHouses as any)?.[planet] ?? 0)
-  }));
-
-  const bhavaParams = {
-    houseCusps,
-    planetPositions,
-    houseLords: getHouseLords(ascSign) ?? {},
-    declinations: declinations ?? {},
-    yearLord: "",
-    monthLord: "",
-    weekdayLord: "",
-    horaLord: "",
-    isDay: dtLocal.hour >= 6 && dtLocal.hour < 18,
-    shadbalaTotals: shadbalaTotals ?? {}
-  };
-
-  const bb = computeBhavabala(bhavaParams as any);
+  const bb = computeBhavabala({
+  ...shadInput,
+  positions: positions ?? {},
+  cusps: cusps ?? [],
+});
   bhavabala = bb && typeof bb === "object" ? bb : {};
 } catch (e) {
   console.error("BHAVA BALA ERROR:", e);

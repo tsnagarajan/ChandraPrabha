@@ -13,8 +13,7 @@ import { generateSummary, generateInterpretation } from '../lib/interpretation';
 import Page7 from '../Page7';
 import AshtakavargaSection from '../../components/AshtakavargaSection';
 
-//import ShadbalaSection, { StrengthInterpretation } from "../../components/ShadbalaSection";
-//import BhavabalaSection from "../../components/BhavabalaSection";
+import ShadbalaSection, { BhavaBalaSection, StrengthInterpretation } from "../../components/ShadbalaSection";
 
 
 
@@ -2918,7 +2917,31 @@ return (
      
     </section>
 
- 
+   {/* ---------- PAGE 9: Shadbala + Bhava Bala ---------- */}
+<section
+  className="page-section avoid-break"
+  style={{
+    pageBreakBefore: "always",
+    padding: "40px",
+    backgroundColor: "#fffdf5",
+    borderRadius: "8px",
+    borderTop: "6px solid #7c3aed",
+    maxWidth: "900px",
+    margin: "40px auto",
+  }}
+>
+  <div style={{ textAlign: "center", marginBottom: 30 }}>
+    <img src="/logo.png" width={120} height={120} alt="Chandra Prabha" />
+    <h2 style={{
+      fontSize: "28px", fontWeight: "bold",
+      fontFamily: "serif", color: "#1f2937", marginTop: "20px",
+    }}>
+      Shadbala & Bhava Bala
+    </h2>
+  </div>
+  <ShadbalaSection data={out.shadbala} />
+  <BhavaBalaSection data={out.bhavabala} />
+</section>
 
 </div>
 </div>
