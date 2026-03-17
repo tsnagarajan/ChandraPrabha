@@ -2988,6 +2988,28 @@ return (
   >
     Download Full PDF Report
   </button>
+  <button
+    type="button"
+    onClick={() => window.print()}
+    style={{
+      padding: "12px 24px",
+      cursor: "pointer",
+      backgroundColor: "#4B5563",
+      color: "white",
+      border: "none",
+      borderRadius: 6,
+      fontWeight: "bold",
+      marginLeft: 12,
+    }}
+  >
+    Print Jathakam
+  </button>
+</div>
+
+
+<div style={{ marginTop: 12, fontSize: 13, color: "#6b7280", textAlign: "center" }}>
+  To print: click <b>Print Jathakam</b>, then choose your printer from the Destination dropdown.
+  To save as PDF: choose <b>Save as PDF</b> from the same dropdown.
 </div>
 
 </main>
