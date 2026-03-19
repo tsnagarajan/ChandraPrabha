@@ -97,6 +97,7 @@ const SIGN_ABBR = [
 
 const TIMEZONES = [
   'Asia/Kolkata',
+  
   'America/Chicago',
   'America/New_York',
   'America/Los_Angeles',
@@ -291,20 +292,18 @@ function fmtISO(iso: string | null, zone: string) {
   if (!iso) return '—';
   try {
     const dt = new Date(iso);
-    const d = new Intl.DateTimeFormat('en-GB', {
-      timeZone: zone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(dt);
-    const t = new Intl.DateTimeFormat('en-GB', {
-      timeZone: zone,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    }).format(dt);
-    return `${d} ${t} (${zone})`;
+    const offsetMatch = iso.match(/([+-])(\d{2}):(\d{2})$/);
+    let offsetMinutes = 330; // default IST +5:30
+    if (offsetMatch) {
+      const sign = offsetMatch[1] === '+' ? 1 : -1;
+      offsetMinutes = sign * (parseInt(offsetMatch[2]) * 60 + parseInt(offsetMatch[3]));
+    }
+    const localMs = dt.getTime() + offsetMinutes * 60000;
+    const local = new Date(localMs);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const dateStr = `${pad(local.getUTCDate())}/${pad(local.getUTCMonth()+1)}/${local.getUTCFullYear()}`;
+    const timeStr = `${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}:${pad(local.getUTCSeconds())}`;
+    return `${dateStr} ${timeStr} (${zone})`;
   } catch {
     return '—';
   }
@@ -345,6 +344,7 @@ function normalizeTimezone(tzRaw: string): {
     'Calcutta/Asia': 'Asia/Kolkata',
     'Bombay/Asia': 'Asia/Kolkata',
     'Madras/Asia': 'Asia/Kolkata',
+    'Asia/Kolkata+1': 'Asia/Kolkata',
   };
   if (quickMap[tz]) return { tz: quickMap[tz], corrected: quickMap[tz] };
   return { tz: null };
@@ -2269,6 +2269,9 @@ return (
                   }}
                 >
                   <option value="">Select timezone…</option>
+                  
+                  <option value="Asia/Kolkata+1">India War Time — 1 Sep 1942 to 15 Oct 1945 (UTC+6:30)</option>
+
                   {TIMEZONES.map((tz) => (
                     <option key={tz} value={tz}>
                       {tz}
@@ -2291,8 +2294,21 @@ return (
                   />
                 )}
               </label>
+              <div style={{ fontSize: 12, color: "#6b7280", marginTop: 8, lineHeight: 1.6 }}>
+                <b>For all births in India:</b> Select "Asia/Kolkata" as timezone.
+                <br/>
+                <b>Exception — born in India between 1 Sep 1942 and 15 Oct 1945:</b> Select 
+                "India War Time (UTC+6:30)" from the dropdown for accurate 
+                sunrise, sunset and sidereal time.
+                <br/><br/>
+                This software uses Indian Standard Time (IST) with Swiss Ephemeris 
+                and Lahiri ayanamsa — the modern standard adopted by leading Vedic 
+                astrology platforms worldwide. Some traditional astrologers use 
+                Local Mean Time (LMT) or Vakya Panchangam, which may occasionally 
+                produce a different ascendant, particularly for births near a sign 
+                boundary. Both have their place in the rich tradition of Jyotisha.
+              </div>
             </div>
-
             <div
               style={{
                 display: 'grid',

@@ -546,19 +546,12 @@ Object.entries(positions ?? {}).forEach(([name, d]) => {
     }
 
     // Sidereal time
-    let gstRes: any = 0;
-    try {
-      if (typeof swe.swe_sidtime === "function") gstRes = swe.swe_sidtime(jd_ut);
-      else if (typeof swe.sidtime === "function") gstRes = swe.sidtime(jd_ut);
-    } catch {}
-
-    const gstHours =
-      typeof gstRes === "number"
-        ? gstRes
-        : (typeof gstRes?.siderealTime === "number"
-            ? gstRes.siderealTime
-            : (typeof gstRes?.sidtime === "number" ? gstRes.sidtime : 0));
-
+    const T = (jd_ut - 2451545.0) / 36525.0;
+    const gstDeg = 280.46061837
+      + 360.98564736629 * (jd_ut - 2451545.0)
+      + 0.000387933 * T * T
+      - (T * T * T) / 38710000.0;
+    const gstHours = norm24(gstDeg / 15.0);
     const lstHours = norm24(gstHours + (lon / 15));
 
     // Nakshatra table
@@ -568,22 +561,24 @@ Object.entries(positions ?? {}).forEach(([name, d]) => {
     const moonLon = positions["Moon"];
     const dasha = buildVimDasha(moonLon, dtLocal);
 
-    // Sunrise / Sunset
     let sunriseISO: string | null = null;
     let sunsetISO: string | null = null;
-
     if (SunCalc) {
       try {
-        const localDate = DateTime.fromObject(
-          { year: dtLocal.year, month: dtLocal.month, day: dtLocal.day },
-          { zone: String(timezone) }
-        );
-        const times = SunCalc.getTimes(localDate.toJSDate(), lat, lon);
-        sunriseISO = DateTime.fromJSDate(times.sunrise).setZone(String(timezone)).toISO();
-        sunsetISO = DateTime.fromJSDate(times.sunset).setZone(String(timezone)).toISO();
+        const dateForSun = new Date(dtUTC.year, dtUTC.month - 1, dtUTC.day);
+        const times = SunCalc.getTimes(dateForSun, lat, lon);
+        
+        const sunriseUTCHour = times.sunrise.getUTCHours() + times.sunrise.getUTCMinutes()/60 + times.sunrise.getUTCSeconds()/3600;
+        const sunsetUTCHour  = times.sunset.getUTCHours()  + times.sunset.getUTCMinutes()/60  + times.sunset.getUTCSeconds()/3600;
+        const tzOffsetHours  = 5.5; // IST fixed offset
+        const srLocal = sunriseUTCHour + tzOffsetHours;
+        const ssLocal = sunsetUTCHour  + tzOffsetHours;
+        const pad = (n: number) => String(Math.floor(n)).padStart(2,'0');
+        const fmtTime = (h: number) => `${pad(h)}:${pad((h%1)*60)}:${pad(((h%1)*60%1)*60)}`;
+        sunriseISO = `${dtLocal.year}-${pad(dtLocal.month)}-${pad(dtLocal.day)}T${fmtTime(srLocal)}+05:30`;
+        sunsetISO  = `${dtLocal.year}-${pad(dtLocal.month)}-${pad(dtLocal.day)}T${fmtTime(ssLocal)}+05:30`;
       } catch {}
     }
-
     // Aspects
     const aspects = buildAspectsPairs(positions);
 
