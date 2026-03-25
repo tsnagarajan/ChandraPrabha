@@ -15,7 +15,9 @@ import AshtakavargaSection from '../../components/AshtakavargaSection';
 
 import ShadbalaSection, { BhavaBalaSection, StrengthInterpretation } from "../../components/ShadbalaSection";
 
+//import OnePageReport from '@/components/OnePageReport';
 
+import ChandraPrabhaJathakamOnePage from "@/components/ChandraPrabhaJathakamOnePage";
 
 /* =========================
    Types
@@ -750,7 +752,39 @@ export default function Home() {
 
   const [email, setEmail] = useState('');
 
-  // Keep selected day valid when month/year changes
+  
+
+// 👇 PASTE HERE
+const getNakshatraPada = (longitude: number | undefined) => {
+  if (typeof longitude !== "number") {
+    return { nakshatra: "—", pada: "—" };
+  }
+
+  const nakshatras = [
+    "Ashwini","Bharani","Krittika","Rohini","Mrigashirsha",
+    "Ardra","Punarvasu","Pushya","Ashlesha","Magha",
+    "Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati",
+    "Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha",
+    "Uttara Ashadha","Shravana","Dhanishta","Shatabhisha",
+    "Purva Bhadrapada","Uttara Bhadrapada","Revati"
+  ];
+
+  const nakLength = 13.333333333333334;
+  const padaLength = 3.3333333333333335;
+
+  const normalized = ((longitude % 360) + 360) % 360;
+  const nakIndex = Math.floor(normalized / nakLength);
+  const withinNak = normalized - nakIndex * nakLength;
+  const pada = Math.floor(withinNak / padaLength) + 1;
+
+  return {
+    nakshatra: nakshatras[nakIndex] || "—",
+    pada: String(pada),
+  };
+};
+
+
+// Keep selected day valid when month/year changes
   useEffect(() => {
     if (day === '' || year === '' || month === '') return;
     const max = daysInMonth(Number(year), Number(month));
@@ -1000,6 +1034,8 @@ const { summary, interpretation } = useMemo(() => {
   async function generateChart(e?: React.FormEvent) {
     e?.preventDefault();
     setErr(null);
+    setShowOnePage(false);
+
     setOut(null);
     setLoading(true);
     try {
@@ -1663,7 +1699,7 @@ function SouthIndianChart({
   const [ampm, setAmpm] = useState<'AM' | 'PM' | ''>('');
   const [timezone, setTimezone] = useState('');
   const [tzSelect, setTzSelect] = useState<string>('');*/
-
+  const [showOnePage, setShowOnePage] = useState(false);
   /*Build chart object from form state
   const chart = calculateChart({
     name,
@@ -2479,6 +2515,96 @@ return (
             <div><b>D1 Lagna:</b> {fmtSignDeg(out.ascendant)} ({fmtDMS(out.ascendant)})</div>
             <div><b>D9 Lagna:</b> {fmtSignDeg(out.d9Ascendant)} ({fmtDMS(out.d9Ascendant)})</div>
             <div><b>Timezone:</b> {out.timezone}</div>
+            
+            <div><b>Birth Main Period:</b> {out?.dasha?.[0]?.lord || '—'}</div>
+<div>
+  <b>Dasha Balance:</b>{' '}
+  {out?.dasha && out.dasha.length > 0
+    ? (() => {
+        const start = new Date(out.dasha[0].startISO);
+        const end = new Date(out.dasha[0].endISO);
+
+        let years = end.getFullYear() - start.getFullYear();
+        let months = end.getMonth() - start.getMonth();
+        let days = end.getDate() - start.getDate();
+
+        if (days < 0) {
+          months -= 1;
+          days += 30;
+        }
+        if (months < 0) {
+          years -= 1;
+          months += 12;
+        }
+
+        return `${years}y ${months}m ${days}d`;
+      })()
+    : '—'}
+</div>
+<div>
+  <b>Current Dasha:</b>{' '}
+  {out?.dasha && out.dasha.length > 0
+    ? (() => {
+        const now = new Date();
+        const current = out.dasha.find((d: any) => {
+          const start = new Date(d.startISO);
+          const end = new Date(d.endISO);
+          return start <= now && now < end;
+        });
+
+        return current?.lord
+          ? current.lord.charAt(0) + current.lord.slice(1).toLowerCase()
+          : '—';
+      })()
+    : '—'}
+</div>
+<div>
+  <b>Sub Period:</b>{' '}
+  {out?.dasha && out.dasha.length > 0
+    ? (() => {
+        const now = new Date();
+        const d = out.dasha.find((item: any) => {
+          const start = new Date(item.startISO);
+          const end = new Date(item.endISO);
+          return start <= now && now < end;
+        });
+
+        if (!d) return '—';
+
+        const lord = String(d.lord || 'UNKNOWN').toUpperCase();
+        const dashaStart = new Date(d.startISO).getTime();
+        const dashaEnd = new Date(d.endISO).getTime();
+        const totalDuration = dashaEnd - dashaStart;
+
+        const vOrder = ['SUN', 'MOON', 'MARS', 'RAHU', 'JUPITER', 'SATURN', 'MERCURY', 'KETU', 'VENUS'];
+        const vYears = [6, 10, 7, 18, 16, 19, 17, 7, 20];
+
+        const currentIndex = vOrder.indexOf(lord);
+        if (currentIndex === -1) return '—';
+
+        let accumulatedTime = dashaStart;
+        let subLord = '—';
+
+        for (let i = 0; i < 9; i++) {
+          const pIdx = (currentIndex + i) % 9;
+          const subDuration = (vYears[pIdx] / 120) * totalDuration;
+          const nextTime = accumulatedTime + subDuration;
+
+          if (now.getTime() >= accumulatedTime && now.getTime() < nextTime) {
+            subLord = vOrder[pIdx];
+            break;
+          }
+
+          accumulatedTime = nextTime;
+        }
+
+        return subLord.charAt(0) + subLord.slice(1).toLowerCase();
+      })()
+    : '—'}
+</div>
+
+            
+
             <div style={{gridColumn:'1 / span 3'}}>
               <b>Sunrise:</b> {fmtISO(out.sunriseISO, out.timezone)} &nbsp; | &nbsp; <b>Sunset:</b> {fmtISO(out.sunsetISO, out.timezone)}
             </div>
@@ -2668,8 +2794,7 @@ return (
                 </div>
 
                 <div style={{ fontSize: 12, color: '#6b7280', marginTop: 6 }}>
-                  Signs only are computed from D1 longitudes using standard
-                  varga rules (no degrees shown).
+                Signs only are computed from D1 longitudes using standard rules (no degrees shown).
                 </div>
               </div>
             </section>
@@ -2690,29 +2815,28 @@ return (
                   Nakshatra • Pada • Ruler (D1)
                 </div>
                 <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(6, 1fr)',
-                    gap: 8,
-                  }}
-                >
-                  <div style={{ fontWeight: 900 }}>Body</div>
-                  <div style={{ fontWeight: 900 }}>Sign</div>
-                  <div style={{ fontWeight: 900 }}>Longitude</div>
-                  <div style={{ fontWeight: 900 }}>Nakshatra</div>
-                  <div style={{ fontWeight: 900 }}>Pada</div>
-                  <div style={{ fontWeight: 900 }}>Ruler</div>
-                  {out.nakTable.map((r, i) => (
-                    <React.Fragment key={`nak-${i}`}>
-                      <div>{r.body}</div>
-                      <div>{r.sign}</div>
-                      <div>{fmtSignDeg(r.deg)}</div>
-                      <div>{r.nakshatra}</div>
-                      <div>{r.pada}</div>
-                      <div>{r.lord}</div>
-                    </React.Fragment>
-                  ))}
-                </div>
+                 style={{
+               display: 'grid',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: 8,
+             }}
+>
+  <div style={{ fontWeight: 900 }}>Body</div>
+  <div style={{ fontWeight: 900 }}>Sign</div>
+  <div style={{ fontWeight: 900 }}>Nakshatra</div>
+  <div style={{ fontWeight: 900 }}>Pada</div>
+  <div style={{ fontWeight: 900 }}>Ruler</div>
+
+  {out.nakTable.map((r, i) => (
+    <React.Fragment key={`nak-${i}`}>
+      <div>{r.body}</div>
+      <div>{r.sign}</div>
+      <div>{r.nakshatra}</div>
+      <div>{r.pada}</div>
+      <div>{r.lord}</div>
+    </React.Fragment>
+  ))}
+</div>
               </div>
             </section>
             {/* ---------- PAGE 5: Aspects (Major) ---------- */}
@@ -2967,69 +3091,133 @@ return (
   className="no-print"
   style={{ marginTop: 40, padding: 20, textAlign: "center" }}
 >
-  <button
-    type="button"
-    onClick={async (e) => {
-      const element = document.getElementById("report");
-      if (!element) return;
-      const btn = e.currentTarget as HTMLButtonElement;
-      const originalText = btn.innerText;
-      try {
-        btn.innerText = "Generating PDF...";
-        const html2pdf = (await import("html2pdf.js")).default;
-        const options = {
-          margin: [0.5, 0.5],
-          filename: "Jathakam-Report.pdf",
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-        };
-        await html2pdf().set(options).from(element).save();
-      } catch (err) {
-        console.error(err);
-      } finally {
-        btn.innerText = originalText;
-      }
-    }}
+  <div
     style={{
-      padding: "12px 24px",
-      cursor: "pointer",
-      backgroundColor: "#50E3C2",
-      color: "white",
-      border: "none",
-      borderRadius: 6,
-      fontWeight: "bold",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 12,
+      flexWrap: "wrap",
     }}
   >
-    Download Full PDF Report
-  </button>
-  <button
-    type="button"
-    onClick={() => window.print()}
+    <button
+      type="button"
+      onClick={async (e) => {
+        const element = document.getElementById("report");
+        if (!element) return;
+        const btn = e.currentTarget as HTMLButtonElement;
+        const originalText = btn.innerText;
+        try {
+          btn.innerText = "Generating PDF...";
+          const html2pdf = (await import("html2pdf.js")).default;
+          const options = {
+            margin: [0.5, 0.5],
+            filename: "Jathakam-Report.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+          };
+          await html2pdf().set(options).from(element).save();
+        } catch (err) {
+          console.error(err);
+        } finally {
+          btn.innerText = originalText;
+        }
+      }}
+      style={{
+        padding: "12px 24px",
+        cursor: "pointer",
+        backgroundColor: "#50E3C2",
+        color: "white",
+        border: "none",
+        borderRadius: 6,
+        fontWeight: "bold",
+      }}
+    >
+      Download Full PDF Report
+    </button>
+
+    <button
+      type="button"
+      onClick={() => window.print()}
+      style={{
+        padding: "12px 24px",
+        cursor: "pointer",
+        backgroundColor: "#4B5563",
+        color: "white",
+        border: "none",
+        borderRadius: 6,
+        fontWeight: "bold",
+      }}
+    >
+      Print Jathakam
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setShowOnePage(true)}
+      style={{
+        padding: "12px 24px",
+        cursor: "pointer",
+        backgroundColor: "#2563EB",
+        color: "white",
+        border: "none",
+        borderRadius: 6,
+        fontWeight: "bold",
+      }}
+    >
+      One Page Report
+    </button>
+  </div>
+
+  <div
     style={{
-      padding: "12px 24px",
-      cursor: "pointer",
-      backgroundColor: "#4B5563",
-      color: "white",
-      border: "none",
-      borderRadius: 6,
-      fontWeight: "bold",
-      marginLeft: 12,
+      marginTop: 12,
+      fontSize: 13,
+      color: "#6b7280",
+      textAlign: "center",
     }}
   >
-    Print Jathakam
-  </button>
+    To print: click <b>Print Jathakam</b>, then choose your printer from the
+    Destination dropdown. To save as PDF: choose <b>Save as PDF</b> from the
+    same dropdown.
+  </div>
 </div>
 
+{out && showOnePage && (
+  <div style={{ marginTop: 16 }}>
+    <div className="no-print" style={{ textAlign: "center", marginBottom: 12 }}>
+      <button
+        type="button"
+        onClick={() => setShowOnePage(false)}
+        style={{
+          padding: "6px 14px",
+          cursor: "pointer",
+          border: "1px solid #333",
+          background: "#fff",
+        }}
+      >
+        Back to Main Report
+      </button>
+    </div>
 
-<div style={{ marginTop: 12, fontSize: 13, color: "#6b7280", textAlign: "center" }}>
-  To print: click <b>Print Jathakam</b>, then choose your printer from the Destination dropdown.
-  To save as PDF: choose <b>Save as PDF</b> from the same dropdown.
-</div>
+    <ChandraPrabhaJathakamOnePage
+      out={out}
+      input={{
+        name,
+        date: dateStr,
+        time: timeStr,
+        place,
+        lat,
+        lon,
+        timezone,
+      }}
+    />
+  </div>
+)}
 
 </main>
 </>
-);
+  );
 }
-
