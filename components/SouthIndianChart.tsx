@@ -32,7 +32,9 @@ type Props = {
   ascDeg?: number;
   positions: Record<string, number>;
   speeds?: Record<string, number>; // Su, Mo, Me, Ve, Ma, Ju, Sa, Ur, Ne, Pl, Ra, Ke
+  compact?: boolean;
 };
+
 
 type Box = {
   sign: number;
@@ -40,7 +42,7 @@ type Box = {
   planets: string[];
 };
 
-export default function SouthIndianChart({ title, mode, ascDeg = 0, positions, speeds }: Props) {
+export default function SouthIndianChart({ title, mode, ascDeg = 0, positions, speeds, compact }: Props) { 
 
   // Build 12 boxes
   const boxes: Box[] = Array.from({length:12}).map((_,i)=>({
@@ -154,7 +156,7 @@ export default function SouthIndianChart({ title, mode, ascDeg = 0, positions, s
               style={{
                 position:'relative',
                 border:'2px solid #111',
-                borderRadius:12,
+                borderRadius: compact ? 0 : 12,
                 background:'#fff',
                 padding:10,
                 display:'flex',
@@ -206,8 +208,9 @@ export default function SouthIndianChart({ title, mode, ascDeg = 0, positions, s
                             fontSize: cell.planets.length >= 7 ? 10 : cell.planets.length >= 5 ? 12 : cell.planets.length >= 4 ? 14 : 16,
                             lineHeight: 1.1,
                             padding: cell.planets.length >= 5 ? '2px 6px' : '4px 8px',
-                            border: '2px solid #111',
-                            borderRadius: 10,
+                            border: compact ? 'none' : '2px solid #111',
+                            
+                            borderRadius: compact ? 0 : 10,
                             fontWeight: 800,
                             background: p === 'ASC' ? '#fff1f2' : '#fff',
                             color: p === 'ASC' ? '#b91c1c' : '#111',

@@ -44,23 +44,7 @@ export default function OnePageReport({ data }: any) {
      <div className="no-print" style={{ textAlign: "center", marginBottom: 12 }}>
   <button
     type="button"
-    onClick={async () => {
-      const onePage = document.querySelector(".onepage-wrap") as HTMLElement | null;
-      if (!onePage) return;
-
-      const html2pdf = (await import("html2pdf.js")).default;
-      await html2pdf()
-        .set({
-          margin: [0.3, 0.3],
-          filename: "One-Page-Jathakam.pdf",
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-        })
-        .from(onePage)
-        .save();
-    }}
+    onClick={() => window.print()}
     style={{
       padding: "8px 16px",
       backgroundColor: "#2563EB",
@@ -71,7 +55,8 @@ export default function OnePageReport({ data }: any) {
       fontWeight: "bold",
     }}
   >
-    Download One Page PDF
+    Print / Save as PDF
+
   </button>
 </div>
     
@@ -192,8 +177,9 @@ export default function OnePageReport({ data }: any) {
       `}</style>
 
       <div className="onepage-card">
-        <div className="title">Chandra Prabha – One Page Summary</div>
-
+        <div className="title">Chandra Prabha Jathakam– One Page Summary</div>
+        <div style={{ textAlign: "center", fontSize: 12, color: "#6b7280", marginBottom: 10 }}>Made with lots of Love by Dr. Tirunelveli Subramanian Nagarajan (Raja Nagarajan) — tsnagarajan@gmail.com</div>
+        
         <div className="grid-2">
           <div>
             <div className="section-title">Birth Details</div>

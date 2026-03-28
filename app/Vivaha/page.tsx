@@ -22,26 +22,39 @@ export default function VivahaPage() {
   const [girl, setGirl] = useState({ ...initialState });
   const [boy, setBoy] = useState({ ...initialState });
   const [system, setSystem] = useState('South Indian (Dasa Porutham)');
-
+  const [girlSuggestions, setGirlSuggestions] = useState<any[]>([]);
+  const [boySuggestions, setBoySuggestions] = useState<any[]>([]);
   const handleReset = () => {
     setGirl({ ...initialState });
     setBoy({ ...initialState });
   };
 
-  const handleGeocode = async (type: 'girl' | 'boy') => {
-    const person = type === 'girl' ? girl : boy;
-    if (!person.place) return alert("Please enter a city name");
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(person.place)}`);
-      const data = await res.json();
-      if (data.length > 0) {
-        const update = { lat: data[0].lat, lon: data[0].lon };
-        type === 'girl' ? setGirl(prev => ({ ...prev, ...update })) : setBoy(prev => ({ ...prev, ...update }));
-      }
-    } catch (err) {
-      alert("Error finding location");
-    }
-  };
+ const handlePlaceSearch = async (type: 'girl' | 'boy', value: string) => {
+  const tz = type === 'girl' ? girl.tz : boy.tz; 
+  const setter = type === 'girl' ? setGirl : setBoy;
+  const sugSetter = type === 'girl' ? setGirlSuggestions : setBoySuggestions;
+  setter(prev => ({ ...prev, place: value }));
+  if (value.length < 3) { sugSetter([]); return; }
+  try {
+    const country = 
+  tz.includes('Kolkata') ? 'IN' :
+  tz.includes('America') ? 'US' :
+  tz.includes('London') ? 'GB' :
+  tz.includes('Singapore') ? 'SG' :
+  tz.includes('Sydney') ? 'AU' : '';
+const countryParam = country ? `&countrycodes=${country}` : '';
+const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&limit=6&countrycodes=in,us,gb,sg,au`);
+    const data = await res.json();
+    sugSetter(data);
+  } catch { sugSetter([]); }
+};
+
+const handleSelectPlace = (type: 'girl' | 'boy', item: any) => {
+  const setter = type === 'girl' ? setGirl : setBoy;
+  const sugSetter = type === 'girl' ? setGirlSuggestions : setBoySuggestions;
+  setter(prev => ({ ...prev, place: item.display_name, lat: item.lat, lon: item.lon }));
+  sugSetter([]);
+};
 
   return (
     <div style={{ backgroundColor: '#EFE9D5', minHeight: '100vh', padding: '40px 20px', fontFamily: 'sans-serif', color: '#333' }}>
@@ -81,14 +94,32 @@ export default function VivahaPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Location</label>
-              <div style={{ display: 'flex', gap: '5px' }}>
-                <input style={{ flex: 1, padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} placeholder="Search Place..." value={girl.place} onChange={(e)=>setGirl({...girl, place:e.target.value})} />
-                <button onClick={()=>handleGeocode('girl')} style={{ padding: '0 12px', background: '#999', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Find</button>
-              </div>
-              <div style={{ fontSize: '11px', color: '#888', marginTop: '4px' }}>Lat: {girl.lat || '--'} / Lon: {girl.lon || '--'}</div>
-            </div>
+            <div style={{ marginBottom: '15px', position: 'relative' }}>
+  <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Location</label>
+  <input
+    
+ style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
+autoComplete="off"
+placeholder="Type city name..."
+value={girl.place}
+onChange={(e) => handlePlaceSearch('girl', e.target.value)}
+  />
+  {girlSuggestions.length > 0 && (
+    <div style={{ position: 'absolute', zIndex: 999, backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', width: '100%', maxHeight: '180px', overflowY: 'auto', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+      {girlSuggestions.map((item, i) => (
+        <div key={i}
+          onClick={() => handleSelectPlace('girl', item)}
+          style={{ padding: '8px 10px', cursor: 'pointer', fontSize: '12px', borderBottom: '1px solid #f0f0f0' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f1e3')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#fff')}
+        >
+          {item.display_name}
+        </div>
+      ))}
+    </div>
+  )}
+  <div style={{ fontSize: '11px', color: '#888', marginTop: '4px' }}>Lat: {girl.lat || '--'} / Lon: {girl.lon || '--'}</div>
+</div>
 
             <div style={{ marginBottom: '15px' }}>
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Timezone</label>
@@ -130,14 +161,31 @@ export default function VivahaPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Location</label>
-              <div style={{ display: 'flex', gap: '5px' }}>
-                <input style={{ flex: 1, padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} placeholder="Search Place..." value={boy.place} onChange={(e)=>setBoy({...boy, place:e.target.value})} />
-                <button onClick={()=>handleGeocode('boy')} style={{ padding: '0 12px', background: '#999', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Find</button>
-              </div>
-              <div style={{ fontSize: '11px', color: '#888', marginTop: '4px' }}>Lat: {boy.lat || '--'} / Lon: {boy.lon || '--'}</div>
-            </div>
+            <div style={{ marginBottom: '15px', position: 'relative' }}>
+  <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Location</label>
+  <input
+    style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
+    autoComplete="off"
+    placeholder="Type city name..."
+    value={boy.place}
+    onChange={(e) => handlePlaceSearch('boy', e.target.value)}
+  />
+  {boySuggestions.length > 0 && (
+    <div style={{ position: 'absolute', zIndex: 999, backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', width: '100%', maxHeight: '180px', overflowY: 'auto', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+      {boySuggestions.map((item, i) => (
+        <div key={i}
+          onClick={() => handleSelectPlace('boy', item)}
+          style={{ padding: '8px 10px', cursor: 'pointer', fontSize: '12px', borderBottom: '1px solid #f0f0f0' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f1e3')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#fff')}
+        >
+          {item.display_name}
+        </div>
+      ))}
+    </div>
+  )}
+  <div style={{ fontSize: '11px', color: '#888', marginTop: '4px' }}>Lat: {boy.lat || '--'} / Lon: {boy.lon || '--'}</div>
+</div>
 
             <div style={{ marginBottom: '15px' }}>
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Timezone</label>
