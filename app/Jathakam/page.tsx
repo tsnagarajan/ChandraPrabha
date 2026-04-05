@@ -2371,7 +2371,7 @@ return (
     mode="sign"
     ascDeg={out.ascendant}
     positions={out.positions}
-    retroSet={retroSet}
+    retroSet={new Set()}
 
   />
 </div>
@@ -2396,7 +2396,7 @@ return (
                   mode="sign"
                   ascDeg={out.d9Ascendant}
                   positions={out.d9Positions}
-                  retroSet={retroSet}
+                  retroSet={new Set()}
 
                 />
               </div>
@@ -2485,7 +2485,7 @@ return (
                 mode="bhava"
                 ascDeg={out.ascendant}
                 positions={out.positions}
-                retroSet={retroSet}
+                retroSet={new Set()}
 
 
               />
