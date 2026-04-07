@@ -1865,7 +1865,7 @@ return (
     <input
       value={name}
       onChange={(e) => setName(e.target.value)}
-      placeholder="e.g., Durga"
+      placeholder=""
       style={{
         width: '100%',
         border: '1px solid #e5e7eb',
@@ -1886,7 +1886,7 @@ return (
     <input
       value={place}
       onChange={(e) => setPlace(e.target.value)}
-      placeholder="City, State, Country (e.g., Mannargudi, Tamil Nadu, India)"
+      placeholder=""
       style={{
         width: '100%',
         border: '1px solid #e5e7eb',
@@ -1998,7 +1998,7 @@ return (
         step="0.000001"
         value={lat}
         onChange={(e) => setLat(e.target.value === '' ? '' : Number(e.target.value))}
-        placeholder="e.g., 10.6667"
+        placeholder=""
         style={{
           width: '100%',
           border: '1px solid #e5e7eb',
@@ -2018,7 +2018,7 @@ return (
         step="0.000001"
         value={lon}
         onChange={(e) => setLon(e.target.value === '' ? '' : Number(e.target.value))}
-        placeholder="e.g., 79.4500"
+        placeholder=""
         style={{
           width: '100%',
           border: '1px solid #e5e7eb',
@@ -2148,7 +2148,7 @@ return (
       <input
         value={timezone}
         onChange={(e) => setTimezone(e.target.value)}
-        placeholder="e.g., America/Chicago"
+        placeholder=""
         style={{
           width: 280,
           border: '1px solid #e5e7eb',
