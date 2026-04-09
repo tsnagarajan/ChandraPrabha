@@ -6,8 +6,8 @@ import { calcAllPorutham, PoruthamResult } from '@/app/lib/vivaha/porutham';
 import { calcAshtaKoota, interpretAshtaKoota, KootaResult } from '@/app/lib/vivaha/ashtakoota';
 import { checkMangalDosha, checkDasaSandhi, checkPapasamya, MangalResult, DasaSandhiResult, PapasamyaResult } from '@/app/lib/vivaha/dosha';
 import SouthIndianChart from '@/components/SouthIndianChart';
+import VivahChart from '@/app/lib/vivaha/VivahChart';
 
-import ChartPair from '@/app/lib/vivaha/ChartPair';
 // Load saved profiles from localStorage
 function getSavedProfiles(): typeof initialState[] {
   if (typeof window === 'undefined') return [];
@@ -33,10 +33,24 @@ const range = (start: number, end: number) =>
 const pad2 = (num: number) => num.toString().padStart(2, '0');
 
 const TIMEZONES = [
-  'Asia/Kolkata', 'America/Chicago', 'America/New_York', 'America/Los_Angeles',
-  'America/Denver', 'UTC', 'Europe/London', 'Asia/Singapore', 'Australia/Sydney'
+  { value: 'Asia/Kolkata', label: 'Asia/Kolkata (India)' },
+  { value: 'America/New_York', label: 'America/New_York (US Eastern)' },
+  { value: 'America/Chicago', label: 'America/Chicago (US Central)' },
+  { value: 'America/Denver', label: 'America/Denver (US Mountain)' },
+  { value: 'America/Los_Angeles', label: 'America/Los_Angeles (US Pacific)' },
+  { value: 'America/Toronto', label: 'America/Toronto (Canada Eastern)' },
+  { value: 'America/Winnipeg', label: 'America/Winnipeg (Canada Central)' },
+  { value: 'America/Vancouver', label: 'America/Vancouver (Canada Pacific)' },
+  { value: 'America/Halifax', label: 'America/Halifax (Canada Atlantic)' },
+  { value: 'UTC', label: 'UTC' },
+  { value: 'Europe/London', label: 'Europe/London (UK)' },
+  { value: 'Europe/Paris', label: 'Europe/Paris (France)' },
+  { value: 'Europe/Berlin', label: 'Europe/Berlin (Germany)' },
+  { value: 'Asia/Dubai', label: 'Asia/Dubai (UAE)' },
+  { value: 'Asia/Singapore', label: 'Asia/Singapore' },
+  { value: 'Asia/Tokyo', label: 'Asia/Tokyo (Japan)' },
+  { value: 'Australia/Sydney', label: 'Australia/Sydney' },
 ];
-
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 const initialState = {
@@ -89,7 +103,7 @@ export default function VivahaPage() {
     if (value.length < 3) { sugSetter([]); return; }
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&limit=6&countrycodes=in,us,gb,sg,au`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&limit=6&countrycodes=in,us,gb,sg,au,ca,nz,ae,my`
       );
       const data = await res.json();
       sugSetter(data);
@@ -214,12 +228,22 @@ setResults({
     return (
       <div style={{ marginBottom: '15px', position: 'relative' }}>
         <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Location</label>
+<div style={{ fontSize:'11px', color:'#888', marginBottom:'4px' }}>Type city name and click 🔍 Search. You may edit the result for cleaner report display.</div>
         <input
           style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
           autoComplete="off" placeholder="Type city name..."
           value={person.place}
-          onChange={(e) => handlePlaceSearch(type, e.target.value)}
+          onChange={(e) => setter(prev => ({ ...prev, place: e.target.value }))}
         />
+        <button
+          type="button"
+          onClick={() => handlePlaceSearch(type, person.place)}
+          style={{ marginTop:'4px', padding:'6px 12px', backgroundColor:'#ED7348', color:'white', border:'none', borderRadius:'4px', cursor:'pointer', fontSize:'12px' }}>
+          🔍 Search
+        </button>
+        
+
+
         {suggestions.length > 0 && (
           <div style={{ position: 'absolute', zIndex: 999, backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', width: '100%', maxHeight: '180px', overflowY: 'auto', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
             {suggestions.map((item, i) => (
@@ -258,6 +282,20 @@ setResults({
       </div>
     );
   };
+
+  const shortPlace = (place: string) => {
+    if (!place) return '—';
+    const parts = place.split(',').map((p: string) => p.trim()).filter((p: string) => p.length > 0 && !/^\d+$/.test(p) && !p.includes('Township') && !p.includes('County') && !p.includes('Borough') && !p.includes('District') && !p.includes('மாவட்டம்'));
+    if (parts.length === 0) return place.split(',')[0].trim();
+    return parts.slice(0, 2).join(', ');
+  };
+
+  const getSign = (deg: number) => {
+    const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+    return SIGNS[Math.floor(((deg % 360) + 360) % 360 / 30)];
+  };
+
+
 
   // =============================================
   // RENDER
@@ -304,7 +342,7 @@ setResults({
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Timezone</label>
               <select style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                 value={girl.tz} onChange={(e) => setGirl({ ...girl, tz: e.target.value })}>
-                {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
+                {TIMEZONES.map(tz => <option key={tz.value} value={tz.value}>{tz.label}</option>)}
               </select>
             </div>
 
@@ -359,7 +397,7 @@ setResults({
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Timezone</label>
               <select style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                 value={boy.tz} onChange={(e) => setBoy({ ...boy, tz: e.target.value })}>
-                {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
+                {TIMEZONES.map(tz => <option key={tz.value} value={tz.value}>{tz.label}</option>)}
               </select>
             </div>
 
@@ -419,27 +457,61 @@ setResults({
           <div id="porutham-results" style={{ marginTop: '40px' }}>
 
             {/* HEADER */}
-            <div style={{ backgroundColor: '#2c1810', color: '#f5f1e3', padding: '20px', borderRadius: '4px', marginBottom: '24px', textAlign: 'center' }}>
+            <div style={{ backgroundColor: '#f5f1e3', color: '#2c1810', padding: '20px', borderRadius: '4px', marginBottom: '24px', textAlign: 'center', border: '2px solid #2c1810' }}>
               <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>
                 {results.girl.name} ❤ {results.boy.name}
               </div>
-              <div style={{ fontSize: '13px', opacity: 0.85 }}>
-                Girl: {results.girl.nakshatra} Pada {results.girl.pada} — {results.girl.rasi} &nbsp;|&nbsp;
-                Boy: {results.boy.nakshatra} Pada {results.boy.pada} — {results.boy.rasi}
-              </div>
-              {isSouthIndian ? (
-                <div style={{ marginTop: '12px', fontSize: '22px', fontWeight: 'bold' }}>
+              <div style={{ fontSize: '12px', textAlign: 'left', display: 'inline-block', width: '100%' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+    <thead>
+      <tr style={{ backgroundColor: '#2c1810', color: '#f5f1e3' }}>
+        <th style={{ padding: '6px 10px', textAlign: 'left' }}>Detail</th>
+        <th style={{ padding: '6px 10px', textAlign: 'left' }}>♀ {results.girl.name}</th>
+        <th style={{ padding: '6px 10px', textAlign: 'left' }}>♂ {results.boy.name}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style={{ backgroundColor: '#faf8f2' }}>
+        <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Place</td>
+        <td style={{ padding: '5px 10px' }}>{shortPlace(girl.place)}</td>
+        <td style={{ padding: '5px 10px' }}>{shortPlace(boy.place)}</td>
+      </tr>
+      <tr style={{ backgroundColor: '#f5f1e3' }}>
+        <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Date & Time</td>
+        <td style={{ padding: '5px 10px' }}>{buildDateStr(girl)} {buildTimeStr(girl)} {girl.ampm}</td>
+        <td style={{ padding: '5px 10px' }}>{buildDateStr(boy)} {buildTimeStr(boy)} {boy.ampm}</td>
+      </tr>
+      <tr style={{ backgroundColor: '#faf8f2' }}>
+        <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Lagna</td>
+        <td style={{ padding: '5px 10px' }}>{getSign(results.girl.ascendant)}</td>
+        <td style={{ padding: '5px 10px' }}>{getSign(results.boy.ascendant)}</td>
+      </tr>
+      <tr style={{ backgroundColor: '#f5f1e3' }}>
+        <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Rasi</td>
+        <td style={{ padding: '5px 10px' }}>{results.girl.rasi}</td>
+        <td style={{ padding: '5px 10px' }}>{results.boy.rasi}</td>
+      </tr>
+      <tr style={{ backgroundColor: '#faf8f2' }}>
+        <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Star — Pada</td>
+        <td style={{ padding: '5px 10px' }}>{results.girl.nakshatra} — {results.girl.pada}</td>
+        <td style={{ padding: '5px 10px' }}>{results.boy.nakshatra} — {results.boy.pada}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+             {isSouthIndian ? (
+                <div style={{ marginTop: '12px', fontSize: '22px', fontWeight: '900' }}>
                   {(() => {
                     const matches = results.poruthams.filter((p: PoruthamResult) => p.result !== "No Match").length;
-                    const color = matches >= 8 ? '#4ade80' : matches >= 6 ? '#fbbf24' : '#f87171';
+                    const color = matches >= 8 ? '#16a34a' : matches >= 6 ? '#d97706' : '#dc2626';
                     return <span style={{ color }}>{matches} / 10 Poruthams Match</span>;
                   })()}
                 </div>
               ) : (
-                <div style={{ marginTop: '12px', fontSize: '22px', fontWeight: 'bold' }}>
+                <div style={{ marginTop: '12px', fontSize: '22px', fontWeight: '900' }}>
                   {(() => {
                     const total = results.kootas.reduce((s: number, k: KootaResult) => s + k.points, 0);
-                    const color = total >= 24 ? '#4ade80' : total >= 18 ? '#fbbf24' : '#f87171';
+                    const color = total >= 25 ? '#16a34a' : total >= 18 ? '#d97706' : '#dc2626';
                     return <span style={{ color }}>{total.toFixed(1)} / 36 Guna Milan</span>;
                   })()}
                 </div>
@@ -450,20 +522,12 @@ setResults({
     <h3 style={{ fontSize:'18px', fontWeight:'bold', marginBottom:'16px', borderBottom:'2px solid #dcd4b8', paddingBottom:'8px' }}>
       Birth Charts
     </h3>
-    <ChartPair
-      name={results.girl.name}
-      ascDeg={results.girl.ascendant}
-      d1Positions={results.girl.positions}
-      d9Positions={results.girl.d9Positions}
-      gender="girl"
-    />
-    <ChartPair
-      name={results.boy.name}
-      ascDeg={results.boy.ascendant}
-      d1Positions={results.boy.positions}
-      d9Positions={results.boy.d9Positions}
-      gender="boy"
-    />
+    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px', marginBottom:'32px' }}>
+      <VivahChart title={`♀ ${results.girl.name} — Rasi (D1)`} ascDeg={results.girl.ascendant} positions={results.girl.positions} mode="sign" />
+      <VivahChart title={`♀ ${results.girl.name} — Navamsa (D9)`} ascDeg={results.girl.ascendant} positions={results.girl.d9Positions} mode="sign" />
+      <VivahChart title={`♂ ${results.boy.name} — Rasi (D1)`} ascDeg={results.boy.ascendant} positions={results.boy.positions} mode="sign" />
+      <VivahChart title={`♂ ${results.boy.name} — Navamsa (D9)`} ascDeg={results.boy.ascendant} positions={results.boy.d9Positions} mode="sign" />
+    </div>
   </>
 )}
             

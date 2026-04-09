@@ -1,0 +1,146 @@
+/* app/Vivaha/vivaha-print.css */
+/* Print styles for Vivaha Porutham — only affects Vivaha page */
+
+@media print {
+
+  /* Hide form, buttons, navigation */
+  .vivah-form-section,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  body {
+    background: white !important;
+    font-size: 11px !important;
+  }
+
+  /* Results container */
+  #porutham-results {
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Header — remove dark background, use elegant border */
+  #porutham-results > div:first-child {
+    background-color: #f5f0e8 !important;
+    color: #2c1810 !important;
+    border: 2px solid #2c1810 !important;
+    border-radius: 0 !important;
+    padding: 12px !important;
+  }
+
+  /* Section headings — remove black, use dark maroon */
+  h3 {
+    font-size: 13px !important;
+    color: #2c1810 !important;
+    border-bottom: 1px solid #2c1810 !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-top: 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Table headers — replace black with dark maroon */
+  thead tr {
+    background-color: #5c3317 !important;
+    color: white !important;
+  }
+
+  /* Keep tables together */
+  table {
+    font-size: 10px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    width: 100% !important;
+  }
+
+  /* Charts — keep together */
+  .vivah-grid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Birth Charts section — start on new page */
+  #porutham-results h3:nth-of-type(1) {
+    page-break-before: avoid !important;
+  }
+
+  /* Ten Porutham — start fresh page */
+  #porutham-results h3:nth-of-type(2) {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  /* Dosha section — start fresh page */
+  #porutham-results h3:nth-of-type(3) {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  /* Dosha boxes — keep together */
+  #porutham-results > div > div {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Overall verdict — keep together */
+  #porutham-results > div:last-child {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  
+
+  /* Score headline — keep readable */
+  #porutham-results > div:first-child div:last-child {
+    font-size: 16px !important;
+    font-weight: bold !important;
+  }
+
+  /* Verdict box — elegant */
+  #porutham-results .verdict-box {
+    border-radius: 0 !important;
+  }
+
+/* Score — large and readable */
+  span[style*="22px"] {
+    font-size: 18px !important;
+    color: #2c1810 !important;
+  }
+/* Thicker chart borders in print */
+  .vivah-grid {
+    border: 2px solid #000 !important;
+  }
+  .vivah-cell {
+    border-right: 1px solid #000 !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  /* Chart fonts larger in print */
+  .vivah-planet {
+    font-size: 13px !important;
+    font-weight: 800 !important;
+  }
+  .vivah-sign {
+    font-size: 11px !important;
+  }
+  .vivah-chart-title {
+    font-size: 15px !important;
+    font-weight: 900 !important;
+  }
+  /* Score larger */
+  span[style*="18px"] {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+  }
+
+
+
+}
+
