@@ -7,7 +7,7 @@ import { calcAshtaKoota, interpretAshtaKoota, KootaResult } from '@/app/lib/viva
 import { checkMangalDosha, checkDasaSandhi, checkPapasamya, MangalResult, DasaSandhiResult, PapasamyaResult } from '@/app/lib/vivaha/dosha';
 import SouthIndianChart from '@/components/SouthIndianChart';
 import VivahChart from '@/app/lib/vivaha/VivahChart';
-
+import NavBar from '@/components/NavBar';
 // Load saved profiles from localStorage
 function getSavedProfiles(): typeof initialState[] {
   if (typeof window === 'undefined') return [];
@@ -301,8 +301,11 @@ setResults({
   // RENDER
   // =============================================
 
-  return (
-    <div style={{ backgroundColor: '#EFE9D5', minHeight: '100vh', padding: '40px 20px', fontFamily: 'sans-serif', color: '#333' }}>
+  
+    return (
+    <>
+    <NavBar />
+     <div style={{ backgroundColor: '#EFE9D5', minHeight: '100vh', padding: '40px 20px', fontFamily: 'sans-serif', color: '#333' }}>
       <div style={{ maxWidth: '850px', margin: '0 auto', backgroundColor: '#F5F1E3', padding: '30px', borderRadius: '4px', border: '1px solid #dcd4b8', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
 
         <h2 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -747,5 +750,6 @@ setResults({
         )}
       </div>
     </div>
+    </>
   );
 }

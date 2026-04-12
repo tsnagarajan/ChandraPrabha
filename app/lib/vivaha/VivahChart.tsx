@@ -69,7 +69,8 @@ export default function VivahChart({ title, ascDeg, positions, mode = 'sign' }: 
       <style jsx>{`
         .vivah-chart-wrap {
           font-family: Georgia, 'Times New Roman', serif;
-          display: inline-block;
+          display: block;
+          width: 100%;
         }
         .vivah-chart-title {
           text-align: center;

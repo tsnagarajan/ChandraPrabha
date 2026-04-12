@@ -18,6 +18,7 @@ import ShadbalaSection, { BhavaBalaSection, StrengthInterpretation } from "../..
 
 import OnePageReport from '@/components/ChandraPrabhaJathakamOnePage';
 
+import NavBar from '@/components/NavBar';
 /* =========================
    Types
    ========================= */
@@ -1745,6 +1746,7 @@ const motionStatusText =
 
 return (
   <>
+    <NavBar />
     <PdfExport />
     <main
       style={{
