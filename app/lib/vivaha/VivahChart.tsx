@@ -25,17 +25,17 @@ const PLANET_ABBR: Record<string,string> = {
 
 
 function norm360(x: number){ return (((x % 360) + 360) % 360); }
-
 interface VivahChartProps {
   title: string;
   ascDeg: number;
   positions: Record<string, number>;
+  speeds?: Record<string, number>; // Add this line
   mode?: 'sign' | 'bhava';
 }
 
 type Box = { sign: number; label: string; planets: string[]; };
 
-export default function VivahChart({ title, ascDeg, positions, mode = 'sign' }: VivahChartProps) {
+export default function VivahChart({ title, ascDeg, positions, speeds, mode = 'sign' }: VivahChartProps)  {
   const CELL = 80;
   const TOTAL = CELL * 4;
 
@@ -44,18 +44,26 @@ export default function VivahChart({ title, ascDeg, positions, mode = 'sign' }: 
 
   if (mode === 'sign') {
     boxes.forEach(b => { b.label = SIGN_ABBR[b.sign]; });
-    Object.entries(positions).forEach(([name, deg])=>{
-      const s = Math.floor(norm360(deg)/30);
-      if (PLANET_ABBR[name]) boxes[s].planets.push(PLANET_ABBR[name]);
+    Object.entries(positions).forEach(([name, deg]) => {
+      const s = Math.floor(norm360(deg) / 30);
+      if (PLANET_ABBR[name]) {
+        // Adding the Retrograde check for Rasi mode
+        const isRetro = speeds && speeds[name] < 0 && name !== 'Rahu' && name !== 'Ketu';
+        const label = isRetro ? `${PLANET_ABBR[name]}(R)` : PLANET_ABBR[name];
+        boxes[s].planets.push(label);
+      }
     });
     boxes[ascSign].planets.unshift('ASC');
   } else {
     boxes.forEach(b => { b.label = `H${((b.sign - ascSign + 12) % 12) + 1}`; });
-    Object.entries(positions).forEach(([name, deg])=>{
-      const s = Math.floor(norm360(deg)/30);
-      const house = ((s - ascSign + 12) % 12) + 1;
-      const idx = boxes.findIndex(bb => bb.label === `H${house}`);
-      if (idx >= 0) boxes[idx].planets.push(PLANET_ABBR[name] ?? name);
+    Object.entries(positions).forEach(([name, deg]) => {
+      const s = Math.floor(norm360(deg) / 30);
+      if (PLANET_ABBR[name]) {
+        // Adding the Retrograde check for Bhava mode
+        const isRetro = speeds && speeds[name] < 0 && name !== 'Rahu' && name !== 'Ketu';
+        const label = isRetro ? `${PLANET_ABBR[name]}(R)` : PLANET_ABBR[name];
+        boxes[s].planets.push(label);
+      }
     });
     const h1 = boxes.findIndex(bb => bb.label === 'H1');
     if (h1 >= 0) boxes[h1].planets.unshift('ASC');

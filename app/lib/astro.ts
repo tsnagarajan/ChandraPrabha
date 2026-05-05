@@ -35,7 +35,7 @@ export const BODY_ORDER = ['Ascendant','Sun','Moon','Mercury','Venus','Mars','Ju
 
 export const PLANET_ABBR: Record<string,string> = {
   Sun:'Sun', Moon:'Moo', Mercury:'Mer', Venus:'Ven', Mars:'Mar',
-  Jupiter:'Jup', Saturn:'Sat', Rahu:'Rah', Ketu:'Ket', Uranus:'Ura', Neptune:'Nep', Pluto:'Plu'
+  Jupiter:'Jup', Saturn:'Sat', Rahu:'Rahu', Ketu:'Ketu', Uranus:'Ura', Neptune:'Nep', Pluto:'Plu'
 };
 
 // South-Indian 4×4 layout (grid coordinates)

@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 
 const SIGN_ABBR = ['Ar','Ta','Ge','Cn','Le','Vi','Li','Sc','Sg','Cp','Aq','Pi'];
@@ -19,10 +20,17 @@ const SOUTH_LAYOUT: Array<{sign:number,row:number,col:number}> = [
 ];
 
 const PLANET_ABBR: Record<string,string> = {
-  Sun:'Sun', Moon:'Moo', Mercury:'Mer', Venus:'Ven', Mars:'Mar',
-  Jupiter:'Jup', Saturn:'Sat', Rahu:'Rah', Ketu:'Ket',
-  Uranus:'Ura', Neptune:'Nep', Pluto:'Plu'
+  Sun:'Sun',
+  Moon:'Moo',
+  Mercury:'Mer',
+  Venus:'Ven',
+  Mars:'Mar',
+  Jupiter:'Jup',
+  Saturn:'Sat',
+  Rahu:'Rah',
+  Ketu:'Ket'
 };
+
 
 function norm360(x: number){ return (((x % 360) + 360) % 360); }
 
@@ -47,7 +55,10 @@ export default function SouthIndianChart({ title, mode, ascDeg = 0, positions, s
     boxes.forEach(b => { b.label = SIGN_ABBR[b.sign]; });
     Object.entries(positions).forEach(([name, deg])=>{
       const s = Math.floor(norm360(deg)/30);
-      boxes[s].planets.push(PLANET_ABBR[name] ?? name);
+      
+
+     boxes[s].planets.push(name);
+
     });
     boxes[ascSign].planets.unshift('ASC');
   } else {
@@ -66,22 +77,47 @@ export default function SouthIndianChart({ title, mode, ascDeg = 0, positions, s
   SOUTH_LAYOUT.forEach(({sign,row,col}) => { grid[row][col] = boxes[sign]; });
 
   const CHIP_TO_SPEED: Record<string,string> = {
-    Sun:'Su', Moo:'Mo', Mer:'Me', Ven:'Ve', Mar:'Ma',
-    Jup:'Ju', Sat:'Sa', Ura:'Ur', Nep:'Ne', Plu:'Pl', Rah:'Ra', Ket:'Ke',
-  };
-  const CHIP_TO_FULL: Record<string,string> = {
-    Sun:'Sun', Moo:'Moon', Mer:'Mercury', Ven:'Venus', Mar:'Mars',
-    Jup:'Jupiter', Sat:'Saturn', Ura:'Uranus', Nep:'Neptune',
-    Plu:'Pluto', Rah:'Rahu', Ket:'Ketu',
-  };
+  Sun:'Su',
+  Moo:'Mo',
+  Mer:'Me',
+  Ven:'Ve',
+  Mar:'Ma',
+  Jup:'Ju',
+  Sat:'Sa',
+  Rah:'Ra',
+  Ket:'Ke'
+};
+const CHIP_TO_FULL: Record<string,string> = {
+  Sun:'Sun',
+  Moo:'Moon',
+  Mer:'Mercury',
+  Ven:'Venus',
+  Mar:'Mars',
+  Jup:'Jupiter',
+  Sat:'Saturn',
+  Rah:'Rahu',
+  Ket:'Ketu'
+};
+
 
   const isRetro = (chip: string) => {
-    if (chip === 'Rah' || chip === 'Ket') return false;
-    if (retroSet) return retroSet.has(chip) || retroSet.has(CHIP_TO_FULL[chip] ?? chip);
-    const k = CHIP_TO_SPEED[chip];
-    if (!k || !speeds) return false;
-    return typeof speeds[k] === 'number' && speeds[k] < 0;
-  };
+  // Hard rule: Rahu & Ketu are never part of retro display logic
+  if (chip === 'Rahu' || chip === 'Ketu') return false;
+
+  const fullName = CHIP_TO_FULL[chip] ?? chip;
+
+  if (retroSet) {
+  if (chip === 'Rahu' || chip === 'Ketu') return false;
+  return retroSet.has(chip) || retroSet.has(fullName);
+}
+
+  
+
+  if (!speeds) return false;
+
+  const k = CHIP_TO_SPEED[chip];
+  return typeof speeds[k] === 'number' && speeds[k] < 0;
+};
 
   const vakraNames = Array.from(new Set(
     boxes.flatMap(b=>b.planets)
@@ -153,7 +189,15 @@ export default function SouthIndianChart({ title, mode, ascDeg = 0, positions, s
                           lineHeight: 1.3,
                           whiteSpace: 'nowrap',
                         }}>
-                          {p}{p !== 'ASC' && isRetro(p) ? ' R' : ''}
+                          
+                    {p.replace(/\s*R$/, '')}
+
+                    
+
+
+
+
+
                         </span>
                       ))}
                     </div>
@@ -164,9 +208,7 @@ export default function SouthIndianChart({ title, mode, ascDeg = 0, positions, s
           })
         )}
       </div>
-      <div style={{ marginTop:6, fontSize:11, color:'#555', textAlign:'center' }}>
-        {vakraNames.length > 0 ? `Vakra: ${vakraNames.join(', ')}` : 'All planets are direct'}
-      </div>
+      
     </div>
   );
 }

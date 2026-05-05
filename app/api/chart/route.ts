@@ -150,9 +150,6 @@ async function computePlanetsAsync(jd_ut: number, iflag: number) {
     ["Mars", swe.SE_MARS],
     ["Jupiter", swe.SE_JUPITER],
     ["Saturn", swe.SE_SATURN],
-    ["Uranus", swe.SE_URANUS],
-    ["Neptune", swe.SE_NEPTUNE],
-    ["Pluto", swe.SE_PLUTO],
     ["Rahu", swe.SE_TRUE_NODE],
   ] as const;
 
@@ -201,9 +198,9 @@ async function computePlanetsAsync(jd_ut: number, iflag: number) {
       Saturn: "SATURN",
       Rahu: "RAHU",
       Ketu: "KETU",
-      Uranus: "URANUS",
-      Neptune: "NEPTUNE",
-      Pluto: "PLUTO",
+      
+      
+      
     };
 
     const sk = SHAD_KEY[name] ?? name.toUpperCase();

@@ -22,7 +22,14 @@ function saveProfileToStorage(p: typeof initialState) {
   localStorage.setItem('vivahaProfiles', JSON.stringify(filtered));
 }
 
-
+const getPlanetLabel = (name: string, speeds: any) => {
+  if (!speeds || !speeds[name]) return name;
+  // Rahu and Ketu are naturally retrograde; traditionally, we don't mark them 'R'
+  if (name === 'Rahu' || name === 'Ketu') return name;
+  
+  // If speed is negative (< 0), the planet is in Vakra (retrograde) motion
+  return speeds[name] < 0 ? `${name}(R)` : name;
+};
 
 
 
@@ -153,6 +160,18 @@ export default function VivahaPage() {
       const girlData = await girlRes.json();
       const boyData = await boyRes.json();
 
+      // 1. Force Ketu to be 180 degrees from Rahu
+      if (girlData.positions && girlData.positions.Rahu !== undefined) {
+      girlData.positions.Ketu = (girlData.positions.Rahu + 180) % 360;
+    }
+     if (boyData.positions && boyData.positions.Rahu !== undefined) {
+     boyData.positions.Ketu = (boyData.positions.Rahu + 180) % 360;
+     }
+
+
+
+
+
       if (!girlRes.ok) throw new Error(girlData.error || "Failed to compute Girl's chart");
       if (!boyRes.ok) throw new Error(boyData.error || "Failed to compute Boy's chart");
 
@@ -170,7 +189,11 @@ export default function VivahaPage() {
       if (bNakIdx === -1) throw new Error(`Unknown nakshatra: ${boyMoon.nakshatra}`);
 
       const gPositions = girlData.positions || {};
+      const gSpeeds = girlData.speeds || {}; // Connects the "wire" for the girl
       const bPositions = boyData.positions || {};
+      const bSpeeds = boyData.speeds || {}; // Connects the "wire" for the boy
+
+
 
       const poruthams = calcAllPorutham(gNakIdx, gRasiIdx, bNakIdx, bRasiIdx, gPositions, bPositions);
       const kootas = calcAshtaKoota(gNakIdx, gRasiIdx, bNakIdx, bRasiIdx, gPositions, bPositions);
@@ -184,13 +207,29 @@ export default function VivahaPage() {
 
    
 
-setResults({
-  girl: { name: girl.name, nakshatra: girlMoon.nakshatra, pada: girlMoon.pada, rasi: girlMoon.sign,
-    ascendant: girlData.ascendant, positions: girlData.positions, 
-    d9Positions: girlData.d9Positions, speeds: girlData.speeds },
-  boy:  { name: boy.name,  nakshatra: boyMoon.nakshatra,  pada: boyMoon.pada,  rasi: boyMoon.sign,
-    ascendant: boyData.ascendant, positions: boyData.positions,
-    d9Positions: boyData.d9Positions, speeds: boyData.speeds },
+  setResults({
+  girl: { 
+    name: girl.name, 
+    nakshatra: girlMoon.nakshatra, 
+    pada: girlMoon.pada, 
+    rasi: girlMoon.sign,
+    ascendant: girlData.ascendant,
+    d9Ascendant: girlData.d9Ascendant, // Use the direct value from route.ts
+    positions: girlData.positions, 
+    d9Positions: girlData.d9Positions, 
+    speeds: girlData.speeds 
+  },
+  boy:  { 
+    name: boy.name,  
+    nakshatra: boyMoon.nakshatra,  
+    pada: boyMoon.pada,  
+    rasi: boyMoon.sign,
+    ascendant: boyData.ascendant, 
+    d9Ascendant: boyData.d9Ascendant, // Use the direct value from route.ts
+    positions: boyData.positions,
+    d9Positions: boyData.d9Positions, 
+    speeds: boyData.speeds 
+  },
   poruthams, kootas, girlMangal, boyMangal, dasaSandhi, papasamya,
 });
       saveProfileToStorage(girl);
@@ -486,14 +525,27 @@ setResults({
       </tr>
       <tr style={{ backgroundColor: '#faf8f2' }}>
         <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Lagna</td>
-        <td style={{ padding: '5px 10px' }}>{getSign(results.girl.ascendant)}</td>
-        <td style={{ padding: '5px 10px' }}>{getSign(results.boy.ascendant)}</td>
+        <td style={{ padding: '5px 10px' }}>{getSign(results.girl.ascendant)} ({results.girl.ascendant?.toFixed(1)}°)</td>
+      <td style={{ padding: '5px 10px' }}>{getSign(results.boy.ascendant)} ({results.boy.ascendant?.toFixed(1)}°)</td>
       </tr>
       <tr style={{ backgroundColor: '#f5f1e3' }}>
         <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Rasi</td>
         <td style={{ padding: '5px 10px' }}>{results.girl.rasi}</td>
         <td style={{ padding: '5px 10px' }}>{results.boy.rasi}</td>
       </tr>
+      
+       <tr style={{ backgroundColor: '#f5f1e3' }}>
+  <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Rahu | Ketu</td>
+  <td style={{ padding: '5px 10px' }}>
+    R: {results.girl.positions?.Rahu?.toFixed(1)}° | K: {results.girl.positions?.Ketu?.toFixed(1)}°
+  </td>
+  <td style={{ padding: '5px 10px' }}>
+    R: {results.boy.positions?.Rahu?.toFixed(1)}° | K: {results.boy.positions?.Ketu?.toFixed(1)}°
+  </td>
+</tr>
+
+
+
       <tr style={{ backgroundColor: '#faf8f2' }}>
         <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>Star — Pada</td>
         <td style={{ padding: '5px 10px' }}>{results.girl.nakshatra} — {results.girl.pada}</td>
@@ -526,19 +578,50 @@ setResults({
       Birth Charts
     </h3>
     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px', marginBottom:'32px' }}>
-      <VivahChart title={`♀ ${results.girl.name} — Rasi (D1)`} ascDeg={results.girl.ascendant} positions={results.girl.positions} mode="sign" />
-      <VivahChart title={`♀ ${results.girl.name} — Navamsa (D9)`} ascDeg={results.girl.ascendant} positions={results.girl.d9Positions} mode="sign" />
-      <VivahChart title={`♂ ${results.boy.name} — Rasi (D1)`} ascDeg={results.boy.ascendant} positions={results.boy.positions} mode="sign" />
-      <VivahChart title={`♂ ${results.boy.name} — Navamsa (D9)`} ascDeg={results.boy.ascendant} positions={results.boy.d9Positions} mode="sign" />
-    </div>
-  </>
-)}
-            
+  {/* Girl Rasi */}
+  <VivahChart 
+    title={`♀ ${results.girl.name} — Rasi (D1)`} 
+    ascDeg={results.girl.ascendant} 
+    positions={results.girl.positions} 
+    speeds={results.girl.speeds} 
+    mode="sign" 
+  />
+  
+  {/* Girl Navamsa */}
+  <VivahChart 
+    title={`♀ ${results.girl.name} — Navamsa (D9)`} 
+    ascDeg={results.girl.d9Ascendant ?? results.girl.ascendant ?? 0} 
+    positions={results.girl.d9Positions} 
+    speeds={results.girl.speeds} 
+    mode="sign" 
+  />
+  
+  {/* Boy Rasi */}
+  <VivahChart 
+    title={`♂ ${results.boy.name} — Rasi (D1)`} 
+    ascDeg={results.boy.ascendant} 
+    positions={results.boy.positions} 
+    speeds={results.boy.speeds} 
+    mode="sign" 
+  />
+  
+  {/* Boy Navamsa */}
+    <VivahChart 
+          title={`♂ ${results.boy.name} — Navamsa (D9)`} 
+          ascDeg={results.boy.d9Ascendant ?? results.boy.ascendant ?? 0} 
+          positions={results.boy.d9Positions} 
+          speeds={results.boy.speeds} 
+          mode="sign" 
+        />
+      </div> 
+    </>
+  )}
+  
+ 
 
-{/* SOUTH INDIAN — TEN PORUTHAM */}
 
-            {/* SOUTH INDIAN — TEN PORUTHAM */}
-            {isSouthIndian && (
+{/* SOUTH INDIAN — TEN PORUTHTHAM */}
+{isSouthIndian && (
               <>
                 <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', borderBottom: '2px solid #dcd4b8', paddingBottom: '8px' }}>
                   Ten Porutham Results
@@ -745,7 +828,6 @@ setResults({
                 </div>
               );
             })()}
-
           </div>
         )}
       </div>

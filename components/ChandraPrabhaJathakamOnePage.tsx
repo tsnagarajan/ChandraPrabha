@@ -21,7 +21,56 @@ export default function ChandraPrabhaJathakamOnePage({ data }: any) {
     dashaBalance,
     currentDasha,
     birthDasha,
+    speeds,
   } = data;
+
+ // Map speed abbreviations to full planet names
+const planetNameMap: Record<string, string> = {
+  Su: 'Sun',
+  Mo: 'Moon',
+  Me: 'Mercury',
+  Ve: 'Venus',
+  Ma: 'Mars',
+  Ju: 'Jupiter',
+  Sa: 'Saturn',
+};
+
+const retroPlanetsD1 = Object.entries(speeds || {}).filter(([abbr, speed]) => {
+  const map: any = {
+    Su: 'Sun', Mo: 'Moon', Me: 'Mercury', Ve: 'Venus',
+    Ma: 'Mars', Ju: 'Jupiter', Sa: 'Saturn'
+  };
+
+  if (!map[abbr]) return false;
+  return typeof speed === 'number' && speed < 0;
+}).map(([abbr]) => {
+  const map: any = {
+    Su: 'Sun', Mo: 'Moon', Me: 'Mercury', Ve: 'Venus',
+    Ma: 'Mars', Ju: 'Jupiter', Sa: 'Saturn'
+  };
+  return map[abbr];
+});
+
+
+// Build the summary sentence
+let retroText = '';
+if (retroPlanetsD1.length === 0) {
+  retroText = 'All planets are direct.';
+} else if (retroPlanetsD1.length === 1) {
+  retroText = `${retroPlanetsD1[0]} is retrograde.`;
+} else {
+  retroText = `${retroPlanetsD1.join(', ')} are retrograde.`;
+}
+
+
+
+
+
+
+
+
+
+
 
   const leftRows  = (vargaRows || []).slice(0, 6);
   const rightRows = (vargaRows || []).slice(6);
@@ -55,6 +104,14 @@ export default function ChandraPrabhaJathakamOnePage({ data }: any) {
   const tdB: React.CSSProperties = { border: '1px solid #444', padding: '4px 6px', textAlign: 'left', fontSize: 11 };
   const thB: React.CSSProperties = { border: '1px solid #444', padding: '4px 6px', background: '#f0f0f0', fontWeight: 'bold', textAlign: 'left', fontSize: 11 };
   
+  
+
+
+
+
+
+
+
 
   return (
     <div style={{ fontFamily: "Georgia, 'Times New Roman', serif", color: '#111', background: '#fff' }}>
@@ -142,6 +199,13 @@ export default function ChandraPrabhaJathakamOnePage({ data }: any) {
           </div>
           </div>
         
+          <div style={{ fontSize: 11, marginTop: 6, fontWeight: 'bold', textAlign: 'center' }}>
+          {retroText}
+          </div>
+
+
+
+
         {/* DASHA */}
         <div style={{ fontSize: 11, lineHeight: 2, marginTop: 6 }}>
           <div><b>Birth Main Period:</b> {birthDasha?.main || '—'}</div>

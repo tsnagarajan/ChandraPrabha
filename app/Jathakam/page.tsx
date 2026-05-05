@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -222,20 +223,18 @@ function trimshamsaSign(s: number, within: number) {
 /** Compute Varga placements (sign names only) from D1 degrees */
 function vargaPlacements(positions: Record<string, number>, asc: number) {
   const bodies = [
-    'Ascendant',
-    'Sun',
-    'Moon',
-    'Mercury',
-    'Venus',
-    'Mars',
-    'Jupiter',
-    'Saturn',
-    'Rahu',
-    'Ketu',
-    'Uranus',
-    'Neptune',
-    'Pluto',
-  ];
+  'Ascendant',
+  'Sun',
+  'Moon',
+  'Mercury',
+  'Venus',
+  'Mars',
+  'Jupiter',
+  'Saturn',
+  'Rahu',
+  'Ketu'
+];
+
   const getDeg = (name: string) =>
     name === 'Ascendant' ? asc : positions[name];
   return bodies
@@ -377,11 +376,10 @@ const PLANET_ABBR: Record<string, string> = {
   Mars: 'Mar',
   Jupiter: 'Jup',
   Saturn: 'Sat',
-  Rahu: 'Rah',
-  Ketu: 'Ket',
-  Uranus: 'Ura',
-  Neptune: 'Nep',
-  Pluto: 'Plu',
+  Rahu: 'Rahu',
+  Ketu: 'Ketu',
+  
+
 };
 
 /* ---- Panchanga helpers ---- */
@@ -1043,13 +1041,21 @@ const { summary, interpretation } = useMemo(() => {
       if (corrected && corrected !== timezone) setTimezone(corrected);
 
       // 1. GET MAIN CHART DATA
-      const res = await fetch('/api/chart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: dateStr, time: timeStr, timezone: tz, lat, lon }),
-      });
+const res = await fetch('/api/chart', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ 
+    date: dateStr, 
+    time: timeStr, 
+    timezone: tz, 
+    lat, 
+    lon,
+    speeds: true // <--- ADD THIS LINE
+  }),
+});
 
-      const json = await res.json();
+const json = await res.json();
+      
 
       if (!res.ok) {
         throw new Error(json.error || 'Failed to fetch');
@@ -1174,7 +1180,9 @@ function SouthIndianChart({
 
 
 
-    return (
+   
+
+return (
       <div className="card avoid-break">
         <div style={{ fontWeight: 800, marginBottom: 10, fontSize: 18 }}>
           {title}
@@ -1249,7 +1257,13 @@ function SouthIndianChart({
                               lineHeight: 1,
                             }}
                           >
-                            {p}
+                            {/* logic to show (R) if planet is in the retroSet */}
+                            {p}{(p !== 'Rahu' && p !== 'Ketu' && retroSet?.has(p)) ? " (R)" : ""}
+
+
+
+
+
 
                           </span>
                         ));
@@ -1261,14 +1275,19 @@ function SouthIndianChart({
             ))
           )}
         </div>
-
-
-
-
       </div>
     );
-  }
+
+    }  
+ 
+
   /* -------- Exports -------- */
+
+
+
+  
+   
+  
   function downloadText(filename: string, mime: string, text: string) {
     const blob = new Blob([text], { type: mime });
     const url = URL.createObjectURL(blob);
@@ -1694,33 +1713,26 @@ function SouthIndianChart({
 const speedMap = out?.speeds ?? {};
 
 // 2) Find which planets are retrograde (negative speed)
-//    ✅ Exclude Rahu/Ketu (they are always retro in Vedic practice)
+//    ✅ Exclude Rahu/Ketu (whatever abbreviation is used)
+//    ✅ Exclude Uranus/Neptune/Pluto
 const retroAbbrs = Object.entries(speedMap)
-  .filter(([abbr, speed]) =>
-    typeof speed === "number" &&
-    speed < 0 &&
-    abbr !== "Ra" &&
-    abbr !== "Ke" &&
-    abbr !== "Ur" &&
-    abbr !== "Ne" &&
-    abbr !== "Pl"
-  )
+  .filter(([abbr, speed]) => {
+    if (typeof speed !== "number" || speed >= 0) return false;
+
+    const norm = abbr.toLowerCase();
+
+    // Exclude all possible forms of Rahu / Ketu
+    if (norm === "ra" || norm === "rah" || norm === "rahu") return false;
+    if (norm === "ke" || norm === "ket" || norm === "ketu") return false;
+
+    // Exclude outer planets by common abbreviations
+    if (norm === "ur" || norm === "ne" || norm === "pl") return false;
+
+    return true;
+  })
   .map(([abbr]) => abbr);
 
-// 3) retroSet for the South Indian chart tokens (Sun, Mer, Ven, Mar, Moo, Jup, Sat)
-const chartTokenMap: Record<string, string> = {
-  Su: "Sun",
-  Mo: "Moo",
-  Me: "Mer",
-  Ve: "Ven",
-  Ma: "Mar",
-  Ju: "Jup",
-  Sa: "Sat",
-  // Ra/Ke intentionally omitted
-};
-const retroSet = new Set(retroAbbrs.map((abbr) => chartTokenMap[abbr] || abbr));
-
-// 4) Names for the status line + retro note
+// 3) Name mapping (MUST be defined BEFORE usage)
 const abbrToName: Record<string, string> = {
   Su: "Sun",
   Mo: "Moon",
@@ -1731,16 +1743,46 @@ const abbrToName: Record<string, string> = {
   Sa: "Saturn",
   // Ra/Ke intentionally omitted
 };
+
+// 4) Chart token mapping
+const chartTokenMap: Record<string, string> = {
+  Su: "Sun",
+  Mo: "Moo",
+  Me: "Mer",
+  Ve: "Ven",
+  Ma: "Mar",
+  Ju: "Jup",
+  Sa: "Sat",
+  // Ra/Ke intentionally omitted
+};
+
+// 5) retroSet for chart logic
+const retroSet = new Set(retroAbbrs);
+
+
+// 6) Names for the status line + retro note
 const retroNames = retroAbbrs.map((a) => abbrToName[a] || a);
 
-
-
-
-// 5) Text printed in JSX
+// 7) Text printed in JSX
 const motionStatusText =
   retroNames.length === 0
     ? "Status: All Planets are Marga (Direct)"
     : `Status: Vakra (Retrograde): ${retroNames.join(", ")}`;
+
+// 8) Remove Uranus, Neptune, Pluto from chart planets
+const filteredPositions = Object.fromEntries(
+  Object.entries(out?.positions ?? {}).filter(([abbr]) => {
+    const norm = abbr.toLowerCase();
+    return (
+      norm !== "ur" &&
+      norm !== "ne" &&
+      norm !== "pl" &&
+      norm !== "uranus" &&
+      norm !== "neptune" &&
+      norm !== "pluto"
+    );
+  })
+);
 
 
 
@@ -2373,7 +2415,8 @@ return (
     mode="sign"
     ascDeg={out.ascendant}
     positions={out.positions}
-    retroSet={new Set()}
+    retroSet={retroSet}
+
 
   />
 </div>
@@ -3027,12 +3070,7 @@ return (
   />
   </div>
 )}
-
-
-
-
-
 </main>
-</> 
-  );
+</>
+);
 }
