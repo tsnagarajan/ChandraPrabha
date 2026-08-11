@@ -22,37 +22,14 @@ html, body {
 /* ======================================= */
 @media print {
 
-  /* Hide floating bars and UI controls */
+  /* Hide the floating export bar during printing */
   .export-bar {
     display: none !important;
   }
 
-  /* Ensure print root and all children are fully visible */
-  #print-root,
-  #print-root * {
-    visibility: visible !important;
-    overflow: visible !important;
-  }
-
+  /* Ensure the main report container is visible to the print engine */
   #print-root {
     display: block !important;
-  }
-
-  /* Prevent grid cells from collapsing and cutting off Saturn/Ketu */
-  #print-root .si-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    grid-template-rows: repeat(4, minmax(80px, auto)) !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  /* Keep SVG and chart elements visible */
-  #print-root svg,
-  #print-root text,
-  #print-root tspan {
-    overflow: visible !important;
-    opacity: 1 !important;
     visibility: visible !important;
   }
 
@@ -66,21 +43,31 @@ html, body {
     page-break-before: always;
   }
 
-  /* Print colors & backgrounds exactly */
+  /* Chart/SVG fixes */
+  #print-root .si-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-auto-rows: 1fr !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  #print-root svg {
+    overflow: visible !important;
+  }
+
+  /* Print colors exactly */
   body { 
-    -webkit-print-color-adjust: exact !important; 
-    print-color-adjust: exact !important; 
+    -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact; 
   }
 
   /* Vertical stacking for charts */
   #print-root .charts-column { 
-    display: block !important; 
+    display: block; 
   }
 
   #print-root .charts-column > * { 
     margin-bottom: 16px; 
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
   }
 
   /* First-page header */
@@ -95,6 +82,10 @@ html, body {
     object-fit: contain;
     display: block; 
     margin: 0 auto;
+  }
+
+  #print-root .report-title { 
+    /* Add font styles if needed */
   }
 }
 

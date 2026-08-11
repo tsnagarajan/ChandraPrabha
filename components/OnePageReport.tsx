@@ -25,6 +25,21 @@ export default function OnePageReport({ data }: any) {
     birthDasha,
   } = data;
 
+  const getKetuDeg = (pos: Record<string, any>) => {
+    if (!pos) return 0;
+    if (typeof pos.Ketu === 'number') return pos.Ketu;
+    if (typeof pos.Ket === 'number') return pos.Ket;
+    
+    const rahuDeg = pos.Rahu ?? pos.Rah ?? pos.rahu ?? pos.Ra;
+    if (typeof rahuDeg === 'number') {
+      return (rahuDeg + 180) % 360;
+    }
+    return 0;
+  };
+
+  const safeD1 = { ...d1Positions, Ketu: d1Positions?.Ketu ?? d1Positions?.Ket ?? ((d1Positions?.Rahu ?? d1Positions?.Rah ?? 0) + 180) % 360 };
+  const safeD9 = { ...d9Positions, Ketu: getKetuDeg(d9Positions) };
+
   return (
   <div className="onepage-wrap">
     <div
@@ -103,22 +118,88 @@ export default function OnePageReport({ data }: any) {
           line-height: 1.35;
         }
 
-        .charts-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 16px;
+       .charts-grid {
+          display: flex;
+          justify-content: space-between;
+          gap: 8px;
           align-items: start;
           margin-top: 12px;
+        }
+
+        /*
+          The two chart-box divs (D1 and D9) actually live inside a container
+          with class "chart-row" in the JSX below -- but no rule for that
+          class name existed before now (the rule above, "charts-grid", was
+          defined but never actually applied to anything). That mismatch is
+          fixed here: chart-row now explicitly stacks the two charts one
+          below the other, each given the full available width, matching
+          how the main page report displays them (where the 4th/5th planet
+          problem does not occur).
+        */
+        .chart-row {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+          margin-top: 12px;
+        }
+
+        .chart-row .chart-box {
+          width: 100% !important;
+          max-width: 480px;
         }
 
         .chart-box {
           border: 1px solid #e5e7eb;
           border-radius: 8px;
-          padding: 10px;
-          overflow: hidden;
+          padding: 6px;
           background: #fff;
+          overflow: visible !important;
+          width: fit-content;
         }
 
+        /*
+          Previously this scaled the chart down to 90% and widened it to
+          111% to help two charts squeeze into a side-by-side row. Now that
+          charts stack vertically with the full page width each (see
+          .chart-row above), that compression is counterproductive -- it
+          works against having more room per cell, which is the actual goal.
+          Left at 1.0 (effectively a no-op) rather than deleted outright, so
+          it's easy to reintroduce if the layout ever goes back to side-by-side.
+        */
+        .chart-box :global(> div) {
+          transform: scale(1.0);
+          transform-origin: top left;
+        }
+
+        /*
+          BROAD, DEFENSIVE OVERRIDE — targets every element inside a chart cell,
+          not just div/span. This addresses the most common reasons a 4th item
+          in a crowded cell (e.g. Ketu, always last since it's appended last
+          when the position object is built) silently disappears:
+            1. overflow/max-height clipping (the original fix)
+            2. text refusing to wrap onto a second line (white-space)
+            3. flex children refusing to shrink below their natural width,
+               which silently pushes the last item outside the visible box
+               even though the parent itself isn't "overflowing" in the
+               traditional sense (the min-width:0 rule below is the fix for
+               this specific, very common flexbox trap)
+        */
+        .chart-box :global(*) {
+          overflow: visible !important;
+          max-height: none !important;
+          white-space: normal !important;
+          text-overflow: clip !important;
+          flex-wrap: wrap !important;
+          min-width: 0 !important;
+          box-sizing: border-box !important;
+        }
+
+        /* Prevent clipping inside chart cells and allow cell contents to overflow cleanly */
+        .chart-box :global(div) {
+          overflow: visible !important;
+          max-height: none !important;
+        }
         .mini-table {
           width: 100%;
           border-collapse: collapse;
@@ -174,6 +255,35 @@ export default function OnePageReport({ data }: any) {
             transform-origin: top center;
           }
         }
+
+       @media print {
+          .chart-box {
+            overflow: visible !important;
+          }
+
+          /* Same broad, defensive override as above, repeated here because
+             print rendering can apply its own layout pass in some browsers
+             (especially Chrome's print preview), so it's safer not to rely
+             solely on the non-print rule cascading through unchanged. */
+          .chart-box :global(*) {
+            overflow: visible !important;
+            max-height: none !important;
+            white-space: normal !important;
+            text-overflow: clip !important;
+            flex-wrap: wrap !important;
+            min-width: 0 !important;
+          }
+
+          .chart-box :global(span) {
+            font-size: 8px !important;
+            line-height: 1.1 !important;
+            padding: 0px 1px !important;
+          }
+
+          .chart-box :global(div) {
+            font-size: 8px !important;
+          }
+        }
       `}</style>
 
       <div className="onepage-card">
@@ -202,23 +312,32 @@ export default function OnePageReport({ data }: any) {
           </div>
         </div>
 
-        <div className="chart-row">
-  <div className="chart-box">
+        <div
+          className="chart-row"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 16,
+            marginTop: 12,
+          }}
+        >
+  <div className="chart-box" style={{ width: "100%", maxWidth: 480 }}>
     <SouthIndianChart
       title="Rāśi (D1)"
       mode="sign"
       ascDeg={data.ascDeg}
-      positions={data.d1Positions}
+      positions={safeD1}
       retroSet={new Set()}
     />
   </div>
 
-  <div className="chart-box">
+  <div className="chart-box" style={{ width: "100%", maxWidth: 480 }}>
     <SouthIndianChart
       title="Navāṁśa (D9)"
       mode="sign"
       ascDeg={data.d9AscDeg}
-      positions={data.d9Positions}
+      positions={safeD9}
       retroSet={new Set()}
     />
   </div>

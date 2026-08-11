@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -17,9 +16,7 @@ import AshtakavargaSection from '../../components/AshtakavargaSection';
 import ShadbalaSection, { BhavaBalaSection, StrengthInterpretation } from "../../components/ShadbalaSection";
 
 
-import OnePageReport from '@/components/ChandraPrabhaJathakamOnePage';
 
-import NavBar from '@/components/NavBar';
 /* =========================
    Types
    ========================= */
@@ -100,7 +97,6 @@ const SIGN_ABBR = [
 
 const TIMEZONES = [
   'Asia/Kolkata',
-  
   'America/Chicago',
   'America/New_York',
   'America/Los_Angeles',
@@ -223,18 +219,20 @@ function trimshamsaSign(s: number, within: number) {
 /** Compute Varga placements (sign names only) from D1 degrees */
 function vargaPlacements(positions: Record<string, number>, asc: number) {
   const bodies = [
-  'Ascendant',
-  'Sun',
-  'Moon',
-  'Mercury',
-  'Venus',
-  'Mars',
-  'Jupiter',
-  'Saturn',
-  'Rahu',
-  'Ketu'
-];
-
+    'Ascendant',
+    'Sun',
+    'Moon',
+    'Mercury',
+    'Venus',
+    'Mars',
+    'Jupiter',
+    'Saturn',
+    'Rahu',
+    'Ketu',
+    'Uranus',
+    'Neptune',
+    'Pluto',
+  ];
   const getDeg = (name: string) =>
     name === 'Ascendant' ? asc : positions[name];
   return bodies
@@ -293,18 +291,20 @@ function fmtISO(iso: string | null, zone: string) {
   if (!iso) return '—';
   try {
     const dt = new Date(iso);
-    const offsetMatch = iso.match(/([+-])(\d{2}):(\d{2})$/);
-    let offsetMinutes = 330; // default IST +5:30
-    if (offsetMatch) {
-      const sign = offsetMatch[1] === '+' ? 1 : -1;
-      offsetMinutes = sign * (parseInt(offsetMatch[2]) * 60 + parseInt(offsetMatch[3]));
-    }
-    const localMs = dt.getTime() + offsetMinutes * 60000;
-    const local = new Date(localMs);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const dateStr = `${pad(local.getUTCDate())}/${pad(local.getUTCMonth()+1)}/${local.getUTCFullYear()}`;
-    const timeStr = `${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}:${pad(local.getUTCSeconds())}`;
-    return `${dateStr} ${timeStr} (${zone})`;
+    const d = new Intl.DateTimeFormat('en-GB', {
+      timeZone: zone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(dt);
+    const t = new Intl.DateTimeFormat('en-GB', {
+      timeZone: zone,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).format(dt);
+    return `${d} ${t} (${zone})`;
   } catch {
     return '—';
   }
@@ -345,7 +345,6 @@ function normalizeTimezone(tzRaw: string): {
     'Calcutta/Asia': 'Asia/Kolkata',
     'Bombay/Asia': 'Asia/Kolkata',
     'Madras/Asia': 'Asia/Kolkata',
-    'Asia/Kolkata+1': 'Asia/Kolkata',
   };
   if (quickMap[tz]) return { tz: quickMap[tz], corrected: quickMap[tz] };
   return { tz: null };
@@ -376,10 +375,11 @@ const PLANET_ABBR: Record<string, string> = {
   Mars: 'Mar',
   Jupiter: 'Jup',
   Saturn: 'Sat',
-  Rahu: 'Rahu',
-  Ketu: 'Ketu',
-  
-
+  Rahu: 'Rah',
+  Ketu: 'Ket',
+  Uranus: 'Ura',
+  Neptune: 'Nep',
+  Pluto: 'Plu',
 };
 
 /* ---- Panchanga helpers ---- */
@@ -695,7 +695,7 @@ export default function Home() {
       .export-bar button { border: 1px solid #ddd; background: #fff; padding: 8px 12px; border-radius: 8px; }
 
       @page { size: A4; margin: 12mm; }
-     @media print {
+      @media print {
         * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         body * { visibility: hidden !important; }
         #print-root, #print-root * { visibility: visible !important; }
@@ -711,31 +711,21 @@ export default function Home() {
         .charts-row.two-up { grid-template-columns: 1fr minmax(20px,20px) 1fr !important; }
         :root { --cell-size: 130px; }
 
-        .si-cell { 
-          border: 3px solid #000 !important; 
-          overflow: visible !important; 
-          min-height: 130px !important;
-          height: auto !important;
-          padding: 2px !important;
-        }
-        .si-label { font-size: 13pt !important; font-weight: 900 !important; }
-        .si-chip { 
-          font-size: 11pt !important; 
-          border: 1.5px solid #000 !important; 
-          padding: 1px 3px !important;
-          margin: 1px 0 !important;
-          line-height: 1.2 !important;
-        }
-        .si-chip-asc { background: #ffe5e8 !important; border-color: #000 !important; color: #000 !important; }
+        .si-cell { border:3px solid #000 !important; overflow:hidden !important; }
+        .si-label { font-size:17pt !important; font-weight:900 !important; }
+        .si-chip { font-size:16pt !important; border:3px solid #000 !important; }
+        .si-chip-asc { background:#ffe5e8 !important; border-color:#000 !important; color:#000 !important; }
 
         .charts-grid { break-inside: avoid; page-break-inside: avoid; }
-        .page-logo { text-align: center; margin: 0 0 10px; }
-        .page-logo img { display: block; margin: 0 auto; }
+        .page-logo { text-align:center; margin: 0 0 10px; }
+        .page-logo img { display:block; margin:0 auto; }
       }
     `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
   }, []);
+
+  
 
 
 
@@ -993,19 +983,19 @@ const { summary, interpretation } = useMemo(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [place]);
 
-  const yearOptions = useMemo(() => range(1880, 2050), []);
+  const yearOptions = useMemo(() => range(1800, 2100), []);
   const dateStr = useMemo(() => {
     if (!year || !month || !day) return '';
     return `${year}-${pad2(Number(month))}-${pad2(Number(day))}`;
   }, [year, month, day]);
- const timeStr = useMemo(() => {
-    if (hour12 === '' || minute === '' || ampm === '')
+  const timeStr = useMemo(() => {
+    if (hour12 === '' || minute === '' || second === '' || ampm === '')
       return '';
     let h = Number(hour12);
     if (ampm === 'AM') h = h === 12 ? 0 : h;
     if (ampm === 'PM') h = h === 12 ? 12 : h + 12;
-    return `${pad2(h)}:${pad2(Number(minute))}:00`;
-  }, [hour12, minute, ampm]);
+    return `${pad2(h)}:${pad2(Number(minute))}:${pad2(Number(second))}`;
+  }, [hour12, minute, second, ampm]);
 
   async function generateChart(e?: React.FormEvent) {
     e?.preventDefault();
@@ -1036,7 +1026,7 @@ const { summary, interpretation } = useMemo(() => {
       }
       if (!timeStr) {
         setErr({
-          error: 'Please set Time (HH:MM & AM/PM) using the dropdowns.',
+          error: 'Please set Time (HH:MM:SS & AM/PM) using the dropdowns.',
         });
         return;
       }
@@ -1051,21 +1041,13 @@ const { summary, interpretation } = useMemo(() => {
       if (corrected && corrected !== timezone) setTimezone(corrected);
 
       // 1. GET MAIN CHART DATA
-const res = await fetch('/api/chart', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ 
-    date: dateStr, 
-    time: timeStr, 
-    timezone: tz, 
-    lat, 
-    lon,
-    speeds: true // <--- ADD THIS LINE
-  }),
-});
+      const res = await fetch('/api/chart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: dateStr, time: timeStr, timezone: tz, lat, lon }),
+      });
 
-const json = await res.json();
-      
+      const json = await res.json();
 
       if (!res.ok) {
         throw new Error(json.error || 'Failed to fetch');
@@ -1190,9 +1172,7 @@ function SouthIndianChart({
 
 
 
-   
-
-return (
+    return (
       <div className="card avoid-break">
         <div style={{ fontWeight: 800, marginBottom: 10, fontSize: 18 }}>
           {title}
@@ -1267,13 +1247,7 @@ return (
                               lineHeight: 1,
                             }}
                           >
-                            {/* logic to show (R) if planet is in the retroSet */}
-                            {p}{(p !== 'Rahu' && p !== 'Ketu' && retroSet?.has(p)) ? " (R)" : ""}
-
-
-
-
-
+                            {p}
 
                           </span>
                         ));
@@ -1285,19 +1259,14 @@ return (
             ))
           )}
         </div>
+
+
+
+
       </div>
     );
-
-    }  
- 
-
+  }
   /* -------- Exports -------- */
-
-
-
-  
-   
-  
   function downloadText(filename: string, mime: string, text: string) {
     const blob = new Blob([text], { type: mime });
     const url = URL.createObjectURL(blob);
@@ -1694,7 +1663,7 @@ return (
   const [ampm, setAmpm] = useState<'AM' | 'PM' | ''>('');
   const [timezone, setTimezone] = useState('');
   const [tzSelect, setTzSelect] = useState<string>('');*/
-  const [showOnePage, setShowOnePage] = useState(false);
+
   /*Build chart object from form state
   const chart = calculateChart({
     name,
@@ -1723,38 +1692,20 @@ return (
 const speedMap = out?.speeds ?? {};
 
 // 2) Find which planets are retrograde (negative speed)
-//    ✅ Exclude Rahu/Ketu (whatever abbreviation is used)
-//    ✅ Exclude Uranus/Neptune/Pluto
+//    ✅ Exclude Rahu/Ketu (they are always retro in Vedic practice)
 const retroAbbrs = Object.entries(speedMap)
-  .filter(([abbr, speed]) => {
-    if (typeof speed !== "number" || speed >= 0) return false;
-
-    const norm = abbr.toLowerCase();
-
-    // Exclude all possible forms of Rahu / Ketu
-    if (norm === "ra" || norm === "rah" || norm === "rahu") return false;
-    if (norm === "ke" || norm === "ket" || norm === "ketu") return false;
-
-    // Exclude outer planets by common abbreviations
-    if (norm === "ur" || norm === "ne" || norm === "pl") return false;
-
-    return true;
-  })
+  .filter(([abbr, speed]) =>
+    typeof speed === "number" &&
+    speed < 0 &&
+    abbr !== "Ra" &&
+    abbr !== "Ke" &&
+    abbr !== "Ur" &&
+    abbr !== "Ne" &&
+    abbr !== "Pl"
+  )
   .map(([abbr]) => abbr);
 
-// 3) Name mapping (MUST be defined BEFORE usage)
-const abbrToName: Record<string, string> = {
-  Su: "Sun",
-  Mo: "Moon",
-  Me: "Mercury",
-  Ve: "Venus",
-  Ma: "Mars",
-  Ju: "Jupiter",
-  Sa: "Saturn",
-  // Ra/Ke intentionally omitted
-};
-
-// 4) Chart token mapping
+// 3) retroSet for the South Indian chart tokens (Sun, Mer, Ven, Mar, Moo, Jup, Sat)
 const chartTokenMap: Record<string, string> = {
   Su: "Sun",
   Mo: "Moo",
@@ -1765,40 +1716,34 @@ const chartTokenMap: Record<string, string> = {
   Sa: "Sat",
   // Ra/Ke intentionally omitted
 };
+const retroSet = new Set(retroAbbrs.map((abbr) => chartTokenMap[abbr] || abbr));
 
-// 5) retroSet for chart logic
-const retroSet = new Set(retroAbbrs);
-
-
-// 6) Names for the status line + retro note
+// 4) Names for the status line + retro note
+const abbrToName: Record<string, string> = {
+  Su: "Sun",
+  Mo: "Moon",
+  Me: "Mercury",
+  Ve: "Venus",
+  Ma: "Mars",
+  Ju: "Jupiter",
+  Sa: "Saturn",
+  // Ra/Ke intentionally omitted
+};
 const retroNames = retroAbbrs.map((a) => abbrToName[a] || a);
 
-// 7) Text printed in JSX
+
+
+
+// 5) Text printed in JSX
 const motionStatusText =
   retroNames.length === 0
     ? "Status: All Planets are Marga (Direct)"
     : `Status: Vakra (Retrograde): ${retroNames.join(", ")}`;
 
-// 8) Remove Uranus, Neptune, Pluto from chart planets
-const filteredPositions = Object.fromEntries(
-  Object.entries(out?.positions ?? {}).filter(([abbr]) => {
-    const norm = abbr.toLowerCase();
-    return (
-      norm !== "ur" &&
-      norm !== "ne" &&
-      norm !== "pl" &&
-      norm !== "uranus" &&
-      norm !== "neptune" &&
-      norm !== "pluto"
-    );
-  })
-);
-
 
 
 return (
   <>
-    <NavBar />
     <PdfExport />
     <main
       style={{
@@ -1898,436 +1843,569 @@ return (
           style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 16px' }}
         >
           <form
-  onSubmit={generateChart}
-  className="card avoid-break"
-  style={{
-    display: 'grid',
-    gap: 20,
-    maxWidth: 560,
-    margin: '0 auto',
-    padding: '24px',
-    borderRadius: 16,
-    background: '#fff',
-    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-  }}
->
-  {/* NAME */}
-  <div>
-    <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-      Full Name
-    </label>
-    <input
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      placeholder=""
-      style={{
-        width: '100%',
-        border: '1px solid #e5e7eb',
-        padding: '10px 14px',
-        borderRadius: 10,
-        fontSize: 15,
-        boxSizing: 'border-box',
-        outline: 'none',
-      }}
-    />
-  </div>
-
-  {/* PLACE */}
-  <div>
-    <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-      Place of Birth
-    </label>
-    <input
-      value={place}
-      onChange={(e) => setPlace(e.target.value)}
-      placeholder=""
-      style={{
-        width: '100%',
-        border: '1px solid #e5e7eb',
-        padding: '10px 14px',
-        borderRadius: 10,
-        fontSize: 15,
-        boxSizing: 'border-box',
-        outline: 'none',
-      }}
-    />
-   <div style={{ fontSize: 12, color: '#6b7280', background: '#f9fafb', borderRadius: 8, padding: '10px 14px', marginTop: 8, lineHeight: 1.6 }}>
-      Type city name above and click <b>Geocode</b>. Select the correct result below to auto-fill coordinates.
-      If your city is not found, visit{' '}
-      <a href="https://www.latlong.net" target="_blank" rel="noopener noreferrer"
-        style={{ color: '#1d4ed8', fontWeight: 600 }}>
-        latlong.net
-      </a>{' '}
-      and paste the coordinates in the fields below.
-    </div>
-    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-      <button
-        type="button"
-        disabled={searching}
-        onClick={doGeocode}
-        style={{
-          background: '#1d4ed8',
-          color: '#fff',
-          border: 'none',
-          padding: '8px 18px',
-          borderRadius: 8,
-          fontWeight: 600,
-          fontSize: 13,
-          cursor: 'pointer',
-        }}
-      >
-        {searching ? 'Searching…' : '🔍 Geocode'}
-      </button>
-      <button
-        type="button"
-        onClick={resetAll}
-        style={{
-          border: '1px solid #e5e7eb',
-          background: '#f9fafb',
-          padding: '8px 14px',
-          borderRadius: 8,
-          fontSize: 13,
-          cursor: 'pointer',
-        }}
-      >
-        ↺ Reset
-      </button>
-    </div>
-</div>
-  {/* GEOCODE RESULTS */}
-  {filteredHits.length > 0 && (
-    <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
-      <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8, color: '#374151' }}>
-        Select your location:
-      </div>
-      <ul style={{ display: 'grid', gap: 6, listStyle: 'none', padding: 0, margin: 0 }}>
-        {filteredHits.map((h, i) => (
-          <li
-            key={i}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 0',
-              borderBottom: i < filteredHits.length - 1 ? '1px solid #e5e7eb' : 'none',
-            }}
+            onSubmit={generateChart}
+            className="card avoid-break"
+            style={{ display: 'grid', gap: 12 }}
           >
-            <span style={{ fontSize: 13, color: '#374151' }}>{h.name}</span>
-            <button
-              onClick={() => {
-                setPlace(h.name);
-                setLat(Number(h.lat.toFixed(6)));
-                setLon(Number(h.lon.toFixed(6)));
-              }}
+            <div
+              style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}
+            >
+              <label>
+                <div>Name</div>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Person's name (e.g., Durga)"
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    width: '100%',
+                  }}
+                />
+              </label>
+            </div>
+
+            <div
               style={{
-                border: '1px solid #1d4ed8',
-                color: '#1d4ed8',
-                background: '#fff',
-                padding: '4px 12px',
-                borderRadius: 6,
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '8px',
+                alignItems: 'flex-start',
+                marginBottom: '12px',
               }}
             >
-              Use
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )}
+              <label style={{ flex: '1 1 100%' }}>
+                <div>Place</div>
+                <input
+                  value={place}
+                  onChange={(e) => setPlace(e.target.value)}
+                  placeholder="City, State/Province, Country (e.g., Park Ridge, Illinois, USA)"
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    width: '100%',
+                  }}
+                />
+              </label>
 
-  
+              <button
+                type="button"
+                disabled={searching}
+                onClick={doGeocode}
+                style={{
+                  background: '#000',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                }}
+              >
+                {searching ? 'Searching…' : 'Geocode'}
+              </button>
 
-  {/* LAT / LON */}
-  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-    <div>
-      <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-        Latitude
-      </label>
-      <input
-        type="number"
-        step="0.000001"
-        value={lat}
-        onChange={(e) => setLat(e.target.value === '' ? '' : Number(e.target.value))}
-        placeholder=""
-        style={{
-          width: '100%',
-          border: '1px solid #e5e7eb',
-          padding: '10px 14px',
-          borderRadius: 10,
-          fontSize: 14,
-          boxSizing: 'border-box',
-        }}
-      />
-    </div>
-    <div>
-      <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-        Longitude
-      </label>
-      <input
-        type="number"
-        step="0.000001"
-        value={lon}
-        onChange={(e) => setLon(e.target.value === '' ? '' : Number(e.target.value))}
-        placeholder=""
-        style={{
-          width: '100%',
-          border: '1px solid #e5e7eb',
-          padding: '10px 14px',
-          borderRadius: 10,
-          fontSize: 14,
-          boxSizing: 'border-box',
-        }}
-      />
-    </div>
-  </div>
+              {/* Geocode results */}
+              {filteredHits.length > 0 && (
+                <div className="card avoid-break" style={{ marginTop: 16 }}>
+                  <div style={{ fontWeight: 700, marginBottom: 8 }}>
+                    Geocode results (city/town first)
+                  </div>
+                  <ul style={{ display: 'grid', gap: 6 }}>
+                    {filteredHits.map((h, i) => (
+                      <li
+                        key={i}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          gap: 8,
+                          alignItems: 'center',
+                        }}
+                      >
+                        <span>{h.name}</span>
+                        <button
+                          onClick={() => {
+                            setPlace(h.name);
+                            setLat(Number(h.lat.toFixed(6)));
+                            setLon(Number(h.lon.toFixed(6)));
+                          }}
+                          style={{
+                            border: '1px solid #ddd',
+                            padding: '6px 12px',
+                            borderRadius: 8,
+                            background: '#fff',
+                          }}
+                        >
+                          Use
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-  {/* DATE */}
-  <div>
-    <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-      Date of Birth
-    </label>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <select
-        value={day === '' ? '' : Number(day)}
-        onChange={(e) => setDay(e.target.value === '' ? '' : Number(e.target.value))}
-        style={{ width: 70, border: '1px solid #e5e7eb', padding: '10px 8px', borderRadius: 10, fontSize: 14 }}
-      >
-        <option value="">DD</option>
-        {range(1, daysInMonth(
-          typeof year === 'number' ? year : undefined,
-          typeof month === 'number' ? month : undefined
-        )).map((d) => (
-          <option key={d} value={d}>{pad2(d)}</option>
-        ))}
-      </select>
-      <span style={{ color: '#9ca3af', fontWeight: 600 }}>/</span>
-      <select
-        value={month === '' ? '' : Number(month)}
-        onChange={(e) => setMonth(e.target.value === '' ? '' : Number(e.target.value))}
-        style={{ width: 80, border: '1px solid #e5e7eb', padding: '10px 8px', borderRadius: 10, fontSize: 14 }}
-      >
-        <option value="">MMM</option>
-        {[
-          'Jan','Feb','Mar','Apr','May','Jun',
-          'Jul','Aug','Sep','Oct','Nov','Dec'
-        ].map((m, i) => (
-          <option key={m} value={i + 1}>{m}</option>
-        ))}
-      </select>
-      <span style={{ color: '#9ca3af', fontWeight: 600 }}>/</span>
-      <select
-        value={year === '' ? '' : Number(year)}
-        onChange={(e) => setYear(e.target.value === '' ? '' : Number(e.target.value))}
-        style={{ width: 100, border: '1px solid #e5e7eb', padding: '10px 8px', borderRadius: 10, fontSize: 14 }}
-      >
-        <option value="">YYYY</option>
-        {yearOptions.map((y) => (
-          <option key={y} value={y}>{y}</option>
-        ))}
-      </select>
-    </div>
-  </div>
+              <button
+                type="button"
+                onClick={useMyLocation}
+                style={{
+                  border: '1px solid #ddd',
+                  background: '#fff',
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                }}
+              >
+                Use my location
+              </button>
 
-  {/* TIME */}
-  <div>
-    <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-      Time of Birth
-    </label>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <select
-        value={hour12 === '' ? '' : Number(hour12)}
-        onChange={(e) => setHour12(e.target.value === '' ? '' : Number(e.target.value))}
-        style={{ width: 75, border: '1px solid #e5e7eb', padding: '10px 8px', borderRadius: 10, fontSize: 14 }}
-      >
-        <option value="">HH</option>
-        {range(1, 12).map((h) => (
-          <option key={h} value={h}>{pad2(h)}</option>
-        ))}
-      </select>
-      <span style={{ color: '#9ca3af', fontWeight: 600 }}>:</span>
-      <select
-        value={minute === '' ? '' : Number(minute)}
-        onChange={(e) => setMinute(e.target.value === '' ? '' : Number(e.target.value))}
-        style={{ width: 75, border: '1px solid #e5e7eb', padding: '10px 8px', borderRadius: 10, fontSize: 14 }}
-      >
-        <option value="">MM</option>
-        {range(0, 59).map((m) => (
-          <option key={m} value={m}>{pad2(m)}</option>
-        ))}
-      </select>
-      <select
-        value={ampm}
-        onChange={(e) => setAmpm((e.target.value || '') as 'AM' | 'PM' | '')}
-        style={{ width: 85, border: '1px solid #e5e7eb', padding: '10px 8px', borderRadius: 10, fontSize: 14 }}
-      >
-        <option value="">AM/PM</option>
-        <option value="AM">AM</option>
-        <option value="PM">PM</option>
-      </select>
-    </div>
-  </div>
-  {/* TIMEZONE */}
-  <div>
-    <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-      Timezone
-    </label>
-    <select
-      value={tzSelect}
-      onChange={(e) => {
-        const v = e.target.value;
-        setTzSelect(v);
-        if (v !== 'CUSTOM') setTimezone(v);
-      }}
-      style={{
-        width: 280,
-        border: '1px solid #e5e7eb',
-        padding: '10px 14px',
-        borderRadius: 10,
-        fontSize: 14,
-        boxSizing: 'border-box',
-      }}
-    >
-      <option value="">Select timezone…</option>
-      <option value="Asia/Kolkata+1">India War Time — 1 Sep 1942 to 15 Oct 1945 (UTC+6:30)</option>
-      {TIMEZONES.map((tz) => (
-        <option key={tz} value={tz}>{tz}</option>
-      ))}
-      <option value="CUSTOM">Custom (type below)</option>
-    </select>
-    {tzSelect === 'CUSTOM' && (
-      <input
-        value={timezone}
-        onChange={(e) => setTimezone(e.target.value)}
-        placeholder=""
-        style={{
-          width: 280,
-          border: '1px solid #e5e7eb',
-          padding: '10px 14px',
-          borderRadius: 10,
-          fontSize: 14,
-          marginTop: 8,
-          boxSizing: 'border-box',
-        }}
-      />
-    )}
-    {(tzSelect === 'Asia/Kolkata' || tzSelect === 'Asia/Kolkata+1') && (
-      <div style={{ fontSize: 13, color: '#b45309', background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 8, padding: '10px 14px', marginTop: 8, lineHeight: 1.6 }}>
-        ⚠️ <b>Born in India between 1 Sep 1942 – 15 Oct 1945? Please select "India War Time (UTC+6:30)" from the timezone dropdown for accurate results.</b>
-      </div>
-    )}
-  </div>
+              <button
+                type="button"
+                onClick={useMyTimezone}
+                style={{
+                  border: '1px solid #ddd',
+                  background: '#fff',
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                }}
+              >
+                Use my timezone
+              </button>
 
-  {/* HOUSE SYSTEM */}
-  <div>
-    <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-      House System
-    </label>
-    <select
-      value={houseSystem}
-      onChange={(e) => setHouseSystem(e.target.value)}
-      style={{
-        width: 200,
-        border: '1px solid #e5e7eb',
-        padding: '10px 14px',
-        borderRadius: 10,
-        fontSize: 14,
-        boxSizing: 'border-box',
-      }}
-    >
-      <option value="P">Placidus (P)</option>
-      <option value="W">Whole Sign (W)</option>
-      <option value="K">Koch (K)</option>
-      <option value="C">Campanus (C)</option>
-      <option value="E">Equal (E)</option>
-    </select>
-  </div>
+              <button
+                type="button"
+                onClick={resetAll}
+                style={{
+                  border: '1px solid #ddd',
+                  background: '#fff',
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                }}
+              >
+                Reset
+              </button>
+            </div>
 
- {/* BUTTONS */}
-  <div style={{ display: 'flex', gap: 12 }}>
-    <button
-      type="submit"
-      disabled={loading}
-      style={{
-        background: '#000',
-        color: '#fff',
-        border: 'none',
-        padding: '12px 28px',
-        borderRadius: 10,
-        fontWeight: 700,
-        fontSize: 15,
-        cursor: 'pointer',
-      }}
-    >
-      {loading ? 'Calculating…' : '✨ Generate Chart'}
-    </button>
-  </div>
+            <div
+              style={{
+                fontSize: '14px',
+                color: '#111827',
+                textAlign: 'center',
+                marginTop: '16px',
+                marginBottom: '16px',
+                fontWeight: 'bold',
+              }}
+            >
+              Click Geocode and scroll down to view matching places. Click “Use”
+              to auto-fill Latitude and Longitude.
+              <br />
+              If no results appear, visit{' '}
+              <a
+                href="https://www.latlong.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: 'underline', color: '#1d4ed8' }}
+              >
+                latlong.net
+              </a>{' '}
+              to obtain coordinates and paste them here manually.
+            </div>
 
-  {/* ERRORS */}
-  {geoError && (
-    <div style={{ color: '#b91c1c', fontSize: 13 }}>{geoError}</div>
-  )}
-  {err && (
-    <div style={{ color: '#b91c1c', background: '#fff', border: '1px solid #fca5a5', padding: 12, borderRadius: 10 }}>
-      <div style={{ fontWeight: 700, marginBottom: 6 }}>
-        {typeof err === 'string' ? err : err.error}
-      </div>
-      {typeof err === 'object' && (err as ApiError).details && (
-        <details style={{ fontSize: 13 }}>
-          <summary>Show technical details</summary>
-          <pre style={{ whiteSpace: 'pre-wrap' }}>
-            {JSON.stringify((err as ApiError).details, null, 2)}
-          </pre>
-        </details>
-      )}
-    </div>
-  )}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(5, 1fr)',
+                gap: 8,
+              }}
+            >
+              <label>
+                <div>Latitude</div>
+                <input
+                  type="number"
+                  step="0.000001"
+                  value={lat}
+                  onChange={(e) =>
+                    setLat(e.target.value === '' ? '' : Number(e.target.value))
+                  }
+                  placeholder="e.g., 42.011233"
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    width: '100%',
+                  }}
+                />
+              </label>
+              <label>
+                <div>Longitude</div>
+                <input
+                  type="number"
+                  step="0.000001"
+                  value={lon}
+                  onChange={(e) =>
+                    setLon(e.target.value === '' ? '' : Number(e.target.value))
+                  }
+                  placeholder="e.g., -87.840603"
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    width: '100%',
+                  }}
+                />
+              </label>
 
-  {/* WELCOME */}
-  <div style={{ textAlign: 'center', padding: '16px', background: '#f9fafb', borderRadius: 10, fontSize: 13, color: '#6b7280', lineHeight: 1.8 }}>
-    <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 6 }}>
-      Welcome to Chandra Prabha Jathakam
-    </div>
-   <p style={{margin: '4px 0'}}>For best results, use a desktop or laptop.</p>
-    <p style={{margin: '4px 0'}}>Mobile users: Tap <em>"Add to Home Screen"</em> in Safari for the best experience.</p>
-    
-  </div>
+              <style>{`
+             #print-root .si-grid { height: auto !important; overflow: visible !important; }
+             #print-root svg       { overflow: visible !important; }
+`}</style>
 
-  {/* PRINT STYLES - kept exactly as before */}
-  <style>{`
-    #print-root .si-grid { height: auto !important; overflow: visible !important; }
-    #print-root svg { overflow: visible !important; }
-  `}</style>
-  <style>{`
-    #print-root .si-grid {
-      grid-template-columns: repeat(4, 1fr) !important;
-      grid-auto-rows: 1fr !important;
-      height: auto !important;
-      overflow: visible !important;
-    }
-    #print-root svg { overflow: visible !important; }
-    #print-root .card,
-    #print-root .page-section,
-    #print-root .avoid-break {
-      break-inside: avoid !important;
-      page-break-inside: avoid !important;
-      overflow: visible !important;
-    }
-    #print-root .charts-column { display: block; }
-    #print-root .charts-column > * { margin-bottom: 16px; }
-    #print-root .report-header { text-align: center; margin: 8px 0 12px; }
-    #print-root .report-header img {
-      width: 140px; height: 140px; object-fit: contain;
-      display: block; margin: 0 auto;
-    }
-    #print-root .report-title { font-weight: 900; font-size: 18px; margin-top: 6px; }
-  `}</style>
+              <style>{`
+              /* Keep SI charts full 4×4 and avoid clipping in the PDF capture */
+          #print-root .si-grid {
+           grid-template-columns: repeat(4, 1fr) !important;
+           grid-auto-rows: 1fr !important;
+           height: auto !important;
+           overflow: visible !important;
+  }
+          #print-root svg {
+           overflow: visible !important;
+  }
 
+  /* Make large blocks stay together across page breaks */
+          #print-root .card,
+          #print-root .page-section,
+          #print-root .avoid-break {
+          break-inside: avoid !important;
+          page-break-inside: avoid !important;
+          overflow: visible !important;
+  }
 
-</form>
+  /* Helper: vertical stack for charts (we'll use in Patch 2) */
+  #print-root .charts-column { display: block; }
+  #print-root .charts-column > * { margin-bottom: 16px; }
+
+  /* First-page header (logo + title) */
+  #print-root .report-header { text-align: center; margin: 8px 0 12px; }
+  #print-root .report-header img {
+    width: 140px; height: 140px; object-fit: contain;
+    display: block; margin: 0 auto;
+  }
+  #print-root .report-title { font-weight: 900; font-size: 18px; margin-top: 6px; }
+`}</style>
+
+              {/* Date (DD/MM/YYYY) */}
+              <div>
+                <div>Date (DD/MM/YYYY)</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <select
+                    value={day === '' ? '' : Number(day)}
+                    onChange={(e) =>
+                      setDay(
+                        e.target.value === '' ? '' : Number(e.target.value)
+                      )
+                    }
+                    style={{
+                      border: '1px solid #ddd',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">DD</option>
+                    {range(
+                      1,
+                      daysInMonth(
+                        typeof year === 'number' ? year : undefined,
+                        typeof month === 'number' ? month : undefined
+                      )
+                    ).map((d) => (
+                      <option key={d} value={d}>
+                        {pad2(d)}
+                      </option>
+                    ))}
+                  </select>
+                  <span>/</span>
+                  <select
+                    value={month === '' ? '' : Number(month)}
+                    onChange={(e) => {
+                      setMonth(
+                        e.target.value === '' ? '' : Number(e.target.value)
+                      );
+                    }}
+                    style={{
+                      border: '1px solid #ddd',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">MM</option>
+                    {range(1, 12).map((m) => (
+                      <option key={m} value={m}>
+                        {pad2(m)}
+                      </option>
+                    ))}
+                  </select>
+                  <span>/</span>
+                  <select
+                    value={year === '' ? '' : Number(year)}
+                    onChange={(e) => {
+                      setYear(
+                        e.target.value === '' ? '' : Number(e.target.value)
+                      );
+                    }}
+                    style={{
+                      border: '1px solid #ddd',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">YYYY</option>
+                    {yearOptions.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Time (HH:MM:SS + AM/PM) */}
+              <div>
+                <div>Time (HH:MM:SS)</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <select
+                    value={hour12 === '' ? '' : Number(hour12)}
+                    onChange={(e) =>
+                      setHour12(
+                        e.target.value === '' ? '' : Number(e.target.value)
+                      )
+                    }
+                    style={{
+                      border: '1px solid #ddd',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">HH</option>
+                    {range(1, 12).map((h) => (
+                      <option key={h} value={h}>
+                        {pad2(h)}
+                      </option>
+                    ))}
+                  </select>
+                  <span>:</span>
+                  <select
+                    value={minute === '' ? '' : Number(minute)}
+                    onChange={(e) =>
+                      setMinute(
+                        e.target.value === '' ? '' : Number(e.target.value)
+                      )
+                    }
+                    style={{
+                      border: '1px solid #ddd',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">MM</option>
+                    {range(0, 59).map((m) => (
+                      <option key={m} value={m}>
+                        {pad2(m)}
+                      </option>
+                    ))}
+                  </select>
+                  <span>:</span>
+                  <select
+                    value={second === '' ? '' : Number(second)}
+                    onChange={(e) =>
+                      setSecond(
+                        e.target.value === '' ? '' : Number(e.target.value)
+                      )
+                    }
+                    style={{
+                      border: '1px solid #ddd',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">SS</option>
+                    {range(0, 59).map((s) => (
+                      <option key={s} value={s}>
+                        {pad2(s)}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={ampm}
+                    onChange={(e) =>
+                      setAmpm((e.target.value || '') as 'AM' | 'PM' | '')
+                    }
+                    style={{
+                      border: '1px solid #ddd',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <option value="">AM/PM</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Timezone */}
+              <label>
+                <div>Timezone</div>
+                <select
+                  value={tzSelect}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setTzSelect(v);
+                    if (v !== 'CUSTOM') setTimezone(v);
+                  }}
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    width: '100%',
+                  }}
+                >
+                  <option value="">Select timezone…</option>
+                  {TIMEZONES.map((tz) => (
+                    <option key={tz} value={tz}>
+                      {tz}
+                    </option>
+                  ))}
+                  <option value="CUSTOM">Custom (type below)</option>
+                </select>
+                {tzSelect === 'CUSTOM' && (
+                  <input
+                    value={timezone}
+                    onChange={(e) => setTimezone(e.target.value)}
+                    placeholder="e.g., America/Chicago"
+                    style={{
+                      border: '1px solid #ddd',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                      width: '100%',
+                      marginTop: 6,
+                    }}
+                  />
+                )}
+              </label>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr auto',
+                gap: 8,
+                alignItems: 'end',
+              }}
+            >
+              <label>
+                <div>House System</div>
+                <select
+                  value={houseSystem}
+                  onChange={(e) => setHouseSystem(e.target.value)}
+                  style={{
+                    border: '1px solid #ddd',
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    width: '100%',
+                  }}
+                >
+                  <option value="P">Placidus (P)</option>
+                  <option value="W">Whole Sign (W)</option>
+                  <option value="K">Koch (K)</option>
+                  <option value="C">Campanus (C)</option>
+                  <option value="E">Equal (E)</option>
+                </select>
+              </label>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  background: '#000',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 14px',
+                  borderRadius: 8,
+                }}
+              >
+                {loading ? 'Calculating…' : 'Generate Chart'}
+              </button>
+
+              <a
+                href="mailto:pranag@yahoo.com?subject=Feedback on Jathakam"
+                style={{
+                  display: 'inline-block',
+                  padding: '10px 14px',
+                  borderRadius: 8,
+                  backgroundColor: '#fffbe6',
+                  color: '#1d4ed8', // blue text
+                  fontWeight: 'bold',
+                  textDecoration: 'underline',
+                  border: '1px solid #facc15',
+                }}
+              >
+                Click here to send your feedback
+              </a>
+            </div>
+
+            {geoError && <div style={{ color: '#b91c1c' }}>{geoError}</div>}
+
+            {err && (
+              <div
+                style={{
+                  color: '#b91c1c',
+                  background: '#fff',
+                  border: '1px solid #fca5a5',
+                  padding: 12,
+                  borderRadius: 8,
+                }}
+              >
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>
+                  {typeof err === 'string' ? err : err.error}
+                </div>
+                {typeof err === 'object' && (err as ApiError).details && (
+                  <details style={{ fontSize: 14 }}>
+                    <summary>Show technical details</summary>
+                    <pre style={{ whiteSpace: 'pre-wrap' }}>
+                      {JSON.stringify((err as ApiError).details, null, 2)}
+                    </pre>
+                  </details>
+                )}
+              </div>
+            )}
+            {/* ✅ Add this message block here */}
+            <div
+              style={{
+                fontSize: '14px',
+                color: '#111827',
+                textAlign: 'center',
+                marginBottom: '1rem',
+                padding: '1rem',
+                backgroundColor: '#f5f5f5',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                lineHeight: '1.6',
+              }}
+            >
+              <div style={{ fontSize: '16px', marginBottom: '0.5rem' }}>
+                Welcome to Chandra Prabha.
+              </div>
+              For best results, use a desktop or laptop and add this app to your{' '}
+              <em>Dock</em>.<br />
+              iPad users: Tap <em>“Add to Home Screen”</em> in Safari for a
+              native-like experience.
+              <br />
+              iPhone users: You may use this app for quick viewing, download, or
+              print—but charts may appear truncated due to screen size.
+            </div>
+            {/* ✅ Message ends here */}
+          </form>
         </div> {/* This closes id="pdf-content" */}
 
                {out && (
@@ -2344,21 +2422,12 @@ return (
           <div style={{fontSize:18, fontWeight:900, marginTop:6}}>Vedic Astrology Report</div>
         </div>
       )}
+{/* Report header (always visible on page 1: screen + print) */}
 <div className="report-header" style={{textAlign:'center', margin:'0 0 12px'}}>
   <img src="/logo.png" alt="Chandra-Prabha" width={140} height={140}
        style={{display:'block', margin:'0 auto'}} />
-  <div style={{fontSize:20, fontWeight:900, marginTop:6}}>
-    Chandra Prabha Jathakam
-  </div>
-  <div style={{fontSize:18, fontWeight:900, marginTop:2}}>
-    Vedic Astrology Report
-  </div>
-  <div style={{fontSize:15, fontWeight:700, marginTop:8, color:'#111827'}}>
-    Made with lots of Love by<br/>
-    Dr. Tirunelveli Subramanian Nagarajan (Raja Nagarajan)<br/>
-    <a href="mailto:tsnagarajan@gmail.com" style={{color:'#1d4ed8'}}>
-      tsnagarajan@gmail.com
-    </a>
+  <div style={{fontSize:18, fontWeight:900, marginTop:6}}>
+    Chandra-Prabha — Vedic Astrology Report
   </div>
 </div>
 
@@ -2370,10 +2439,9 @@ return (
 
 
 
-
       {/* Intro */}
       <div className="card avoid-break" style={{textAlign:'center'}}>
-        
+        <div style={{fontSize:22, fontWeight:900}}>Vedic Astrology Report</div>
         <div style={{marginTop:8, fontSize:16, display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:8}}>
           <div><b>Name:</b> {name || '—'}</div>
           <div><b>Birth Place:</b> {place || '—'}</div>
@@ -2427,7 +2495,6 @@ return (
     positions={out.positions}
     retroSet={retroSet}
 
-
   />
 </div>
 
@@ -2451,7 +2518,7 @@ return (
                   mode="sign"
                   ascDeg={out.d9Ascendant}
                   positions={out.d9Positions}
-                  retroSet={new Set()}
+                  retroSet={retroSet}
 
                 />
               </div>
@@ -2540,7 +2607,7 @@ return (
                 mode="bhava"
                 ascDeg={out.ascendant}
                 positions={out.positions}
-                retroSet={new Set()}
+                retroSet={retroSet}
 
 
               />
@@ -2884,209 +2951,47 @@ return (
   className="no-print"
   style={{ marginTop: 40, padding: 20, textAlign: "center" }}
 >
-  <div
+  <button
+    type="button"
+    onClick={async (e) => {
+      const element = document.getElementById("report");
+      if (!element) return;
+      const btn = e.currentTarget as HTMLButtonElement;
+      const originalText = btn.innerText;
+      try {
+        btn.innerText = "Generating PDF...";
+        const html2pdf = (await import("html2pdf.js")).default;
+        const options = {
+          margin: [0.5, 0.5],
+          filename: "Jathakam-Report.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        };
+        await html2pdf().set(options).from(element).save();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        btn.innerText = originalText;
+      }
+    }}
     style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      gap: 12,
-      flexWrap: "wrap",
+      padding: "12px 24px",
+      cursor: "pointer",
+      backgroundColor: "#50E3C2",
+      color: "white",
+      border: "none",
+      borderRadius: 6,
+      fontWeight: "bold",
     }}
   >
-    <button
-      type="button"
-      onClick={async (e) => {
-        const element = document.getElementById("report");
-        if (!element) return;
-        const btn = e.currentTarget as HTMLButtonElement;
-        const originalText = btn.innerText;
-        try {
-          btn.innerText = "Generating PDF...";
-          const html2pdf = (await import("html2pdf.js")).default;
-          const options = {
-            margin: [0.5, 0.5],
-            filename: "Jathakam-Report.pdf",
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-          };
-          await html2pdf().set(options).from(element).save();
-        } catch (err) {
-          console.error(err);
-        } finally {
-          btn.innerText = originalText;
-        }
-      }}
-      style={{
-        padding: "12px 24px",
-        cursor: "pointer",
-        backgroundColor: "#50E3C2",
-        color: "white",
-        border: "none",
-        borderRadius: 6,
-        fontWeight: "bold",
-      }}
-    >
-      Download Full PDF Report
-    </button>
-
-    <button
-      type="button"
-      onClick={() => window.print()}
-      style={{
-        padding: "12px 24px",
-        cursor: "pointer",
-        backgroundColor: "#4B5563",
-        color: "white",
-        border: "none",
-        borderRadius: 6,
-        fontWeight: "bold",
-      }}
-    >
-      Print Jathakam
-    </button>
-    <button
-      type="button"
-      onClick={() => setShowOnePage(true)}
-      style={{
-        padding: "12px 24px",
-        cursor: "pointer",
-        backgroundColor: "#2563EB",
-        color: "white",
-        border: "none",
-        borderRadius: 6,
-        fontWeight: "bold",
-      }}
-    >
-      One Page Report
-    </button>
-  </div>
-  <div
-    style={{
-      marginTop: 12,
-      fontSize: 13,
-      color: "#6b7280",
-      textAlign: "center",
-    }}
-  >
-    To print: click <b>Print Jathakam</b>, then choose your printer from the
-    Destination dropdown. To save as PDF: choose <b>Save as PDF</b> from the
-    same dropdown.
-  </div>
+    Download Full PDF Report
+  </button>
 </div>
 
-{showOnePage && out && (
-  <div style={{ marginTop: 24 }}>
-    <OnePageReport
-      data={{
-        name,
-        birthDetails: {
-          date: dateStr,
-          time: timeStr,
-          place,
-          lat,
-          lon,
-          timezone,
-        },
-        lagna: fmtSignDeg(out.ascendant),
-        d9Lagna: fmtSignDeg(out.d9Ascendant),
-        rasi: fmtSignDeg(out.positions.Moon),
-        nakshatra: panchanga?.nakshatra,
-        pada: panchanga?.pada,
-        dashaBalance:
-          out?.dasha && out.dasha.length > 0
-            ? (() => {
-                const start = new Date(out.dasha[0].startISO);
-                const end = new Date(out.dasha[0].endISO);
-                let years = end.getFullYear() - start.getFullYear();
-                let months = end.getMonth() - start.getMonth();
-                let days = end.getDate() - start.getDate();
-                if (days < 0) { months -= 1; days += 30; }
-                if (months < 0) { years -= 1; months += 12; }
-                return `${years}y ${months}m ${days}d`;
-              })()
-            : "—",
-        birthDasha: {
-          main: out?.dasha && out.dasha.length > 0
-            ? out.dasha[0]?.lord || "—"
-            : "—",
-        },
-        currentDasha: {
-          main: out?.dasha && out.dasha.length > 0
-            ? (() => {
-                const now = new Date();
-                const current = out.dasha.find((d: any) => {
-                  const start = new Date(d.startISO);
-                  const end = new Date(d.endISO);
-                  return start <= now && now < end;
-                });
-               
-          return current ? current.lord : "—";
-              })()
-            : "—",
-          sub: (() => {
-            if (!out?.dasha || out.dasha.length === 0) return '—';
-            const now = new Date();
-            const current = out.dasha.find((d: any) => {
-              const s = new Date(d.startISO), e = new Date(d.endISO);
-              return s <= now && now < e;
-            });
-            if (!current) return '—';
-            const vOrder = ["Sun","Moon","Mars","Rahu","Jupiter","Saturn","Mercury","Ketu","Venus"];
-            const vYears: Record<string,number> = {Sun:6,Moon:10,Mars:7,Rahu:18,Jupiter:16,Saturn:19,Mercury:17,Ketu:7,Venus:20};
-            const currentIndex = vOrder.indexOf(current.lord);
-            if (currentIndex === -1) return '—';
-            const dashaStart = new Date(current.startISO).getTime();
-            const totalDuration = new Date(current.endISO).getTime() - dashaStart;
-            let accumulatedTime = dashaStart;
-            let subLord = '—';
-            for (let i = 0; i < 9; i++) {
-              const pIdx = (currentIndex + i) % 9;
-              const subDuration = (vYears[vOrder[pIdx]] / 120) * totalDuration;
-              const nextTime = accumulatedTime + subDuration;
-              if (now.getTime() >= accumulatedTime && now.getTime() < nextTime) {
-                subLord = vOrder[pIdx];
-                break;
-              }
-              accumulatedTime = nextTime;
-            }
-            return subLord.charAt(0) + subLord.slice(1).toLowerCase();
-          })(),
-        },
-        
-         d1Positions: {
-          ...out.positions,
-          Ketu: (out.positions?.Ketu !== undefined) ? out.positions.Ketu : ((out.positions?.Rahu ?? 0) + 180) % 360
-        },
-        d9Positions: {
-          ...out.d9Positions,
-          Ketu: (out.d9Positions?.Ketu !== undefined) ? out.d9Positions.Ketu : ((out.d9Positions?.Rahu ?? 0) + 180) % 360
-        },
-        ascDeg: out.ascendant,
-        d9AscDeg: out.d9Ascendant,
-        speeds: out.speeds || {},
-        vargaRows: (() => {
-            const nakMap: Record<string, any> = {};
-            (out.nakTable || []).forEach((r: any) => { nakMap[r.body] = r; });
-            return [
-          { body: 'Ascendant', d1: fmtSignDeg(out.ascendant), nakshatra: nakMap['Ascendant']?.nakshatra, pada: nakMap['Ascendant']?.pada, d9: fmtSignDeg(out.d9Ascendant) },
-          { body: 'Sun', d1: fmtSignDeg(out.positions?.Sun), nakshatra: nakMap['Sun']?.nakshatra, pada: nakMap['Sun']?.pada, d9: fmtSignDeg(out.d9Positions?.Sun) },
-          { body: 'Moon', d1: fmtSignDeg(out.positions?.Moon), nakshatra: nakMap['Moon']?.nakshatra, pada: nakMap['Moon']?.pada, d9: fmtSignDeg(out.d9Positions?.Moon) },
-          { body: 'Mercury', d1: fmtSignDeg(out.positions?.Mercury), nakshatra: nakMap['Mercury']?.nakshatra, pada: nakMap['Mercury']?.pada, d9: fmtSignDeg(out.d9Positions?.Mercury) },
-          { body: 'Venus', d1: fmtSignDeg(out.positions?.Venus), nakshatra: nakMap['Venus']?.nakshatra, pada: nakMap['Venus']?.pada, d9: fmtSignDeg(out.d9Positions?.Venus) },
-          { body: 'Mars', d1: fmtSignDeg(out.positions?.Mars), nakshatra: nakMap['Mars']?.nakshatra, pada: nakMap['Mars']?.pada, d9: fmtSignDeg(out.d9Positions?.Mars) },
-          { body: 'Jupiter', d1: fmtSignDeg(out.positions?.Jupiter), nakshatra: nakMap['Jupiter']?.nakshatra, pada: nakMap['Jupiter']?.pada, d9: fmtSignDeg(out.d9Positions?.Jupiter) },
-          { body: 'Saturn', d1: fmtSignDeg(out.positions?.Saturn), nakshatra: nakMap['Saturn']?.nakshatra, pada: nakMap['Saturn']?.pada, d9: fmtSignDeg(out.d9Positions?.Saturn) },
-          { body: 'Rahu', d1: fmtSignDeg(out.positions?.Rahu), nakshatra: nakMap['Rahu']?.nakshatra, pada: nakMap['Rahu']?.pada, d9: fmtSignDeg(out.d9Positions?.Rahu) },
-          { body: 'Ketu', d1: fmtSignDeg(out.positions?.Ketu), nakshatra: nakMap['Ketu']?.nakshatra, pada: nakMap['Ketu']?.pada, d9: fmtSignDeg(out.d9Positions?.Ketu) },
-            ];
-        })(),
-    }}
-  />
-  </div>
-)}
 </main>
 </>
 );
 }
+

@@ -187,15 +187,29 @@ if (retroPlanetsD1.length === 0) {
           </table>
         </div>
 
-        {/* CHARTS */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
-          <div style={{'--cell-size': '80px'} as React.CSSProperties}>
+        {/*
+          CHARTS
+          CHANGED (see chat for full reasoning):
+          1. gridTemplateColumns changed from '1fr 1fr' (2 columns, side by
+             side) to '1fr' (1 column) so D1 sits above D9, each getting the
+             full width instead of half.
+          2. --cell-size increased from 80px to 130px on each chart, giving
+             each Rasi cell much more room for a 4th/5th planet label.
+          3. compact={true} removed (changed to compact={false}) -- this was
+             very likely switching SouthIndianChart into a deliberately
+             smaller/denser layout mode built for tight two-column space,
+             which may itself have been capping how much a cell shows.
+             Since D1 and D9 no longer need to share a row, compact mode is
+             no longer needed anyway.
+        */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16, marginBottom: 10 }}>
+          <div style={{'--cell-size': '130px'} as React.CSSProperties}>
             <div style={{ fontWeight: 'bold', fontSize: 11, marginBottom: 3 }}>Rasi</div>
-            <SouthIndianChart title="" mode="sign" ascDeg={ascDeg} positions={d1Positions} retroSet={new Set()} compact={true} />
+            <SouthIndianChart title="" mode="sign" ascDeg={ascDeg} positions={d1Positions} retroSet={new Set()} compact={false} />
           </div>
-          <div style={{'--cell-size': '80px'} as React.CSSProperties}>
+          <div style={{'--cell-size': '130px'} as React.CSSProperties}>
             <div style={{ fontWeight: 'bold', fontSize: 11, marginBottom: 3 }}>Navamsa</div>
-            <SouthIndianChart title="" mode="sign" ascDeg={d9AscDeg} positions={d9Positions} retroSet={new Set()} compact={true} />
+            <SouthIndianChart title="" mode="sign" ascDeg={d9AscDeg} positions={d9Positions} retroSet={new Set()} compact={false} />
           </div>
           </div>
         
