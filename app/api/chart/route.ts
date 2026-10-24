@@ -562,18 +562,16 @@ Object.entries(positions ?? {}).forEach(([name, d]) => {
     let sunsetISO: string | null = null;
     if (SunCalc) {
       try {
-        const dateForSun = new Date(dtUTC.year, dtUTC.month - 1, dtUTC.day);
-        const times = SunCalc.getTimes(dateForSun, lat, lon);
-        
-        const sunriseUTCHour = times.sunrise.getUTCHours() + times.sunrise.getUTCMinutes()/60 + times.sunrise.getUTCSeconds()/3600;
-        const sunsetUTCHour  = times.sunset.getUTCHours()  + times.sunset.getUTCMinutes()/60  + times.sunset.getUTCSeconds()/3600;
-        const tzOffsetHours  = 5.5; // IST fixed offset
-        const srLocal = sunriseUTCHour + tzOffsetHours;
-        const ssLocal = sunsetUTCHour  + tzOffsetHours;
-        const pad = (n: number) => String(Math.floor(n)).padStart(2,'0');
-        const fmtTime = (h: number) => `${pad(h)}:${pad((h%1)*60)}:${pad(((h%1)*60%1)*60)}`;
-        sunriseISO = `${dtLocal.year}-${pad(dtLocal.month)}-${pad(dtLocal.day)}T${fmtTime(srLocal)}+05:30`;
-        sunsetISO  = `${dtLocal.year}-${pad(dtLocal.month)}-${pad(dtLocal.day)}T${fmtTime(ssLocal)}+05:30`;
+        // Use local NOON of the birth date in the birth-place timezone,
+        // so SunCalc picks the correct day for every place on earth.
+        const noonLocal = DateTime.fromObject(
+          { year: dtLocal.year, month: dtLocal.month, day: dtLocal.day, hour: 12 },
+          { zone: String(timezone) }
+        );
+        const times = SunCalc.getTimes(noonLocal.toJSDate(), lat, lon);
+        // Convert to the birth-place timezone (was wrongly fixed to IST +05:30)
+        sunriseISO = DateTime.fromJSDate(times.sunrise).setZone(String(timezone)).toISO({ suppressMilliseconds: true });
+        sunsetISO  = DateTime.fromJSDate(times.sunset).setZone(String(timezone)).toISO({ suppressMilliseconds: true });
       } catch {}
     }
     // Aspects
