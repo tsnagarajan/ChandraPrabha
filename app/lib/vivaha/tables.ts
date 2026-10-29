@@ -45,34 +45,34 @@ export const YONI_ENEMIES: Record<string, string> = {
   "Snake":"Mongoose","Mongoose":"Snake"
 };
 
-// Rajju group for each nakshatra
+// Rajju group for each nakshatra (Suddha Vakya Panchangam)
 export const NAK_RAJJU = [
   "Patha",   // 0  Ashwini
-  "Patha",   // 1  Bharani
-  "Siro",    // 2  Krittika
-  "Siro",    // 3  Rohini
+  "Thodai",  // 1  Bharani
+  "Uthara",  // 2  Krittika
+  "Kanda",   // 3  Rohini
   "Siro",    // 4  Mrigashira
   "Kanda",   // 5  Ardra
-  "Kanda",   // 6  Punarvasu
-  "Kanda",   // 7  Pushya
-  "Kanda",   // 8  Ashlesha
-  "Thodia",  // 9  Magha
-  "Thodia",  // 10 Purva Phalguni
-  "Thodia",  // 11 Uttara Phalguni
-  "Uthara",  // 12 Hasta
-  "Kanda",   // 13 Chitra
-  "Uthara",  // 14 Swati
-  "Thodia",  // 15 Vishakha
-  "Kanda",   // 16 Anuradha
-  "Thodia",  // 17 Jyeshtha
-  "Thodia",  // 18 Mula
-  "Thodia",  // 19 Purva Ashadha
-  "Kanda",   // 20 Uttara Ashadha
+  "Uthara",  // 6  Punarvasu
+  "Thodai",  // 7  Pushya
+  "Patha",   // 8  Ashlesha
+  "Patha",   // 9  Magha
+  "Thodai",  // 10 Purva Phalguni
+  "Uthara",  // 11 Uttara Phalguni
+  "Kanda",   // 12 Hasta
+  "Siro",    // 13 Chitra
+  "Kanda",   // 14 Swati
+  "Uthara",  // 15 Vishakha
+  "Thodai",  // 16 Anuradha
+  "Patha",   // 17 Jyeshtha
+  "Patha",   // 18 Mula
+  "Thodai",  // 19 Purva Ashadha
+  "Uthara",  // 20 Uttara Ashadha
   "Kanda",   // 21 Shravana
   "Siro",    // 22 Dhanishta
-  "Siro",    // 23 Shatabhisha
-  "Siro",    // 24 Purva Bhadrapada
-  "Patha",   // 25 Uttara Bhadrapada
+  "Kanda",   // 23 Shatabhisha
+  "Uthara",  // 24 Purva Bhadrapada
+  "Thodai",  // 25 Uttara Bhadrapada
   "Patha",   // 26 Revati
 ];
 

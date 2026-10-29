@@ -182,7 +182,7 @@ export function calcRajju(gNak: number, bNak: number): PoruthamResult {
     "Siro":"Husband's longevity affected",
     "Kanda":"Wife's longevity affected",
     "Uthara":"Children (Putra Dosha)",
-    "Thodia":"Loss of property",
+    "Thodai":"Loss of property",
     "Patha":"Dangers from travel"
   };
   return {
